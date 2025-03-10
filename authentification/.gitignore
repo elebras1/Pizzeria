@@ -1,0 +1,30 @@
+# Node modules
+/node_modules/
+
+# Log files
+*.log
+
+# IDE configuration files
+/.vscode/
+/.idea/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Local environment variables (env files)
+.env
+
+# Build directories
+/dist/
+/build/
+
+# npm cache files
+npm-debug.log*
+
+# Test coverage files
+/coverage/
+
+# Security files
+*.pem
+*.key
