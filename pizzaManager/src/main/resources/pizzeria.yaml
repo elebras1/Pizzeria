@@ -1,0 +1,355 @@
+openapi: 3.0.0
+info:
+  title: Pizza API
+  version: 1.0.0
+paths:
+  /piz:
+    get:
+      summary: Récupérer toutes les pizzas
+      responses:
+        '200':
+          description: Liste des pizzas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PizzaDto'
+    post:
+      summary: Créer une nouvelle pizza
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PizzaDto'
+      responses:
+        '201':
+          description: Pizzaza créée
+
+  /piz/{id}:
+    get:
+      summary: Récupérer une pizza par ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de la pizza
+      responses:
+        '200':
+          description: Pizzaza trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PizzaDto'
+        '404':
+          description: Pizzaza non trouvée
+
+    put:
+      summary: Mettre à jour une pizza existante
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de la pizza
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PizzaDto'
+      responses:
+        '200':
+          description: Pizzaza mise à jour
+
+    delete:
+      summary: Supprimer une pizza
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de la pizza
+      responses:
+        '204':
+          description: Pizzaza supprimée
+
+  /ingredients:
+    get:
+      summary: Récupérer tous les ingrédients
+      responses:
+        '200':
+          description: Liste des ingrédients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IngredientDto'
+    post:
+      summary: Créer un nouvel ingrédient
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngredientDto'
+      responses:
+        '201':
+          description: Ingredient créé
+
+  /ingredients/{id}:
+    get:
+      summary: Récupérer un ingrédient par ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'ingrédient
+      responses:
+        '200':
+          description: Ingredient trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngredientDto'
+        '404':
+          description: Ingredient non trouvé
+
+    put:
+      summary: Mettre à jour un ingrédient existant
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'ingrédient
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngredientDto'
+      responses:
+        '200':
+          description: Ingredient mis à jour
+
+    delete:
+      summary: Supprimer un ingrédient
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'ingrédient
+      responses:
+        '204':
+          description: Ingredient supprimé
+
+  /commandes:
+    get:
+      summary: Récupérer toutes les commandes
+      responses:
+        '200':
+          description: Liste des commandes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommandeDto'
+    post:
+      summary: Créer une nouvelle commande
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommandeDto'
+      responses:
+        '201':
+          description: Commande créée
+
+  /commandes/{id}:
+    get:
+      summary: Récupérer une commande par ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de la commande
+      responses:
+        '200':
+          description: Commande trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommandeDto'
+        '404':
+          description: Commande non trouvée
+
+    put:
+      summary: Mettre à jour une commande existante
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de la commande
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommandeDto'
+      responses:
+        '200':
+          description: Commande mise à jour
+
+    delete:
+      summary: Supprimer une commande
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de la commande
+      responses:
+        '204':
+          description: Commande supprimée
+
+  /comptes:
+    get:
+      summary: Récupérer tous les comptes
+      responses:
+        '200':
+          description: Liste des comptes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CompteDto'
+    post:
+      summary: Créer un nouveau compte
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompteDto'
+      responses:
+        '201':
+          description: Compte créé
+
+  /comptes/{id}:
+    get:
+      summary: Récupérer un compte par ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID du compte
+      responses:
+        '200':
+          description: Compte trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompteDto'
+        '404':
+          description: Compte non trouvé
+
+    put:
+      summary: Mettre à jour un compte existant
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID du compte
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompteDto'
+      responses:
+        '200':
+          description: Compte mis à jour
+
+    delete:
+      summary: Supprimer un compte
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID du compte
+      responses:
+        '204':
+          description: Compte supprimé
+
+components:
+  schemas:
+    PizzaDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nom:
+          type: string
+        description:
+          type: string
+        photo:
+          type: string
+
+    IngredientDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nom:
+          type: string
+        description:
+          type: string
+        photo:
+          type: string
+
+    CommandeDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nom:
+          type: string
+        id_compte:
+          type: integer
+          format: int64
+
+    CompteDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        pseudo:
+          type: string
+        nom:
+          type: string
+        prenom:
+          type: string
+        mot_de_passe:
+          type: string
