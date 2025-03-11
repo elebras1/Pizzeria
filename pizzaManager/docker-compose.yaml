@@ -11,6 +11,8 @@ services:
       MYSQL_PASSWORD: pizzeria_password
     ports:
       - "3306:3306"
+    networks:
+      - pizzeria-network
     volumes:
       - mariadb_data:/var/lib/mysql
 
@@ -23,6 +25,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - "27017:27017"
+    networks:
+      - pizzeria-network
     volumes:
       - mongodb_data:/data/db
 
@@ -40,6 +44,11 @@ services:
       SPRING_DATA_MONGODB_URI: mongodb://root:example@mongodb:27017/pizzeria?authSource=admin
     ports:
       - "8081:8081"
+    networks:
+      - pizzeria-network
+
+networks:
+  pizzeria-network:
 
 volumes:
   mariadb_data:

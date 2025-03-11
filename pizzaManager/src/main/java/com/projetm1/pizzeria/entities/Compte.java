@@ -10,22 +10,15 @@ import java.util.Objects;
 @Document(collection = "compte")
 public class Compte {
     @Id
-    private Long id;
+    private String  id;
     private String pseudo;
     private String prenom;
     private String nom;
     private String motDePasse;
     private Boolean isAdmin;
-    private List<Long> idCommandes;
+    private List<String > idCommandes;
 
     public Compte() {
-    }
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getPseudo() {

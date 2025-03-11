@@ -1,4 +1,4 @@
-package com.projetm1.pizzeria.repository;
+package com.projetm1.pizzeria.repository.jpa;
 
 import com.projetm1.pizzeria.entities.Commentaire;
 import org.springframework.data.jpa.repository.JpaRepository;
