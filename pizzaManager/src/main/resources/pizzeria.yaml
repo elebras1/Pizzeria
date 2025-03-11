@@ -366,6 +366,9 @@ components:
           type: string
         photo:
           type: string
+        price:
+          type: number
+          format: double
 
     CartDto:
       type: object
@@ -381,9 +384,6 @@ components:
           items:
             type: integer
             format: int64
-        idAccount:
-          type: integer
-          format: int64
 
     OrderDto:
       type: object
