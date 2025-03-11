@@ -1,16 +1,42 @@
 const express = require('express');
+const httpProxy = require('http-proxy');
+const jwt = require('jsonwebtoken');
+const proxy = httpProxy.createProxyServer();
 const app = express();
-const dotenv = require('dotenv');
+require('dotenv').config();
 
-dotenv.config();
+const publicRoutes = [
+    '/api/pizzas',
+    '/api/auth/login',
+    '/api/auth/register'    
+];
 
-const authRoutes = require('./routes/auth');
+function authMiddleware(req, res, next) {
+    if (publicRoutes.includes(req.path)) {
+        return next();
+    }
 
-app.use(express.json());
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: 'Accès non autorisé, jeton manquant' });
+    }
 
-app.use('/api/auth', authRoutes);
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        return res.status(401).json({ message: 'Jeton invalide ou expiré' });
+    }
+}
 
-const port = process.env.PORT || 5000;
-app.listen(port, () => {
-  console.log(`Serveur API d'authentification démarré sur http://localhost:${port}`);
+
+app.use(authMiddleware);
+
+app.all('/*', (req, res) => {
+    proxy.web(req, res, { target: 'http://localhost:8080' });
+});
+
+app.listen(3000, () => {
+    console.log('Serveur Node.js en écoute sur le port 3000');
 });
