@@ -13,7 +13,6 @@ public class PizzaPanier {
     @ManyToOne
     @JoinColumn(name = "id_pizza", nullable = false)
     private Pizza pizza;
-
     @ManyToOne
     @JoinColumn(name = "id_panier", nullable = false)
     private Panier panier;
