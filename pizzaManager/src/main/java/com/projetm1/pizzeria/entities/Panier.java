@@ -2,6 +2,7 @@ package com.projetm1.pizzeria.entities;
 
 import jakarta.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -37,6 +38,21 @@ public class Panier {
     }
     public void setPizzaPaniers(Set<PizzaPanier> pizzaPaniers) {
         this.pizzaPaniers = pizzaPaniers;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Panier panier = (Panier) o;
+
+        return Objects.equals(id, panier.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }
 

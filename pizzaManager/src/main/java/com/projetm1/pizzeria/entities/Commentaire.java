@@ -2,6 +2,8 @@ package com.projetm1.pizzeria.entities;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "commentaire")
 public class Commentaire {
@@ -47,6 +49,21 @@ public class Commentaire {
 
     public void setCommande(Commande commande) {
         this.commande = commande;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Commentaire that = (Commentaire) o;
+
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }
 

@@ -3,6 +3,7 @@ package com.projetm1.pizzeria.entities;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -91,5 +92,20 @@ public class Pizza {
 
     public void setPizzaPaniers(Set<PizzaPanier> pizzaPaniers) {
         this.pizzaPaniers = pizzaPaniers;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Pizza pizza = (Pizza) o;
+
+        return Objects.equals(id, pizza.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }

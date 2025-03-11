@@ -2,6 +2,7 @@ package com.projetm1.pizzeria.entities;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -13,7 +14,7 @@ public class Ingredient {
     private Long id;
     private String nom;
     private String description;
-    private int prix;
+    private Float prix;
     @ManyToMany(mappedBy = "ingredient_standard")
     private Set<Pizza> pizzasStandard;
     @ManyToMany(mappedBy = "ingredient_optionnel")
@@ -51,11 +52,11 @@ public class Ingredient {
         this.description = description;
     }
 
-    public int getPrix() {
+    public Float getPrix() {
         return prix;
     }
 
-    public void setPrix(int prix) {
+    public void setPrix(Float prix) {
         this.prix = prix;
     }
 
@@ -81,5 +82,20 @@ public class Ingredient {
 
     public void setPizzasOptionnel(Set<Pizza> pizzasOptionnel) {
         this.pizzasOptionnel = pizzasOptionnel;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Ingredient that = (Ingredient) o;
+
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }
