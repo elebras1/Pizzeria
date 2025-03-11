@@ -1,6 +1,7 @@
 package com.projetm1.pizzeria.entities;
 
 import jakarta.persistence.*;
+
 import java.util.Set;
 import java.util.HashSet;
 
@@ -13,14 +14,16 @@ public class Ingredient {
     private String nom;
     private String description;
     private int prix;
-    @ManyToMany(mappedBy = "standardIngredients")
-    private Set<Pizza> pizzasStandard = new HashSet<>();
-    @ManyToMany(mappedBy = "optionalIngredients")
-    private Set<Pizza> pizzasOptional = new HashSet<>();
-    @ManyToMany(mappedBy = "ingredients")
+    @ManyToMany(mappedBy = "ingredient_standard")
+    private Set<Pizza> pizzasStandard;
+    @ManyToMany(mappedBy = "ingredient_optionnel")
+    private Set<Pizza> pizzasOptionnel;
+    @ManyToMany(mappedBy = "ingredients_panier")
     private Set<PizzaPanier> pizzaPaniers;
 
     public Ingredient() {
+        this.pizzaPaniers = new HashSet<>();
+        this.pizzasOptionnel = new HashSet<>();
         this.pizzasStandard = new HashSet<>();
     }
 
@@ -56,6 +59,14 @@ public class Ingredient {
         this.prix = prix;
     }
 
+    private Set<PizzaPanier> getPizzaPaniers() {
+        return pizzaPaniers;
+    }
+
+    private void setPizzaPaniers(Set<PizzaPanier> pizzaPaniers) {
+        this.pizzaPaniers = pizzaPaniers;
+    }
+
     public Set<Pizza> getPizzasStandard() {
         return pizzasStandard;
     }
@@ -64,11 +75,11 @@ public class Ingredient {
         this.pizzasStandard = pizzasStandard;
     }
 
-    public Set<Pizza> getPizzasOptional() {
-        return pizzasOptional;
+    public Set<Pizza> getPizzasOptionnel() {
+        return pizzasOptionnel;
     }
 
-    public void setPizzasOptional(Set<Pizza> pizzasOptional) {
-        this.pizzasOptional = pizzasOptional;
+    public void setPizzasOptionnel(Set<Pizza> pizzasOptionnel) {
+        this.pizzasOptionnel = pizzasOptionnel;
     }
 }

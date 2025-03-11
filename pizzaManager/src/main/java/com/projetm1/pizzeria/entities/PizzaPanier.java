@@ -13,12 +13,13 @@ public class PizzaPanier {
     @ManyToOne
     @JoinColumn(name = "id_pizza", nullable = false)
     private Pizza pizza;
+
     @ManyToOne
     @JoinColumn(name = "id_panier", nullable = false)
     private Panier panier;
     @ManyToMany
     @JoinTable(
-            name = "pizzapanier_ingredient",
+            name = "ingredients_panier",
             joinColumns = @JoinColumn(name = "pizza_panier_id"),
             inverseJoinColumns = @JoinColumn(name = "ingredient_id")
     )
