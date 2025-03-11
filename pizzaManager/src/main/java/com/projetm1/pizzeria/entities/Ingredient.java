@@ -15,11 +15,11 @@ public class Ingredient {
     private String nom;
     private String description;
     private Float prix;
-    @ManyToMany(mappedBy = "ingredient_standard")
+    @ManyToMany(mappedBy = "standardIngredients")
     private Set<Pizza> pizzasStandard;
-    @ManyToMany(mappedBy = "ingredient_optionnel")
+    @ManyToMany(mappedBy = "optionalIngredients")
     private Set<Pizza> pizzasOptionnel;
-    @ManyToMany(mappedBy = "ingredients_panier")
+    @ManyToMany(mappedBy = "ingredients")
     private Set<PizzaPanier> pizzaPaniers;
 
     public Ingredient() {

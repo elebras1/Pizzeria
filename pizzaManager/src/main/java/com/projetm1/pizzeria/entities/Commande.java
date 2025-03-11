@@ -12,9 +12,7 @@ public class Commande {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "id_compte")
-    private Compte compte;
+    private Long idCompte;
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL)
     private List<Panier> paniers;
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL)
@@ -33,13 +31,6 @@ public class Commande {
         this.id = id;
     }
 
-    public Compte getCompte() {
-        return compte;
-    }
-
-    public void setCompte(Compte compte) {
-        this.compte = compte;
-    }
 
     public List<Panier> getPaniers() {
         return paniers;

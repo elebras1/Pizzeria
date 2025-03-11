@@ -1,27 +1,24 @@
 package com.projetm1.pizzeria.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
-@Table(name = "compte")
+@Document(collection = "compte")
 public class Compte {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String pseudo;
     private String prenom;
     private String nom;
     private String motDePasse;
     private Boolean isAdmin;
-    @OneToMany(mappedBy = "compte", cascade = CascadeType.ALL)
-    private List<Commande> commandes;
+    private List<Long> idCommandes;
 
     public Compte() {
-        this.commandes = new ArrayList<>();
     }
     public Long getId() {
         return id;
@@ -63,13 +60,6 @@ public class Compte {
         this.motDePasse = motDePasse;
     }
 
-    public List<Commande> getCommandes() {
-        return commandes;
-    }
-
-    public void setCommandes(List<Commande> commandes) {
-        this.commandes = commandes;
-    }
 
     public Boolean getIsAdmin() {
         return isAdmin;
