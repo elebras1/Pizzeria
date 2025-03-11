@@ -1,0 +1,47 @@
+﻿version: '3.8'
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: monMotDePasseSuperSecret
+      MYSQL_DATABASE: test
+      MYSQL_USER: pizzeria_user
+      MYSQL_PASSWORD: pizzeria_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: pizzeria
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  pizzeria:
+    build: .
+    container_name: pizzeria
+    restart: always
+    depends_on:
+      - mariadb
+      - mongodb
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mariadb://mariadb:3306/test
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: monMotDePasseSuperSecret
+      SPRING_DATA_MONGODB_URI: mongodb://root:example@mongodb:27017/pizzeria?authSource=admin
+    ports:
+      - "8081:8081"
+
+volumes:
+  mariadb_data:
+  mongodb_data:
