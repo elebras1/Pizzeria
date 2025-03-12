@@ -339,6 +339,26 @@ paths:
         '204':
           description: Compte supprimé
 
+  /accounts/{id}/orders:
+    get:
+      summary: Récupérer les commandes d'un compte
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID du compte
+      responses:
+        '200':
+          description: Commandes
+          content:
+            application/json:
+              schema:
+                type: array
+                $ref: '#/components/schemas/AccountDto'
+        '404':
+          description: Compte non trouvé
 components:
   schemas:
     PizzaDto:
