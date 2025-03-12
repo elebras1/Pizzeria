@@ -15,7 +15,7 @@ public class Commande {
     @ManyToOne
     @JoinColumn(name = "id_compte")
     private Compte compte;
-    @OneToMany(mappedBy = "pizzapanier", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pizza_panier", cascade = CascadeType.ALL)
     private List<PizzaPanier> panier;
     private List<String> idCommentaires;
 }
