@@ -1,22 +1,28 @@
 package com.projetm1.pizzeria.entities;
 
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Document(collection = "compte")
+@Entity
+@Table(name = "compte")
 public class Compte {
     @Id
-    private String  id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long  id;
     private String pseudo;
     private String prenom;
     private String nom;
     private String motDePasse;
     private Boolean isAdmin;
-    private List<String > idCommandes;
+
+
+    @ManyToOne
+    @JoinColumn(name = "id_commande")
+    private List<Commande > Commandes;
 
     public Compte() {
     }

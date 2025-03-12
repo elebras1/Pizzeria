@@ -1,31 +1,20 @@
 package com.projetm1.pizzeria.entities;
 
 import jakarta.persistence.*;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Objects;
-
-@Entity
-@Table(name = "commentaire")
+@Document(collection = "commentaire")
 public class Commentaire {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     private String texte;
     private String photo;
-    @ManyToOne
-    @JoinColumn(name = "id_commande")
-    private Commande commande;
+    private String idCommande;
 
     public Commentaire() {
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getTexte() {
         return texte;
@@ -41,14 +30,6 @@ public class Commentaire {
 
     public void setPhoto(String photo) {
         this.photo = photo;
-    }
-
-    public Commande getCommande() {
-        return commande;
-    }
-
-    public void setCommande(Commande commande) {
-        this.commande = commande;
     }
 
     @Override

@@ -12,15 +12,15 @@ public class Commande {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long idCompte;
+
+    @OneToMany(mappedBy = "commande")
+    private Compte Compte;
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL)
     private List<Panier> paniers;
-    @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL)
-    private List<Commentaire> commentaires;
+    private List<String> idCommentaires;
 
     public Commande() {
         this.paniers = new ArrayList<>();
-        this.commentaires = new ArrayList<>();
     }
 
     public Long getId() {
@@ -38,14 +38,6 @@ public class Commande {
 
     public void setPaniers(List<Panier> paniers) {
         this.paniers = paniers;
-    }
-
-    public List<Commentaire> getCommentaires() {
-        return commentaires;
-    }
-
-    public void setCommentaires(List<Commentaire> commentaires) {
-        this.commentaires = commentaires;
     }
 
     @Override
