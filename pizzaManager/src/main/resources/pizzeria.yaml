@@ -45,7 +45,6 @@ paths:
                 $ref: '#/components/schemas/PizzaDto'
         '404':
           description: Pizza non trouvée
-
     put:
       summary: Mettre à jour une pizza existante
       parameters:
@@ -63,7 +62,6 @@ paths:
       responses:
         '200':
           description: Pizza mise à jour
-
     delete:
       summary: Supprimer une pizza
       parameters:
@@ -138,7 +136,7 @@ paths:
               $ref: '#/components/schemas/IngredientDto'
       responses:
         '201':
-          description: Ingredient créé
+          description: Ingrédient créé
 
   /ingredients/{id}:
     get:
@@ -152,14 +150,13 @@ paths:
           description: ID de l'ingrédient
       responses:
         '200':
-          description: Ingredient trouvé
+          description: Ingrédient trouvé
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/IngredientDto'
         '404':
-          description: Ingredient non trouvé
-
+          description: Ingrédient non trouvé
     put:
       summary: Mettre à jour un ingrédient existant
       parameters:
@@ -176,8 +173,7 @@ paths:
               $ref: '#/components/schemas/IngredientDto'
       responses:
         '200':
-          description: Ingredient mis à jour
-
+          description: Ingrédient mis à jour
     delete:
       summary: Supprimer un ingrédient
       parameters:
@@ -189,7 +185,7 @@ paths:
           description: ID de l'ingrédient
       responses:
         '204':
-          description: Ingredient supprimé
+          description: Ingrédient supprimé
 
   /orders:
     get:
@@ -233,7 +229,6 @@ paths:
                 $ref: '#/components/schemas/OrderDto'
         '404':
           description: Commande non trouvée
-
     put:
       summary: Mettre à jour une commande existante
       parameters:
@@ -251,7 +246,6 @@ paths:
       responses:
         '200':
           description: Commande mise à jour
-
     delete:
       summary: Supprimer une commande
       parameters:
@@ -264,6 +258,28 @@ paths:
       responses:
         '204':
           description: Commande supprimée
+
+  /orders/{id}/comments:
+    get:
+      summary: Récupérer les commentaires d'une commande
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de la commande
+      responses:
+        '200':
+          description: Liste des commentaires de la commande
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommentDto'
+        '404':
+          description: Commande non trouvée
 
   /accounts:
     get:
@@ -307,7 +323,6 @@ paths:
                 $ref: '#/components/schemas/AccountDto'
         '404':
           description: Compte non trouvé
-
     put:
       summary: Mettre à jour un compte existant
       parameters:
@@ -325,7 +340,6 @@ paths:
       responses:
         '200':
           description: Compte mis à jour
-
     delete:
       summary: Supprimer un compte
       parameters:
@@ -351,14 +365,270 @@ paths:
           description: ID du compte
       responses:
         '200':
-          description: Commandes
+          description: Liste des commandes du compte
           content:
             application/json:
               schema:
                 type: array
-                $ref: '#/components/schemas/AccountDto'
+                items:
+                  $ref: '#/components/schemas/OrderDto'
         '404':
           description: Compte non trouvé
+
+  /carts:
+    get:
+      summary: Récupérer tous les paniers
+      responses:
+        '200':
+          description: Liste des paniers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CartDto'
+    post:
+      summary: Créer un nouveau panier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartDto'
+      responses:
+        '201':
+          description: Panier créé
+
+  /carts/{id}:
+    get:
+      summary: Récupérer un panier par ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID du panier
+      responses:
+        '200':
+          description: Panier trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartDto'
+        '404':
+          description: Panier non trouvé
+    put:
+      summary: Mettre à jour un panier existant
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID du panier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartDto'
+      responses:
+        '200':
+          description: Panier mis à jour
+    delete:
+      summary: Supprimer un panier
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID du panier
+      responses:
+        '204':
+          description: Panier supprimé
+
+  /pizza-carts:
+    get:
+      summary: Récupérer toutes les associations pizza/panier
+      responses:
+        '200':
+          description: Liste des associations pizza/panier
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PizzaCartDto'
+    post:
+      summary: Ajouter une pizza à un panier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PizzaCartDto'
+      responses:
+        '201':
+          description: Association créée
+
+  /pizza-carts/{id}:
+    get:
+      summary: Récupérer une association pizza/panier par ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'association
+      responses:
+        '200':
+          description: Association trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PizzaCartDto'
+        '404':
+          description: Association non trouvée
+    put:
+      summary: Mettre à jour une association pizza/panier
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'association
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PizzaCartDto'
+      responses:
+        '200':
+          description: Association mise à jour
+    delete:
+      summary: Supprimer une association pizza/panier
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de l'association
+      responses:
+        '204':
+          description: Association supprimée
+
+  /comments:
+    get:
+      summary: Récupérer tous les commentaires
+      responses:
+        '200':
+          description: Liste des commentaires
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommentDto'
+    post:
+      summary: Créer un nouveau commentaire
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentDto'
+      responses:
+        '201':
+          description: Commentaire créé
+
+  /comments/{id}:
+    get:
+      summary: Récupérer un commentaire par ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID du commentaire
+      responses:
+        '200':
+          description: Commentaire trouvé
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentDto'
+        '404':
+          description: Commentaire non trouvé
+    put:
+      summary: Mettre à jour un commentaire existant
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID du commentaire
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentDto'
+      responses:
+        '200':
+          description: Commentaire mis à jour
+    delete:
+      summary: Supprimer un commentaire
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID du commentaire
+      responses:
+        '204':
+          description: Commentaire supprimé
+
+  # Optionnel : association des commentaires à une pizza
+  /pizzas/{id}/comments:
+    get:
+      summary: Récupérer les commentaires d'une pizza
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de la pizza
+      responses:
+        '200':
+          description: Liste des commentaires pour la pizza
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommentDto'
+    post:
+      summary: Ajouter un commentaire à une pizza
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de la pizza
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentDto'
+      responses:
+        '201':
+          description: Commentaire ajouté à la pizza
+
 components:
   schemas:
     PizzaDto:
@@ -384,13 +654,11 @@ components:
           type: string
         description:
           type: string
-        photo:
-          type: string
         price:
           type: number
           format: double
 
-    CartDto:
+    PizzaCartDto:
       type: object
       properties:
         id:
@@ -404,6 +672,24 @@ components:
           items:
             type: integer
             format: int64
+        idCart:
+          type: integer
+          format: int64
+
+    CartDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        idOrder:
+          type: integer
+          format: int64
+        idsPizzas:
+          type: array
+          items:
+            type: integer
+            format: int64
 
     OrderDto:
       type: object
@@ -411,11 +697,13 @@ components:
         id:
           type: integer
           format: int64
-        name:
-          type: string
         idAccount:
           type: integer
           format: int64
+        carts:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartDto'
 
     CommentDto:
       type: object
@@ -427,7 +715,7 @@ components:
           type: string
         photo:
           type: string
-        idOrder:
+        idComment:
           type: integer
           format: int64
 
@@ -445,3 +733,5 @@ components:
           type: string
         firstname:
           type: string
+        isAdmin:
+          type: boolean

@@ -8,6 +8,7 @@ public class CommentaireDto {
     private String id;
     private String texte;
     private String photo;
+    private Long idCommande;
 
     public CommentaireDto() {
     }
@@ -34,6 +35,14 @@ public class CommentaireDto {
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public Long getIdCommande() {
+        return idCommande;
+    }
+
+    public void setIdCommande(Long idCommande) {
+        this.idCommande = idCommande;
     }
 
     @Override
