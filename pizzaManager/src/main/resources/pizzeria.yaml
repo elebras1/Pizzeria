@@ -95,6 +95,37 @@ paths:
                 items:
                   $ref: '#/components/schemas/IngredientDto'
 
+      post:
+        summary: Ajouter un ingrédient standard à une pizza
+        parameters:
+          - in: path
+            name: id
+            schema:
+              type: integer
+            required: true
+            description: ID de la pizza
+        requestBody:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngredientDto'
+        responses:
+          '201':
+            description: Ingrédient ajouté à la pizza
+
+    delete:
+      summary: Supprimer un ingrédient standard d'une pizza
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de la pizza
+      responses:
+        '204':
+          description: Ingrédient supprimé de la pizza
+
   /pizza/{id}/optional-ingredients:
     get:
       summary: Récupérer les ingrédients optionnels d'une pizza
@@ -114,6 +145,37 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/IngredientDto'
+
+    post:
+      summary: Ajouter un ingrédient optionnel à une pizza
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de la pizza
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngredientDto'
+      responses:
+        '201':
+          description: Ingrédient ajouté à la pizza
+
+    delete:
+      summary: Supprimer un ingrédient optionnel d'une pizza
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID de la pizza
+      responses:
+        '204':
+          description: Ingrédient supprimé de la pizza
 
   /ingredients:
     get:
