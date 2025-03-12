@@ -13,8 +13,10 @@ public class Commande {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "commande")
-    private Compte Compte;
+
+    @ManyToOne
+    @JoinColumn(name = "id_compte")
+    private Compte compte;
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL)
     private List<Panier> paniers;
     private List<String> idCommentaires;

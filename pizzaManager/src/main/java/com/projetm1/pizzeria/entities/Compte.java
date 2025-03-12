@@ -20,9 +20,8 @@ public class Compte {
     private Boolean isAdmin;
 
 
-    @ManyToOne
-    @JoinColumn(name = "id_commande")
-    private List<Commande > Commandes;
+    @OneToMany(mappedBy = "compte")
+    private List<Commande > commandes;
 
     public Compte() {
     }
