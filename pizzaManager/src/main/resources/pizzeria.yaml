@@ -95,23 +95,16 @@ paths:
                 items:
                   $ref: '#/components/schemas/IngredientDto'
 
-      post:
-        summary: Ajouter un ingrédient standard à une pizza
-        parameters:
+    post:
+      summary: Ajouter un ingrédient standard à une pizza
+      parameters:
           - in: path
-            name: id
-            schema:
+          name: id
+          schema:
               type: integer
-            required: true
-            description: ID de la pizza
-        requestBody:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/IngredientDto'
-        responses:
-          '201':
-            description: Ingrédient ajouté à la pizza
+          required: true
+          description: ID de la pizza
+
 
     delete:
       summary: Supprimer un ingrédient standard d'une pizza
