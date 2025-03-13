@@ -1,12 +1,16 @@
 package com.projetm1.pizzeria.compte;
 
 import com.projetm1.pizzeria.compte.dto.CompteDto;
+import com.projetm1.pizzeria.compte.dto.CompteRequestDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface CompteMapper {
 
-    Compte toEntity(CompteDto dto);
+    CompteDto toDto(Compte compte);
 
-    CompteDto toDto(Compte entity);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "commandes", ignore = true)
+    Compte toEntity(CompteRequestDto compteRequestDto);
 }
