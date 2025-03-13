@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @SpringBootApplication(scanBasePackages = "com.projetm1.pizzeria")
-@EnableJpaRepositories(basePackages = "com.projetm1.pizzeria.repository.jpa")
-@EnableMongoRepositories(basePackages = "com.projetm1.pizzeria.repository.mongo")
+@EnableJpaRepositories(basePackages = "com.projetm1.pizzeria")
+@EnableMongoRepositories(basePackages = "com.projetm1.pizzeria.Commentaire")
 public class PizzeriaApplication {
 
 	public static void main(String[] args) {
