@@ -97,9 +97,9 @@ app.post('/api/auth/refresh', (req, res) => {
 app.use(authMiddleware);
 
 app.all('/*', (req, res) => {
-    proxy.web(req, res, { target: 'http://localhost:8080' });
+    proxy.web(req, res, { target: process.env.BACK });
 });
 
-app.listen(3000, () => {
-    console.log('Serveur proxy en écoute sur le port 3000');
+app.listen(process.env.PORT, () => {
+    console.log(`Serveur proxy en écoute sur le port ${process.env.PORT}`);
 });
