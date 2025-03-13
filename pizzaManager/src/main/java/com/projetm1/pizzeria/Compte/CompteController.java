@@ -16,22 +16,22 @@ public class CompteController {
     }
 
     @GetMapping
-    public List<CompteDto> getAllCompte() {
+    public List<CompteNoPasswordDto> getAllCompte() {
         return this.compteService.getAllCompte();
     }
 
     @GetMapping("/{id}")
-    public CompteDto getCompteById(Long id) {
-        return this.compteService.getCompteById(id);
+    public CompteNoPasswordDto getCompteById(@PathVariable String id) {
+        return this.compteService.getCompteById(Long.parseLong(id));
     }
 
     @PostMapping
-    public CompteDto addCompte(@RequestBody CompteDto compteDto) {
+    public CompteNoPasswordDto addCompte(@RequestBody CompteDto compteDto) {
         return this.compteService.saveCompte(compteDto);
     }
 
     @PutMapping
-    public CompteDto updateCompte(@RequestBody CompteDto compteDto) {
+    public CompteNoPasswordDto updateCompte(@RequestBody CompteDto compteDto) {
         return this.compteService.updateCompte(compteDto);
     }
 
