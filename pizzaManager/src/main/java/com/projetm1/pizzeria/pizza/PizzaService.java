@@ -1,6 +1,7 @@
 package com.projetm1.pizzeria.pizza;
 
 import com.projetm1.pizzeria.pizza.dto.PizzaDto;
+import com.projetm1.pizzeria.pizza.dto.PizzaRequestDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,7 @@ public class PizzaService {
         return pizzaDtos;
     }
 
-    public PizzaDto savePizza(PizzaDto pizzaDto) {
+    public PizzaDto savePizza(PizzaRequestDto pizzaDto) {
         Pizza pizza = this.pizzaMapper.toEntity(pizzaDto);
         pizza = this.pizzaRepository.save(pizza);
 
@@ -42,10 +43,14 @@ public class PizzaService {
         this.pizzaRepository.deleteById(id);
     }
 
-    public PizzaDto updatePizza(PizzaDto pizzaDto) {
-        Pizza pizza = this.pizzaMapper.toEntity(pizzaDto);
-        pizza = this.pizzaRepository.save(pizza);
+    public PizzaDto updatePizza(Long id, PizzaRequestDto pizzaDto) {
+        if(!this.pizzaRepository.existsById(id)) {
+            return null;
+        }
 
-        return this.pizzaMapper.toDto(pizza);
+        Pizza pizza = this.pizzaMapper.toEntity(pizzaDto);
+        pizza.setId(id);
+
+        return this.pizzaMapper.toDto(this.pizzaRepository.save(pizza));
     }
 }

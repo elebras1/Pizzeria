@@ -9,4 +9,5 @@ import java.util.List;
 public class CommandeRequestDto {
     private Long compteId;
     private List<PizzaPanierDto> panier;
+    private List<String> commentairesIds;
 }
