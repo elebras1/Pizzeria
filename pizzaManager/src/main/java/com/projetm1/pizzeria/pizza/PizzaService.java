@@ -23,7 +23,7 @@ public class PizzaService {
         return this.pizzaMapper.toDto(this.pizzaRepository.findById(id).orElse(null));
     }
 
-    public List<PizzaDto> getAllPizza() {
+    public List<PizzaDto> getAllPizzas() {
         List<PizzaDto> pizzaDtos = new ArrayList<>();
         for(Pizza pizza : this.pizzaRepository.findAll()) {
             pizzaDtos.add(this.pizzaMapper.toDto(pizza));
