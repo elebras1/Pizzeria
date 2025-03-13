@@ -1,10 +1,13 @@
 package com.projetm1.pizzeria.commentaire;
 
+import com.projetm1.pizzeria.commande.Commande;
+import com.projetm1.pizzeria.commande.CommandeRepository;
 import com.projetm1.pizzeria.commentaire.dto.CommentaireDto;
 import com.projetm1.pizzeria.commentaire.dto.CommentaireRequestDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,10 +16,12 @@ import java.util.stream.Collectors;
 public class CommentaireService {
     private final CommentaireRepository commentaireRepository;
     private final CommentaireMapper commentaireMapper;
+    private final CommandeRepository commandeRepository;
 
-    public CommentaireService(CommentaireRepository commentaireRepository, CommentaireMapper commentaireMapper) {
+    public CommentaireService(CommentaireRepository commentaireRepository, CommentaireMapper commentaireMapper, CommandeRepository commandeRepository) {
         this.commentaireRepository = commentaireRepository;
         this.commentaireMapper = commentaireMapper;
+        this.commandeRepository = commandeRepository;
     }
 
     public CommentaireDto getCommentaireById(String id) {
@@ -48,5 +53,22 @@ public class CommentaireService {
         commentaire.setId(id);
 
         return this.commentaireMapper.toDto(this.commentaireRepository.save(commentaire));
+    }
+
+    public List<CommentaireDto> getCommentairesByCommandeId(Long commandeId) {
+        Commande commande = this.commandeRepository.findById(commandeId).orElse(null);
+        if(commande == null) {
+            return null;
+        }
+
+        List<Commentaire> commentaires = new ArrayList<>();
+        for(String commentaireId : commande.getIdCommentaires()) {
+            Commentaire commentaire = this.commentaireRepository.findById(commentaireId).orElse(null);
+            if(commentaire != null) {
+                commentaires.add(commentaire);
+            }
+        }
+
+        return commentaires.stream().map(this.commentaireMapper::toDto).collect(Collectors.toList());
     }
 }

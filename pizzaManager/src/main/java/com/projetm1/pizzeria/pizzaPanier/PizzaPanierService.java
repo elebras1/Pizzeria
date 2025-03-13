@@ -35,7 +35,7 @@ public class PizzaPanierService {
         return this.pizzaPanierMapper.toDto(this.pizzaPanierRepository.findById(id).orElse(null));
     }
 
-    public List<PizzaPanierDto> getAllPizzaPanier() {
+    public List<PizzaPanierDto> getAllPizzasPaniers() {
         List<PizzaPanierDto> pizzaPanierDtos = new ArrayList<>();
         for(PizzaPanier pizzaPanier : this.pizzaPanierRepository.findAll()) {
             pizzaPanierDtos.add(this.pizzaPanierMapper.toDto(pizzaPanier));
