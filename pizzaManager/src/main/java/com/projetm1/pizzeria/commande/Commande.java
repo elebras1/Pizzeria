@@ -19,6 +19,10 @@ public class Commande {
     private Compte compte;
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL)
     private List<PizzaPanier> panier;
+    @ElementCollection
+    @CollectionTable(name = "commentaires", joinColumns = @JoinColumn(name = "commande_id"))
+    @Column(name = "commentaire")
     private List<String> idCommentaires;
+
 }
 
