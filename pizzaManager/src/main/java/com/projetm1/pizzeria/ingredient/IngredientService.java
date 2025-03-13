@@ -23,7 +23,7 @@ public class IngredientService {
         return this.ingredientMapper.toDto(this.ingredientRepository.findById(id).orElse(null));
     }
 
-    public List<IngredientDto> getAllIngredient() {
+    public List<IngredientDto> getAllIngredients() {
         List<IngredientDto> ingredientDtos = new ArrayList<>();
         for(Ingredient ingredient : this.ingredientRepository.findAll()) {
             ingredientDtos.add(this.ingredientMapper.toDto(ingredient));
