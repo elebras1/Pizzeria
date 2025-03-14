@@ -20,12 +20,13 @@ public class PizzaService {
     }
 
     public PizzaDto getPizzaById(Long id) {
-        return this.pizzaMapper.toDto(this.pizzaRepository.findById(id).orElse(null));
+        System.out.println(this.pizzaRepository.findByIdWithIngredients(id).orElse(null));
+        return this.pizzaMapper.toDto(this.pizzaRepository.findByIdWithIngredients(id).orElse(null));
     }
 
     public List<PizzaDto> getAllPizzas() {
         List<PizzaDto> pizzaDtos = new ArrayList<>();
-        for(Pizza pizza : this.pizzaRepository.findAll()) {
+        for(Pizza pizza : this.pizzaRepository.findAllWithIngredients()) {
             pizzaDtos.add(this.pizzaMapper.toDto(pizza));
         }
 
