@@ -121,12 +121,15 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private PizzaPanier createPizzaPanier(Commande commande, Pizza pizza, Set<Ingredient> ingredients) {
+        Set<Ingredient> finalIngredients = new HashSet<>(ingredients);
+        finalIngredients.addAll(pizza.getStandardIngredients());
         PizzaPanier pizzaPanier = new PizzaPanier();
         pizzaPanier.setCommande(commande);
         pizzaPanier.setPizza(pizza);
-        pizzaPanier.setIngredients(ingredients);
+        pizzaPanier.setIngredients(finalIngredients);
         return pizzaPanier;
     }
+
 
     private Commentaire createCommentaire(String idCommande, String texte) {
         Commentaire commentaire = new Commentaire();
