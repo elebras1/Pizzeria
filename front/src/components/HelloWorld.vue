@@ -1,20 +1,30 @@
 <script setup>
-defineProps({
+import axios from 'axios'
+
+const props = defineProps({
   msg: {
     type: String,
     required: true,
   },
 })
+
+async function poste() {
+  try {
+    await axios.post('http://localhost:3000/api/auth/login', {
+      username: 'test',
+      password: 'test'
+    })
+    console.log('Requête envoyée avec succès')
+  } catch (error) {
+    console.log('Erreur lors de la requête:', error)
+  }
+}
 </script>
 
 <template>
   <div class="greetings">
     <h1 class="green">{{ msg }}</h1>
-    <h3>
-      You’ve successfully created a project with
-      <a href="https://vite.dev/" target="_blank" rel="noopener">Vite</a> +
-      <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue 3</a>.
-    </h3>
+    <button @click="poste">Post</button>
   </div>
 </template>
 
