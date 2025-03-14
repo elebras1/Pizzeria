@@ -17,7 +17,6 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from "axios";
 import { useAuthStore } from '@/stores/auth.js';
 
 const authStore = useAuthStore();
@@ -25,21 +24,13 @@ const username = ref('');
 const password = ref('');
 const router = useRouter();
 
-const handleLogin = () => {
-  axios.post('http://localhost:3000/api/auth/login', {
-    username: username.value,
-    password: password.value,
-  })
-    .then((response) => {
-      if (response.data.accessToken) {
-        localStorage.setItem("accessToken", response.data.accessToken);
-        authStore.login(); // Mettre à jour l'état global
-        router.push('/'); // Redirection vers la page d'accueil
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+const handleLogin = async () => {
+  const success = await authStore.login(username.value, password.value);
+  if (success) {
+    await router.push('/');
+  } else {
+    console.error("Échec de la connexion");
+  }
 };
 
 const goToRegister = () => {

@@ -45,8 +45,7 @@ function authMiddleware(req, res, next) {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
+        req.user = jwt.verify(token, process.env.JWT_SECRET);
         next();
     } catch (error) {
         return res.status(401).json({ message: 'Jeton invalide ou expiré' });
@@ -89,11 +88,21 @@ app.post('/api/auth/refresh', (req, res) => {
         const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
         const accessToken = generateAccessToken({ username: decoded.username });
 
-        return res.json({ accessToken });
+        return res.json({ accessToken : accessToken });
     } catch (error) {
         return res.status(401).json({ message: 'Jeton de rafraîchissement invalide ou expiré' });
     }
 });
+
+app.post('/api/auth/logout', (req, res) => {
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'Strict'
+    });
+    return res.json({ message: 'Déconnexion réussie' });
+});
+
 
 app.use(authMiddleware);
 

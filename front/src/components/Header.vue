@@ -6,35 +6,34 @@
       </p>
     </div>
     <div class="auth">
-      <button v-if="!authStore.isLoggedIn" @click="login">Connexion</button>
-      <button v-else @click="logout">Déconnexion</button>
+      <button v-if="!isLoggedIn" @click="handleLogin">Connexion</button>
+      <button v-else @click="handleLogout">Déconnexion</button>
     </div>
   </header>
 </template>
 
 <script>
-import { useAuthStore } from "@/stores/auth";
+import { useAuthStore } from '@/stores/auth';
 import router from "@/router/index.js";
 
 export default {
-  name: "Header",
-  setup() {
-    const authStore = useAuthStore();
-
-    const login = () => {
-      router.push("/login");
-    };
-
-    const logout = () => {
-      authStore.logout();
-      localStorage.removeItem("accessToken");
-      router.push("/");
-    };
-
-    return { authStore, login, logout };
+  name: 'Header',
+  computed: {
+    isLoggedIn() {
+      return useAuthStore().isLoggedIn;
+    }
   },
+  methods: {
+    handleLogin() {
+      router.push('/login');
+    },
+    handleLogout() {
+      useAuthStore().logout();
+    }
+  }
 };
 </script>
+
 
 <style scoped>
 .navbar {

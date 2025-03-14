@@ -12,7 +12,6 @@ const showLoginModal = ref(false);
 const selectedPizza = ref(null);
 
 onMounted(() => {
-  authStore.checkLogin();
   getAllPizzas();
 });
 
