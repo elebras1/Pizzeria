@@ -1,6 +1,7 @@
 package com.projetm1.pizzeria.compte;
 
 import com.projetm1.pizzeria.compte.dto.CompteDto;
+import com.projetm1.pizzeria.compte.dto.CompteRequestDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,7 @@ public class CompteService {
         return compteDtos;
     }
 
-    public CompteDto saveCompte(CompteDto compteDto) {
+    public CompteDto saveCompte(CompteRequestDto compteDto) {
         Compte compte = this.compteMapper.toEntity(compteDto);
         compte = this.compteRepository.save(compte);
 
@@ -42,7 +43,7 @@ public class CompteService {
         this.compteRepository.deleteById(id);
     }
 
-    public CompteDto updateCompte(CompteDto compteDto) {
+    public CompteDto updateCompte(CompteRequestDto compteDto) {
         Compte compte = this.compteMapper.toEntity(compteDto);
         compte = this.compteRepository.save(compte);
 
