@@ -1,38 +1,38 @@
-package com.projetm1.pizzeria.Compte;
+package com.projetm1.pizzeria.compte;
 
+import com.projetm1.pizzeria.compte.dto.CompteRequestDto;
+import com.projetm1.pizzeria.compte.dto.CompteDto;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/compte")
+@RequestMapping("/api/comptes")
 public class CompteController {
     private final CompteService compteService;
-    private final CompteMapper compteMapper;
 
-    public CompteController(CompteService compteService,CompteMapper compteMapper) {
+    public CompteController(CompteService compteService) {
         this.compteService = compteService;
-        this.compteMapper = compteMapper;
     }
 
     @GetMapping
-    public List<CompteNoPasswordDto> getAllCompte() {
+    public List<CompteDto> getAllCompte() {
         return this.compteService.getAllCompte();
     }
 
     @GetMapping("/{id}")
-    public CompteNoPasswordDto getCompteById(@PathVariable String id) {
+    public CompteDto getCompteById(@PathVariable String id) {
         return this.compteService.getCompteById(Long.parseLong(id));
     }
 
     @PostMapping
-    public CompteNoPasswordDto addCompte(@RequestBody CompteDto compteDto) {
+    public CompteDto saveCompte(@RequestBody CompteRequestDto compteDto) {
         return this.compteService.saveCompte(compteDto);
     }
 
-    @PutMapping
-    public CompteNoPasswordDto updateCompte(@RequestBody CompteDto compteDto) {
-        return this.compteService.updateCompte(compteDto);
+    @PutMapping("/{id}")
+    public CompteDto updateCompte(@PathVariable Long id, @RequestBody CompteRequestDto compteDto) {
+        return this.compteService.updateCompte(id, compteDto);
     }
 
     @DeleteMapping("/{id}")

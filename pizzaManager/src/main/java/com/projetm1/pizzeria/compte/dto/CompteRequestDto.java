@@ -8,5 +8,4 @@ public class CompteRequestDto {
     private String prenom;
     private String nom;
     private String motDePasse;
-    private Boolean isAdmin;
 }

@@ -1,6 +1,6 @@
 package com.projetm1.pizzeria.authentification;
 
-import com.projetm1.pizzeria.Compte.Compte;
+import com.projetm1.pizzeria.compte.Compte;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

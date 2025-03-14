@@ -1,9 +1,8 @@
 package com.projetm1.pizzeria.authentification;
 
-import com.projetm1.pizzeria.Compte.Compte;
+import com.projetm1.pizzeria.compte.Compte;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service("authentificationService")

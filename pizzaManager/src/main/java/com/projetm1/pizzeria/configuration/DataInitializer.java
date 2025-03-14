@@ -13,6 +13,7 @@ import com.projetm1.pizzeria.pizza.PizzaRepository;
 import com.projetm1.pizzeria.pizzaPanier.PizzaPanier;
 import com.projetm1.pizzeria.pizzaPanier.PizzaPanierRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -25,14 +26,16 @@ public class DataInitializer implements CommandLineRunner {
     private final CommandeRepository commandeRepository;
     private final CompteRepository compteRepository;
     private final CommentaireRepository commentaireRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public DataInitializer(PizzaRepository pizzaRepository, IngredientRepository ingredientRepository, PizzaPanierRepository pizzaPanierRepository, CommandeRepository commandeRepository, CompteRepository compteRepository, CommentaireRepository commentaireRepository) {
+    public DataInitializer(PizzaRepository pizzaRepository, IngredientRepository ingredientRepository, PizzaPanierRepository pizzaPanierRepository, CommandeRepository commandeRepository, CompteRepository compteRepository, CommentaireRepository commentaireRepository, PasswordEncoder passwordEncoder) {
         this.pizzaRepository = pizzaRepository;
         this.ingredientRepository = ingredientRepository;
         this.pizzaPanierRepository = pizzaPanierRepository;
         this.commandeRepository = commandeRepository;
         this.compteRepository = compteRepository;
         this.commentaireRepository = commentaireRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -109,7 +112,7 @@ public class DataInitializer implements CommandLineRunner {
         compte.setPseudo(pseudo);
         compte.setPrenom(prenom);
         compte.setNom(nom);
-        compte.setMotDePasse(motDePasse);
+        compte.setMotDePasse(this.passwordEncoder.encode(motDePasse));
         compte.setIsAdmin(isAdmin);
         return compte;
     }
