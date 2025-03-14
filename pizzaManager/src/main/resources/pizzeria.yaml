@@ -98,12 +98,13 @@ paths:
     post:
       summary: Ajouter un ingrédient standard à une pizza
       parameters:
-          - in: path
-          name: id
-          schema:
-              type: integer
-          required: true
-          description: ID de la pizza
+        - in: path
+          name:id
+        schema:
+          type: integer
+        required: true
+        description: ID de la pizza
+      responses:
 
 
     delete:

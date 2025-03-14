@@ -1,10 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import LoginForm from '../components/authentification/Login.vue';
-import RegisterForm from '../components/authentification/Register.vue';
+import Home from "../components/Home.vue";
+import PizzaSelection from "@/components/PizzaSelection.vue";
+import Login from "@/components/authentification/Login.vue";
+import Register from "@/components/authentification/Register.vue";
 
 const routes = [
-    { path: '/', name: 'Login', component: LoginForm },
-    { path: '/register', name: 'Register', component: RegisterForm }
+    { path: '/login', name: 'Login', component: Login },
+    { path: '/register', name: 'Register', component: Register },
+    { path: '/', name: 'Home', component: Home },
+    { path: '/pizza-selection', name: 'PizzaSelection', component: PizzaSelection },
 ];
 
 const router = createRouter({

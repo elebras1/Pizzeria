@@ -45,6 +45,6 @@ const handleRegister = () => {
 };
 
 const goToLogin = () => {
-  router.push('/');
+  router.push('/login');
 };
 </script>
