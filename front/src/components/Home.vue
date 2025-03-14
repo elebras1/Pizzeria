@@ -1,51 +1,84 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '../stores/auth';
+import axios from "axios";
+import PizzaSelection from "./PizzaSelection.vue";
+import ModalConnexion from "./ModalConnexion.vue";
+
+const authStore = useAuthStore();
+const pizzas = ref([]);
+const showPizzaModal = ref(false);
+const showLoginModal = ref(false);
+const selectedPizza = ref(null);
+
+onMounted(() => {
+  authStore.checkLogin();
+  getAllPizzas();
+});
+
+const getAllPizzas = async () => {
+  try {
+    const response = await axios.get("http://localhost:8081/api/pizzas");
+    pizzas.value = response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const openPizzaModal = (pizza) => {
+  if (authStore.isLoggedIn) {
+    selectedPizza.value = pizza;
+    showPizzaModal.value = true;
+  } else {
+    showLoginModal.value = true;
+  }
+};
+
+const closePizzaModal = () => {
+  showPizzaModal.value = false;
+};
+
+const closeLoginModal = () => {
+  showLoginModal.value = false;
+};
+
+const calculatePrice = (pizza) => {
+  const standardPrice = pizza.standardIngredients.reduce((acc, ingredient) => acc + ingredient.prix, 0);
+  return standardPrice.toFixed(2);
+};
+</script>
+
 <template>
   <div>
     <h2>Nos délicieuses pizzas</h2>
     <div class="pizza-list">
-      <div v-for="pizza in pizzas" :key="pizza.id" class="pizza-item" @click="jsp">
+      <div v-for="pizza in pizzas" :key="pizza.id" class="pizza-item" @click="openPizzaModal(pizza)">
         <div class="pizza-info">
-          <h3>{{ pizza.name }}</h3>
-          <p class="pizza-price">{{ pizza.price }} €</p>
+          <h3>{{ pizza.nom }}</h3>
+          <p class="pizza-price">{{ calculatePrice(pizza) }} €</p>
           <p>{{ pizza.description }}</p>
           <span v-if="pizza.popular" class="label">Populaire</span>
         </div>
         <img :src="pizza.image" :alt="pizza.name" class="pizza-image" />
       </div>
     </div>
+
+    <!-- Modal de Sélection de Pizza -->
+    <PizzaSelection
+        v-if="showPizzaModal && authStore.isLoggedIn"
+        :pizza="selectedPizza"
+        :isVisible="showPizzaModal"
+        @close="closePizzaModal"
+    />
+
+    <!-- Modal de Connexion -->
+    <ModalConnexion
+        v-if="showLoginModal && !authStore.isLoggedIn"
+        :isVisible="showLoginModal"
+        @close="closeLoginModal"
+    />
   </div>
 </template>
-
-<script>
-import router from "@/router/index.js";
-import axios from "axios";
-
-export default {
-  name: "Home",
-  data() {
-    return {
-      pizzas: [
-        { id: 1, name: "Margherita", description: "Sauce tomate, mozzarella, basilic", price: 8.5, image: "https://media.gettyimages.com/id/938742222/fr/photo/pizza-pepperoni-fromage.jpg?s=612x612&w=gi&k=20&c=iASmsm5ZD7sk79jE4eQNy0dACaM-cLr7eUIYEPRxFdQ=", popular: true },
-        { id: 2, name: "Pepperoni", description: "Sauce tomate, mozzarella, pepperoni", price: 10.0, image: "https://via.placeholder.com/300" },
-        { id: 3, name: "Reine", description: "Sauce tomate, jambon, champignons, mozzarella", price: 9.5, image: "https://via.placeholder.com/300", popular: true },
-        { id: 4, name: "Quatre Fromages", description: "Mozzarella, gorgonzola, parmesan, chèvre", price: 11.0, image: "https://via.placeholder.com/300" }
-      ]
-    };
-  },
-  methods: {
-    async getAllPizzas() {
-      try {
-        const response = await axios.get("/api/pizzas");
-        this.pizzas = response.data;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    jsp() {
-      router.push('/pizza-selection');
-    }
-  }
-};
-</script>
 
 <style scoped>
 .pizza-list {
@@ -63,6 +96,7 @@ export default {
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   background-color: #fff;
+  cursor: pointer;
 }
 
 .pizza-info {
@@ -71,8 +105,8 @@ export default {
 }
 
 .pizza-image {
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   border-radius: 8px;
 }
 
@@ -92,9 +126,10 @@ export default {
 h2 {
   text-align: center;
   margin-top: 1rem;
-  color: white;
+  color: black;
 }
-h3,h4,h5,p {
+
+h3, h4, h5, p {
   color: black;
 }
 </style>

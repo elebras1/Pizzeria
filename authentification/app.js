@@ -73,6 +73,7 @@ app.post('/api/auth/login', async (req, res) => {
             return res.status(401).json({ message: 'Identifiants incorrects' });
         }
     } catch (error) {
+        console.log(error);
         return res.status(401).json({ message: 'Problème avec le Serveur' });
     }
 });

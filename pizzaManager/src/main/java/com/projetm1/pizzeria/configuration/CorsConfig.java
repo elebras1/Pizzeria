@@ -19,19 +19,6 @@ public class CorsConfig {
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
-
-                // Configuration spécifique pour les API publiques
-                registry.addMapping("/api/public/**")
-                        .allowedOrigins("*") // Autorise toutes les origines pour cette route
-                        .allowedMethods("GET")
-                        .allowedHeaders("Content-Type");
-
-                // Configuration pour une API spécifique
-                registry.addMapping("/api/secure/**")
-                        .allowedOrigins("http://secure.example.com")
-                        .allowedMethods("POST", "PUT")
-                        .allowedHeaders("Authorization", "Content-Type")
-                        .allowCredentials(true);
             }
         };
     }
