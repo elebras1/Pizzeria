@@ -20,11 +20,27 @@ app.use(cookieParser());
 
 // Routes publiques sans authentification
 const publicRoutes = [
-    '/api/pizzas',
     '/api/auth/login',
     '/api/auth/register',
-    '/api/auth/refresh'
+    '/api/pizzas'
 ];
+
+const adminRoutes = [
+    '/api/admin',
+    '/api/users',
+    '/api/delete'
+];
+
+const clientRoutes = [
+    '/api/orders',
+    '/api/account'
+];
+
+const compteNeededRoutes = [
+    '/api/profile',
+    '/api/settings'
+];
+
 
 function generateAccessToken(payload) {
     return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '15m' });
@@ -46,6 +62,7 @@ function authMiddleware(req, res, next) {
 
     try {
         req.user = jwt.verify(token, process.env.JWT_SECRET);
+        req.headers['x-compte'] = req.user.compte;
         next();
     } catch (error) {
         return res.status(401).json({ message: 'Jeton invalide ou expiré' });
@@ -57,9 +74,10 @@ app.post('/api/auth/login', async (req, res) => {
     const auth = { username: username, password: password };
     try {
         const response = await axios.post(`${process.env.BACK}/api/authentification`, auth);
-        if (response.data) {
-            const accessToken = generateAccessToken({ username });
-            const refreshToken = generateRefreshToken({ username });
+        const compte = response.data;
+        if (compte!=null) {
+            const accessToken = generateAccessToken({ compte });
+            const refreshToken = generateRefreshToken({ compte });
 
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,

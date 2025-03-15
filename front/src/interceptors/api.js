@@ -7,17 +7,23 @@ const api = axios.create({
 });
 
 api.interceptors.response.use(
-    response => response,
+    response => {
+        const authStore = useAuthStore();
+        authStore.isLoggedIn = true;
+        return response;
+    },
     async error => {
         const originalRequest = error.config;
         const authStore = useAuthStore();
         if (error.response.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
             try {
-                const response = await axios.post('/api/auth/refresh', {}, { withCredentials: true });
+                const response = await axios.post('http://localhost:3000/api/auth/refresh', {}, { withCredentials: true });
                 const newAccessToken = response.data.accessToken;
                 api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
                 originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                authStore.isLoggedIn = true;
+                authStore.accessToken = newAccessToken;
                 return api(originalRequest);
             } catch (refreshError) {
                 console.log('Erreur de rafraîchissement du token:', refreshError);
@@ -25,6 +31,10 @@ api.interceptors.response.use(
                 authStore.accessToken = null;
                 return Promise.reject(refreshError);
             }
+        }
+        if (error.response.status === 403) {
+            console.log('Accès refusé : permissions insuffisantes');
+            return Promise.reject(error);
         }
         authStore.isLoggedIn = false;
         authStore.accessToken = null;

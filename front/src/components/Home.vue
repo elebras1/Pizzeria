@@ -4,6 +4,7 @@ import { useAuthStore } from '../stores/auth';
 import axios from "axios";
 import PizzaSelection from "./PizzaSelection.vue";
 import ModalConnexion from "./ModalConnexion.vue";
+import api from '@/interceptors/api.js';
 
 const authStore = useAuthStore();
 const pizzas = ref([]);
@@ -17,7 +18,7 @@ onMounted(() => {
 
 const getAllPizzas = async () => {
   try {
-    const response = await axios.get("http://localhost:8081/api/pizzas");
+    const response = await api.get("/pizzas");
     pizzas.value = response.data;
   } catch (error) {
     console.error(error);
