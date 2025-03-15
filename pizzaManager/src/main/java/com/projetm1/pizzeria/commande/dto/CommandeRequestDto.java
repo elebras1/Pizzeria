@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 public class CommandeRequestDto {
     private Long compteId;
+    private Boolean enCours;
     private List<PizzaPanierDto> panier;
     private List<String> commentairesIds;
 }

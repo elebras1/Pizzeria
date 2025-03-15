@@ -19,6 +19,7 @@ public class Commande {
     private Compte compte;
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL)
     private List<PizzaPanier> panier;
+    private Boolean enCours;
     @ElementCollection
     @CollectionTable(name = "commentaires", joinColumns = @JoinColumn(name = "commande_id"))
     @Column(name = "commentaire")

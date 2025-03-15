@@ -9,6 +9,7 @@ import java.util.List;
 public class CommandeDto {
     private Long id;
     private Long compteId;
+    private Boolean enCours;
     private List<PizzaPanierDto> panier;
     private List<String> commentairesIds;
 }

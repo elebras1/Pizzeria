@@ -7,5 +7,5 @@ public class IngredientDto {
     private Long id;
     private String nom;
     private String description;
-    private Float prix;
+    private Double prix;
 }

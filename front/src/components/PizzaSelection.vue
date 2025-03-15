@@ -8,7 +8,10 @@
         <div v-for="ingrediant in Pizza.standardIngredients" :key="ingrediant.id" class="ingredient">
           <label>{{ ingrediant.nom }}</label>
           <input v-if="ingrediant.nom === 'pate'" type="checkbox" checked disabled />
-          <input v-else type="checkbox" checked />
+          <input v-else type="checkbox" checked
+                 :value="ingrediant.id"
+                 @change="toggleIngredient(ingrediant.id)"
+          />
         </div>
         <h3>Ingrédients Optionnels</h3>
         <div v-for="ingredient in Pizza.optionalIngredients" :key="ingredient.id" class="ingredient">
@@ -29,6 +32,7 @@
 </template>
 
 <script>
+import { usePanierStore } from '@/stores/panier';
 
 export default {
   name: "PizzaSelection",
@@ -36,40 +40,55 @@ export default {
   data() {
     return {
       Price: 0,
-      selectedOptionalIngredients: [],
+      selectedIngredients: [],
       Pizza: {
         nom: "",
         image: "",
         standardIngredients: [],
         optionalIngredients: [],
       },
+      panier: [],
     };
   },
   methods: {
     async calculatePrice() {
-      let total = this.Pizza.standardIngredients.reduce((acc, ing) => acc + ing.prix, 0);
-      total += this.selectedOptionalIngredients.reduce((acc, id) => {
-        const ingredient = this.Pizza.optionalIngredients.find((ing) => ing.id === id);
-        return ingredient ? acc + ingredient.prix : acc;
-      }, 0);
+      let total = this.selectedIngredients.reduce((acc, ing) => acc + ing.prix, 0);
       this.Price = total.toFixed(2);
     },
     toggleIngredient(id) {
-      if (this.selectedOptionalIngredients.includes(id)) {
-        this.selectedOptionalIngredients = this.selectedOptionalIngredients.filter((i) => i !== id);
-      } else {
-        this.selectedOptionalIngredients.push(id);
+      const ingredient = this.Pizza.optionalIngredients.find((ing) => ing.id === id)
+          || this.Pizza.standardIngredients.find((ing) => ing.id === id);
+
+      if (ingredient) {
+        const index = this.selectedIngredients.findIndex((ing) => ing.id === id);
+        if (index !== -1) {
+          this.selectedIngredients.splice(index, 1);  // Supprimer l'ingrédient existant
+        } else {
+          this.selectedIngredients.push(ingredient);  // Ajouter l'ingrédient
+        }
+        this.calculatePrice();
       }
-      this.calculatePrice();
     },
     addToCart() {
       console.log("Ajouté au panier avec un prix de " + this.Price + " €");
+      this.panier = {
+        id: null,
+        pizza: {
+          id: this.Pizza.id,
+          nom: this.Pizza.nom,
+          description: this.Pizza.description,
+          photo: this.Pizza.photo,
+        },
+        ingredients: this.selectedIngredients,
+      };
+      usePanierStore().addPizza(this.panier);
     },
     closeModal() {
       this.$emit("close");
     },
     getPizza() {
       this.Pizza = this.pizza;
+      this.selectedIngredients = [...this.Pizza.standardIngredients];
       this.calculatePrice();
     },
 

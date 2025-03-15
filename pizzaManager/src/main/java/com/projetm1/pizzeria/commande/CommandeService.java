@@ -56,4 +56,9 @@ public class CommandeService {
 
         return this.commandeMapper.toDto(this.commandeRepository.save(commande));
     }
+
+    public Long getLastCommandeIdByCompteId(Long id) {
+        Commande commande=this.commandeRepository.findByEnCours(Boolean.TRUE);
+        return commande.getId();
+    }
 }
