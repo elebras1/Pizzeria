@@ -1,14 +1,17 @@
-openapi: 3.0.0
+openapi: "3.0.3"
 info:
-  title: Pizza API
-  version: 1.0.0
+  title: Pizzeria API
+  description: Documentation de l'API pour la gestion de pizzas, ingrédients, comptes, commandes, commentaires et authentification.
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8080/api
 paths:
   /pizzas:
     get:
       summary: Récupérer toutes les pizzas
       responses:
         '200':
-          description: Liste des pizzas
+          description: Liste des PizzaDto
           content:
             application/json:
               schema:
@@ -18,165 +21,80 @@ paths:
     post:
       summary: Créer une nouvelle pizza
       requestBody:
+        description: Objet PizzaRequestDto
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PizzaDto'
-      responses:
-        '201':
-          description: Pizza créée
-
-  /pizza/{id}:
-    get:
-      summary: Récupérer une pizza par ID
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID de la pizza
+              $ref: '#/components/schemas/PizzaRequestDto'
       responses:
         '200':
-          description: Pizza trouvée
+          description: Pizza créée
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PizzaDto'
-        '404':
-          description: Pizza non trouvée
-    put:
-      summary: Mettre à jour une pizza existante
+  /pizzas/{id}:
+    get:
+      summary: Récupérer une pizza par son id
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
+          description: ID de la pizza
+          required: true
           schema:
             type: integer
-          required: true
-          description: ID de la pizza
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PizzaDto'
+            format: int64
       responses:
         '200':
-          description: Pizza mise à jour
+          description: Objet PizzaDto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PizzaDto'
     delete:
-      summary: Supprimer une pizza
+      summary: Supprimer une pizza par son id
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
+          description: ID de la pizza à supprimer
+          required: true
           schema:
             type: integer
-          required: true
-          description: ID de la pizza
+            format: int64
       responses:
         '204':
           description: Pizza supprimée
-
-  /pizza/{id}/standard-ingredients:
-    get:
-      summary: Récupérer les ingrédients standards d'une pizza
+    put:
+      summary: Mettre à jour une pizza par son id
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
+          description: ID de la pizza à mettre à jour
+          required: true
           schema:
             type: integer
-          required: true
-          description: ID de la pizza
-      responses:
-        '200':
-          description: Liste des ingrédients standards
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/IngredientDto'
-
-    post:
-      summary: Ajouter un ingrédient standard à une pizza
-      parameters:
-        - in: path
-          name:id
-        schema:
-          type: integer
-        required: true
-        description: ID de la pizza
-      responses:
-
-
-    delete:
-      summary: Supprimer un ingrédient standard d'une pizza
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID de la pizza
-      responses:
-        '204':
-          description: Ingrédient supprimé de la pizza
-
-  /pizza/{id}/optional-ingredients:
-    get:
-      summary: Récupérer les ingrédients optionnels d'une pizza
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID de la pizza
-      responses:
-        '200':
-          description: Liste des ingrédients optionnels
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/IngredientDto'
-
-    post:
-      summary: Ajouter un ingrédient optionnel à une pizza
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID de la pizza
+            format: int64
       requestBody:
+        description: Objet PizzaRequestDto
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IngredientDto'
+              $ref: '#/components/schemas/PizzaRequestDto'
       responses:
-        '201':
-          description: Ingrédient ajouté à la pizza
-
-    delete:
-      summary: Supprimer un ingrédient optionnel d'une pizza
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID de la pizza
-      responses:
-        '204':
-          description: Ingrédient supprimé de la pizza
-
+        '200':
+          description: Pizza mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PizzaDto'
   /ingredients:
     get:
       summary: Récupérer tous les ingrédients
       responses:
         '200':
-          description: Liste des ingrédients
+          description: Liste des IngredientDto
           content:
             application/json:
               schema:
@@ -186,596 +104,580 @@ paths:
     post:
       summary: Créer un nouvel ingrédient
       requestBody:
+        description: Objet IngredientRequestDto
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IngredientDto'
-      responses:
-        '201':
-          description: Ingrédient créé
-
-  /ingredients/{id}:
-    get:
-      summary: Récupérer un ingrédient par ID
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID de l'ingrédient
+              $ref: '#/components/schemas/IngredientRequestDto'
       responses:
         '200':
-          description: Ingrédient trouvé
+          description: Ingrédient créé
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/IngredientDto'
-        '404':
-          description: Ingrédient non trouvé
-    put:
-      summary: Mettre à jour un ingrédient existant
+  /ingredients/{id}:
+    get:
+      summary: Récupérer un ingrédient par son id
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
+          description: ID de l'ingrédient
+          required: true
           schema:
             type: integer
-          required: true
-          description: ID de l'ingrédient
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/IngredientDto'
+            format: int64
       responses:
         '200':
-          description: Ingrédient mis à jour
+          description: Objet IngredientDto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngredientDto'
     delete:
-      summary: Supprimer un ingrédient
+      summary: Supprimer un ingrédient par son id
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
+          description: ID de l'ingrédient à supprimer
+          required: true
           schema:
             type: integer
-          required: true
-          description: ID de l'ingrédient
+            format: int64
       responses:
         '204':
           description: Ingrédient supprimé
-
-  /orders:
-    get:
-      summary: Récupérer toutes les commandes
+    put:
+      summary: Mettre à jour un ingrédient par son id
+      parameters:
+        - name: id
+          in: path
+          description: ID de l'ingrédient à mettre à jour
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Objet IngredientRequestDto
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IngredientRequestDto'
       responses:
         '200':
-          description: Liste des commandes
+          description: Ingrédient mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngredientDto'
+  /pizzas-paniers:
+    get:
+      summary: Récupérer tous les pizzas-paniers
+      responses:
+        '200':
+          description: Liste des PizzaPanierDto
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/OrderDto'
+                  $ref: '#/components/schemas/PizzaPanierDto'
     post:
-      summary: Créer une nouvelle commande
+      summary: Créer un nouveau pizza-panier
       requestBody:
+        description: Objet PizzaPanierRequestDto
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OrderDto'
-      responses:
-        '201':
-          description: Commande créée
-
-  /orders/{id}:
-    get:
-      summary: Récupérer une commande par ID
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID de la commande
+              $ref: '#/components/schemas/PizzaPanierRequestDto'
       responses:
         '200':
-          description: Commande trouvée
+          description: PizzaPanier créé
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderDto'
-        '404':
-          description: Commande non trouvée
-    put:
-      summary: Mettre à jour une commande existante
+                $ref: '#/components/schemas/PizzaPanierDto'
+  /pizzas-paniers/{id}:
+    get:
+      summary: Récupérer un pizza-panier par son id
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
+          description: ID du pizza-panier
+          required: true
           schema:
             type: integer
-          required: true
-          description: ID de la commande
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/OrderDto'
+            format: int64
       responses:
         '200':
-          description: Commande mise à jour
+          description: Objet PizzaPanierDto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PizzaPanierDto'
     delete:
-      summary: Supprimer une commande
+      summary: Supprimer un pizza-panier par son id
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
+          description: ID du pizza-panier à supprimer
+          required: true
           schema:
             type: integer
-          required: true
-          description: ID de la commande
+            format: int64
       responses:
         '204':
-          description: Commande supprimée
-
-  /orders/{id}/comments:
-    get:
-      summary: Récupérer les commentaires d'une commande
+          description: Pizza-panier supprimé
+    put:
+      summary: Mettre à jour un pizza-panier par son id
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
+          description: ID du pizza-panier à mettre à jour
+          required: true
           schema:
             type: integer
-          required: true
-          description: ID de la commande
+            format: int64
+      requestBody:
+        description: Objet PizzaPanierRequestDto
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PizzaPanierRequestDto'
       responses:
         '200':
-          description: Liste des commentaires de la commande
+          description: Pizza-panier mis à jour
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CommentDto'
-        '404':
-          description: Commande non trouvée
-
-  /accounts:
+                $ref: '#/components/schemas/PizzaPanierDto'
+  /comptes:
     get:
       summary: Récupérer tous les comptes
       responses:
         '200':
-          description: Liste des comptes
+          description: Liste des CompteDto
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AccountDto'
+                  $ref: '#/components/schemas/CompteDto'
     post:
       summary: Créer un nouveau compte
       requestBody:
+        description: Objet CompteRequestDto
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AccountDto'
-      responses:
-        '201':
-          description: Compte créé
-
-  /accounts/{id}:
-    get:
-      summary: Récupérer un compte par ID
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID du compte
+              $ref: '#/components/schemas/CompteRequestDto'
       responses:
         '200':
-          description: Compte trouvé
+          description: Compte créé
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountDto'
-        '404':
-          description: Compte non trouvé
-    put:
-      summary: Mettre à jour un compte existant
+                $ref: '#/components/schemas/CompteDto'
+  /comptes/{id}:
+    get:
+      summary: Récupérer un compte par son id
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
+        - name: id
+          in: path
+          description: ID du compte (en string dans l'URL, converti en Long)
           required: true
-          description: ID du compte
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AccountDto'
+          schema:
+            type: string
       responses:
         '200':
-          description: Compte mis à jour
+          description: Objet CompteDto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompteDto'
     delete:
-      summary: Supprimer un compte
+      summary: Supprimer un compte par son id
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
+          description: ID du compte à supprimer
+          required: true
           schema:
             type: integer
-          required: true
-          description: ID du compte
+            format: int64
       responses:
         '204':
           description: Compte supprimé
-
-  /accounts/{id}/orders:
-    get:
-      summary: Récupérer les commandes d'un compte
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID du compte
-      responses:
-        '200':
-          description: Liste des commandes du compte
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/OrderDto'
-        '404':
-          description: Compte non trouvé
-
-  /carts:
-    get:
-      summary: Récupérer tous les paniers
-      responses:
-        '200':
-          description: Liste des paniers
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CartDto'
-    post:
-      summary: Créer un nouveau panier
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CartDto'
-      responses:
-        '201':
-          description: Panier créé
-
-  /carts/{id}:
-    get:
-      summary: Récupérer un panier par ID
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID du panier
-      responses:
-        '200':
-          description: Panier trouvé
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CartDto'
-        '404':
-          description: Panier non trouvé
     put:
-      summary: Mettre à jour un panier existant
+      summary: Mettre à jour un compte par son id
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
+          description: ID du compte à mettre à jour
+          required: true
           schema:
             type: integer
-          required: true
-          description: ID du panier
+            format: int64
       requestBody:
+        description: Objet CompteRequestDto
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CartDto'
+              $ref: '#/components/schemas/CompteRequestDto'
       responses:
         '200':
-          description: Panier mis à jour
-    delete:
-      summary: Supprimer un panier
+          description: Compte mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompteDto'
+  /commandes:
+    get:
+      summary: Récupérer toutes les commandes
+      responses:
+        '200':
+          description: Liste des CommandeDto
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommandeDto'
+    post:
+      summary: Créer une nouvelle commande
+      requestBody:
+        description: Objet CommandeRequestDto
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommandeRequestDto'
+      responses:
+        '200':
+          description: Commande créée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommandeDto'
+  /commandes/{id}:
+    get:
+      summary: Récupérer une commande par son id
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
+          description: ID de la commande
+          required: true
           schema:
             type: integer
+            format: int64
+      responses:
+        '200':
+          description: Objet CommandeDto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommandeDto'
+    delete:
+      summary: Supprimer une commande par son id
+      parameters:
+        - name: id
+          in: path
+          description: ID de la commande à supprimer
           required: true
-          description: ID du panier
+          schema:
+            type: integer
+            format: int64
       responses:
         '204':
-          description: Panier supprimé
-
-  /pizza-carts:
-    get:
-      summary: Récupérer toutes les associations pizza/panier
+          description: Commande supprimée
+    put:
+      summary: Mettre à jour une commande par son id
+      parameters:
+        - name: id
+          in: path
+          description: ID de la commande à mettre à jour
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Objet CommandeRequestDto
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommandeRequestDto'
       responses:
         '200':
-          description: Liste des associations pizza/panier
+          description: Commande mise à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommandeDto'
+  /commandes/{id}/commentaires:
+    post:
+      summary: Ajouter un commentaire à une commande
+      parameters:
+        - name: id
+          in: path
+          description: ID de la commande (string)
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Objet CommentaireRequestDto
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentaireRequestDto'
+      responses:
+        '200':
+          description: Commentaire ajouté
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentaireDto'
+    get:
+      summary: Récupérer les commentaires d'une commande
+      parameters:
+        - name: id
+          in: path
+          description: ID de la commande
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Liste des CommentaireDto
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/PizzaCartDto'
-    post:
-      summary: Ajouter une pizza à un panier
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PizzaCartDto'
-      responses:
-        '201':
-          description: Association créée
-
-  /pizza-carts/{id}:
-    get:
-      summary: Récupérer une association pizza/panier par ID
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID de l'association
-      responses:
-        '200':
-          description: Association trouvée
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PizzaCartDto'
-        '404':
-          description: Association non trouvée
-    put:
-      summary: Mettre à jour une association pizza/panier
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID de l'association
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/PizzaCartDto'
-      responses:
-        '200':
-          description: Association mise à jour
-    delete:
-      summary: Supprimer une association pizza/panier
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID de l'association
-      responses:
-        '204':
-          description: Association supprimée
-
-  /comments:
+                  $ref: '#/components/schemas/CommentaireDto'
+  /commentaires:
     get:
       summary: Récupérer tous les commentaires
       responses:
         '200':
-          description: Liste des commentaires
+          description: Liste des CommentaireDto
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CommentDto'
-    post:
-      summary: Créer un nouveau commentaire
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CommentDto'
-      responses:
-        '201':
-          description: Commentaire créé
-
-  /comments/{id}:
+                  $ref: '#/components/schemas/CommentaireDto'
+  /commentaires/{id}:
     get:
-      summary: Récupérer un commentaire par ID
+      summary: Récupérer un commentaire par son id
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
+        - name: id
+          in: path
           description: ID du commentaire
+          required: true
+          schema:
+            type: string
       responses:
         '200':
-          description: Commentaire trouvé
+          description: Objet CommentaireDto
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommentDto'
-        '404':
-          description: Commentaire non trouvé
-    put:
-      summary: Mettre à jour un commentaire existant
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
-          required: true
-          description: ID du commentaire
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CommentDto'
-      responses:
-        '200':
-          description: Commentaire mis à jour
+                $ref: '#/components/schemas/CommentaireDto'
     delete:
-      summary: Supprimer un commentaire
+      summary: Supprimer un commentaire par son id
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
+        - name: id
+          in: path
+          description: ID du commentaire à supprimer
           required: true
-          description: ID du commentaire
+          schema:
+            type: string
       responses:
         '204':
           description: Commentaire supprimé
-
-  # Optionnel : association des commentaires à une pizza
-  /pizzas/{id}/comments:
-    get:
-      summary: Récupérer les commentaires d'une pizza
+    put:
+      summary: Mettre à jour un commentaire par son id
       parameters:
-        - in: path
-          name: id
-          schema:
-            type: integer
+        - name: id
+          in: path
+          description: ID du commentaire à mettre à jour
           required: true
-          description: ID de la pizza
-      responses:
-        '200':
-          description: Liste des commentaires pour la pizza
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CommentDto'
-    post:
-      summary: Ajouter un commentaire à une pizza
-      parameters:
-        - in: path
-          name: id
           schema:
-            type: integer
-          required: true
-          description: ID de la pizza
+            type: string
       requestBody:
+        description: Objet CommentaireRequestDto
+        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CommentDto'
+              $ref: '#/components/schemas/CommentaireRequestDto'
       responses:
-        '201':
-          description: Commentaire ajouté à la pizza
-
+        '200':
+          description: Commentaire mis à jour
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentaireDto'
+  /authentification:
+    post:
+      summary: Vérifier les identifiants de connexion
+      requestBody:
+        description: Objet AuthentificationDto
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthentificationDto'
+      responses:
+        '200':
+          description: Résultat de la vérification (true/false)
+          content:
+            application/json:
+              schema:
+                type: boolean
 components:
   schemas:
+    PizzaPanierDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        pizza:
+          $ref: '#/components/schemas/PizzaLightDto'
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/IngredientDto'
+      required:
+        - id
+        - pizza
+        - ingredients
+    PizzaPanierRequestDto:
+      type: object
+      properties:
+        pizzaId:
+          type: integer
+          format: int64
+        ingredientsIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+      required:
+        - pizzaId
+        - ingredientsIds
+    PizzaLightDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nom:
+          type: string
+        description:
+          type: string
+        photo:
+          type: string
+      required:
+        - id
+        - nom
+        - description
+        - photo
     PizzaDto:
       type: object
       properties:
         id:
           type: integer
           format: int64
-        name:
+        nom:
           type: string
         description:
           type: string
         photo:
           type: string
-
+        standardIngredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/IngredientDto'
+        optionalIngredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/IngredientDto'
+      required:
+        - id
+        - nom
+        - description
+        - photo
+        - standardIngredients
+        - optionalIngredients
+    PizzaRequestDto:
+      type: object
+      properties:
+        nom:
+          type: string
+        description:
+          type: string
+        photo:
+          type: string
+        standardIngredientsIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        optionalIngredientsIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+      required:
+        - nom
+        - description
+        - photo
+        - standardIngredientsIds
+        - optionalIngredientsIds
     IngredientDto:
       type: object
       properties:
         id:
           type: integer
           format: int64
-        name:
+        nom:
           type: string
         description:
           type: string
-        price:
+        prix:
           type: number
-          format: double
-
-    PizzaCartDto:
+          format: float
+      required:
+        - id
+        - nom
+        - description
+        - prix
+    IngredientRequestDto:
       type: object
       properties:
-        id:
-          type: integer
-          format: int64
-        idPizza:
-          type: integer
-          format: int64
-        idsIngredients:
-          type: array
-          items:
-            type: integer
-            format: int64
-        idCart:
-          type: integer
-          format: int64
-
-    CartDto:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        idOrder:
-          type: integer
-          format: int64
-        idsPizzas:
-          type: array
-          items:
-            type: integer
-            format: int64
-
-    OrderDto:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        idAccount:
-          type: integer
-          format: int64
-        carts:
-          type: array
-          items:
-            $ref: '#/components/schemas/CartDto'
-
-    CommentDto:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        text:
+        nom:
           type: string
-        photo:
+        description:
           type: string
-        idComment:
-          type: integer
-          format: int64
-
-    AccountDto:
+        prix:
+          type: number
+          format: float
+      required:
+        - nom
+        - description
+        - prix
+    CompteDto:
       type: object
       properties:
         id:
@@ -783,11 +685,101 @@ components:
           format: int64
         pseudo:
           type: string
+        prenom:
+          type: string
+        nom:
+          type: string
+      required:
+        - id
+        - pseudo
+        - prenom
+        - nom
+    CompteRequestDto:
+      type: object
+      properties:
+        pseudo:
+          type: string
+        prenom:
+          type: string
+        nom:
+          type: string
+        motDePasse:
+          type: string
+      required:
+        - pseudo
+        - prenom
+        - nom
+        - motDePasse
+    CommandeDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        compteId:
+          type: integer
+          format: int64
+        panier:
+          type: array
+          items:
+            $ref: '#/components/schemas/PizzaPanierDto'
+        commentairesIds:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - compteId
+        - panier
+        - commentairesIds
+    CommandeRequestDto:
+      type: object
+      properties:
+        compteId:
+          type: integer
+          format: int64
+        panier:
+          type: array
+          items:
+            $ref: '#/components/schemas/PizzaPanierDto'
+        commentairesIds:
+          type: array
+          items:
+            type: string
+      required:
+        - compteId
+        - panier
+        - commentairesIds
+    CommentaireDto:
+      type: object
+      properties:
+        id:
+          type: string
+        texte:
+          type: string
+        photo:
+          type: string
+      required:
+        - id
+        - texte
+        - photo
+    CommentaireRequestDto:
+      type: object
+      properties:
+        texte:
+          type: string
+        photo:
+          type: string
+      required:
+        - texte
+        - photo
+    AuthentificationDto:
+      type: object
+      properties:
+        username:
+          type: string
         password:
           type: string
-        name:
-          type: string
-        firstname:
-          type: string
-        isAdmin:
-          type: boolean
+      required:
+        - username
+        - password
