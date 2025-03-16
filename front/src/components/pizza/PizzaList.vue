@@ -25,7 +25,8 @@
                     <td>{{ pizza.nom }}</td>
                     <td>{{ pizza.description }}</td>
                     <td>
-                        <img :src="pizza.photo" :alt="`Photo de ${pizza.nom}`" class="pizza-photo" />
+                        <!-- Affichage de l'image récupérée -->
+                        <img :src="pizza.photoUrl" :alt="`Photo de ${pizza.nom}`" class="pizza-photo" />
                     </td>
                     <td>
                         <span v-for="(ingredient, index) in pizza.standardIngredients" :key="ingredient.id">
@@ -54,6 +55,7 @@
 
 <script>
 import pizzaService from '@/services/pizzaService';
+import imageService from '@/services/imageService';
 
 export default {
     name: 'PizzaList',
@@ -68,8 +70,23 @@ export default {
             pizzaService.getPizzas()
                 .then(response => {
                     this.pizzas = response.data;
+                    this.pizzas.forEach(pizza => {
+                        imageService.getImage(pizza.photo)
+                            .then(imageResponse => {
+                                // Convertir le Blob en URL utilisable par la balise <img>
+                                pizza.photoUrl = URL.createObjectURL(imageResponse.data);
+                                console.log('Image récupérée', pizza.photoUrl);
+                            })
+                            .catch(error => {
+                                console.error('Erreur lors de la récupération de l\'image', error);
+                                pizza.photoUrl = 'default-image-url.jpg'; // Image par défaut en cas d'erreur
+                            });
+                    });
                 })
-                .catch(error => console.error('Erreur lors de la récupération des pizzas', error));
+                .catch(error => {
+                    console.error('Erreur lors de la récupération des pizzas', error);
+                    this.errorMessage = 'Erreur lors de la récupération des pizzas.';
+                });
         },
         deletePizza(id) {
             if (confirm("Voulez-vous vraiment supprimer cette pizza ?")) {
@@ -98,7 +115,6 @@ export default {
     margin-top: 1rem;
     border-radius: 8px;
     overflow: hidden;
-    /* Empêche les bords arrondis de déborder */
 }
 
 .custom-table th,

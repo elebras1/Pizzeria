@@ -16,10 +16,11 @@
             <div class="form-group">
                 <label>Photo</label>
                 <input type="file" @change="onFileChange" :required="!isEditMode">
-                <div v-if="pizza.photo" class="image-preview">
-                    <img :src="pizza.photo" alt="Prévisualisation de la pizza">
+                <div v-if="pizza.photo && !isEditMode" class="image-preview">
+                    <img :src="photoPreviewUrl" alt="Prévisualisation de la pizza">
                 </div>
             </div>
+
 
             <div class="form-group">
                 <label>Ingrédients standards</label>
@@ -67,7 +68,7 @@ export default {
             pizza: {
                 nom: '',
                 description: '',
-                photo: '',
+                photo: null,  // Changer de string à un objet File
                 standardIngredientsIds: [],
                 optionalIngredientsIds: []
             },
@@ -78,13 +79,25 @@ export default {
     computed: {
         isEditMode() {
             return this.pizzaId !== null;
+        },
+        photoPreviewUrl() {
+            // Générer l'URL de prévisualisation si un fichier a été sélectionné
+            return this.pizza.photo ? URL.createObjectURL(this.pizza.photo) : '';
         }
     },
     methods: {
         handleSubmit() {
             this.error = null;
+            const formData = new FormData();
+            formData.append('nom', this.pizza.nom);
+            formData.append('description', this.pizza.description);
+            formData.append('photo', this.pizza.photo);  // Envoyer l'objet photo
+
+            this.pizza.standardIngredientsIds.forEach(id => formData.append('standardIngredientsIds', id));
+            this.pizza.optionalIngredientsIds.forEach(id => formData.append('optionalIngredientsIds', id));
+
             if (this.isEditMode) {
-                pizzaService.updatePizza(this.pizzaId, this.pizza)
+                pizzaService.updatePizza(this.pizzaId, formData)
                     .then(() => {
                         this.$router.push({ name: 'PizzaList' });
                     })
@@ -93,7 +106,7 @@ export default {
                         this.error = 'Erreur lors de la mise à jour de la pizza.';
                     });
             } else {
-                pizzaService.createPizza(this.pizza)
+                pizzaService.createPizza(formData)
                     .then(() => {
                         this.$router.push({ name: 'PizzaList' });
                     })
@@ -101,6 +114,12 @@ export default {
                         console.error('Erreur lors de la création', error);
                         this.error = 'Erreur lors de la création de la pizza.';
                     });
+            }
+        },
+        onFileChange(e) {
+            const file = e.target.files[0];
+            if (file) {
+                this.pizza.photo = file; // Stocke l'objet File directement
             }
         },
         fetchPizza() {
@@ -126,17 +145,6 @@ export default {
                     console.error('Erreur lors de la récupération des ingrédients', error);
                     this.error = 'Erreur lors de la récupération des ingrédients.';
                 });
-        },
-        onFileChange(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    // Stocke l'image au format Base64 dans pizza.photo
-                    this.pizza.photo = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
         }
     },
     mounted() {

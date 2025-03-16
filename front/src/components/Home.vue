@@ -4,6 +4,7 @@ import { useAuthStore } from '../stores/auth';
 import axios from "axios";
 import PizzaSelection from "./PizzaSelection.vue";
 import ModalConnexion from "./ModalConnexion.vue";
+import imageService from '@/services/imageService';
 
 const authStore = useAuthStore();
 const pizzas = ref([]);
@@ -19,6 +20,16 @@ const getAllPizzas = async () => {
   try {
     const response = await axios.get("http://localhost:8081/api/pizzas");
     pizzas.value = response.data;
+    pizzas.value.forEach(pizza => {
+      imageService.getImage(pizza.photo)
+        .then(imageResponse => {
+          pizza.photoUrl = URL.createObjectURL(imageResponse.data);
+        })
+        .catch(error => {
+          console.error('Erreur lors de la récupération de l\'image', error);
+        });
+
+    });
   } catch (error) {
     console.error(error);
   }
@@ -58,24 +69,17 @@ const calculatePrice = (pizza) => {
           <p>{{ pizza.description }}</p>
           <span v-if="pizza.popular" class="label">Populaire</span>
         </div>
-        <img :src="pizza.image" :alt="pizza.name" class="pizza-image" />
+        <img :src="pizza.photoUrl" :alt="pizza.nom" class="pizza-image" />
       </div>
     </div>
 
     <!-- Modal de Sélection de Pizza -->
-    <PizzaSelection
-        v-if="showPizzaModal && authStore.isLoggedIn"
-        :pizza="selectedPizza"
-        :isVisible="showPizzaModal"
-        @close="closePizzaModal"
-    />
+    <PizzaSelection v-if="showPizzaModal && authStore.isLoggedIn" :pizza="selectedPizza" :isVisible="showPizzaModal"
+      @close="closePizzaModal" />
 
     <!-- Modal de Connexion -->
-    <ModalConnexion
-        v-if="showLoginModal && !authStore.isLoggedIn"
-        :isVisible="showLoginModal"
-        @close="closeLoginModal"
-    />
+    <ModalConnexion v-if="showLoginModal && !authStore.isLoggedIn" :isVisible="showLoginModal"
+      @close="closeLoginModal" />
   </div>
 </template>
 
@@ -128,7 +132,10 @@ h2 {
   color: black;
 }
 
-h3, h4, h5, p {
+h3,
+h4,
+h5,
+p {
   color: black;
 }
 </style>
