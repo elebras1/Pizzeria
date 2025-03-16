@@ -15,13 +15,6 @@
       </div>
     </div>
 
-    <!-- Modale Commande -->
-    <div v-if="showCommande" class="modal" @click.self="toggleCommande">
-      <div class="modal-content">
-        <button class="close" @click="toggleCommande">Fermer</button>
-        <Commande></Commande>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -29,16 +22,18 @@
 import { ref } from "vue";
 import Informations from "@/components/Informations.vue";
 import Commande from "@/components/Commande.vue";
+import { useRouter } from "vue-router";
 
 const showInformations = ref(false);
 const showCommande = ref(false);
+const router = useRouter();
 
 const toggleInformations = () => {
   showInformations.value = !showInformations.value;
 };
 
 const toggleCommande = () => {
-  showCommande.value = !showCommande.value;
+  router.push({ path: "/account/commandes" });
 };
 </script>
 
