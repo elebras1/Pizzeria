@@ -39,8 +39,6 @@ api.interceptors.response.use(
             console.log('Accès refusé : permissions insuffisantes');
             return Promise.reject(error);
         }
-
-        authStore.clearAuth();
         return Promise.reject(error);
     }
 );

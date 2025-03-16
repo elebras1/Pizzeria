@@ -10,7 +10,7 @@
           <input v-if="ingrediant.nom === 'pate'" type="checkbox" checked disabled />
           <input v-else type="checkbox" checked
                  :value="ingrediant.id"
-                 @change="toggleIngredient(ingrediant.id)"
+                 @change="toggleIngredient(ingrediant)"
           />
         </div>
         <h3>Ingrédients Optionnels</h3>
@@ -22,7 +22,7 @@
           <input
               type="checkbox"
               :value="ingredient.id"
-              @change="toggleIngredient(ingredient.id)"
+              @change="toggleIngredient(ingredient)"
           />
         </div>
         <button @click="addToCart">{{ Price }} € - Ajouter au panier</button>
@@ -33,6 +33,7 @@
 
 <script>
 import { usePanierStore } from '@/stores/panier';
+import {ref, toRaw} from "vue";
 
 export default {
   name: "PizzaSelection",
@@ -47,7 +48,6 @@ export default {
         standardIngredients: [],
         optionalIngredients: [],
       },
-      panier: [],
     };
   },
   methods: {
@@ -55,35 +55,43 @@ export default {
       let total = this.selectedIngredients.reduce((acc, ing) => acc + ing.prix, 0);
       this.Price = total.toFixed(2);
     },
-    toggleIngredient(id) {
-      const index = this.selectedIngredients.indexOf(id);
+    toggleIngredient(ingredient) {
+      const index = this.selectedIngredients.findIndex(item => item.id === ingredient.id);
       if (index !== -1) {
         this.selectedIngredients.splice(index, 1);
       } else {
-        this.selectedIngredients.push(id);
+        this.selectedIngredients.push(ingredient);
       }
       this.calculatePrice();
     },
     addToCart() {
-      console.log("Ajouté au panier avec un prix de " + this.Price + " €");
-      this.panier = {
-        pizzaId: this.pizza.id,
-        ingredientsIds: this.selectedIngredients,
+      const cartItem = {
+        pizza: {
+          id: toRaw(this.Pizza).id,
+          nom: toRaw(this.Pizza).nom,
+          image: toRaw(this.Pizza).image,
+        },
+        ingredients: JSON.parse(JSON.stringify(toRaw(this.selectedIngredients))), // Copie profonde
+        prix: parseFloat(this.Price),
+        cartItemId: Date.now(),
+        quantity: 1,
       };
-      usePanierStore().addPizza(this.panier);
+      usePanierStore().addPizza(cartItem);
+      this.closeModal();
     },
     closeModal() {
       this.$emit("close");
     },
     getPizza() {
       this.Pizza = this.pizza;
-      this.selectedIngredients = this.Pizza.standardIngredients.map((ing) => ing.id);
+      this.selectedIngredients = [...this.Pizza.standardIngredients];
       this.calculatePrice();
     },
 
   },
   mounted() {
     this.getPizza();
+    usePanierStore().loadFromLocalStorage();
   },
 };
 </script>

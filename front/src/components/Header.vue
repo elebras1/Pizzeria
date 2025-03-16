@@ -7,7 +7,7 @@
     </div>
     <div class="auth">
       <template v-if="isLoggedIn">
-        <button @click="goToCart">Panier</button>
+        <button @click="goToPanier">Panier</button>
         <button @click="goToAccount">Mon Compte</button>
         <button @click="handleLogout">Déconnexion</button>
       </template>
@@ -36,8 +36,8 @@ export default {
     handleLogout() {
       useAuthStore().logout();
     },
-    goToCart() {
-      router.push('/cart');
+    goToPanier() {
+      router.push('/panier');
     },
     goToAccount() {
       router.push('/account');
