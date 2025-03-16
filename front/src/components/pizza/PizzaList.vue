@@ -6,6 +6,7 @@
                 Ajouter
             </router-link>
         </div>
+        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         <table class="custom-table" v-if="pizzas.length">
             <thead>
                 <tr>
@@ -58,7 +59,8 @@ export default {
     name: 'PizzaList',
     data() {
         return {
-            pizzas: []
+            pizzas: [],
+            errorMessage: ''
         };
     },
     methods: {
@@ -72,8 +74,14 @@ export default {
         deletePizza(id) {
             if (confirm("Voulez-vous vraiment supprimer cette pizza ?")) {
                 pizzaService.deletePizza(id)
-                    .then(() => this.fetchPizzas())
-                    .catch(error => console.error('Erreur lors de la suppression', error));
+                    .then(() => {
+                        this.fetchPizzas();
+                        this.errorMessage = '';
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la suppression', error);
+                        this.errorMessage = 'Erreur : Impossible de supprimer cette pizza.';
+                    });
             }
         }
     },
@@ -148,14 +156,9 @@ export default {
     color: white;
 }
 
-.action-button:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
-    /* Petit effet de survol */
-}
-
-.action-button:active {
-    transform: translateY(0);
-    /* Rétablit la position après avoir cliqué */
+.error-message {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
 }
 </style>
