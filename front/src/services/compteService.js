@@ -9,6 +9,9 @@ export default {
     getCompte(id) {
         return axios.get(`${API_URL}/${id}`);
     },
+    getCommandes(id) {
+        return axios.get(`${API_URL}/${id}/commandes`);
+    },
     createCompte(compte) {
         return axios.post(API_URL, compte);
     },

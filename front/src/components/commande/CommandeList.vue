@@ -60,7 +60,16 @@ export default {
     },
     methods: {
         fetchCommandes() {
-            commandeService.getCommandes()
+            const idCompte = this.$route.params.idCompte;
+
+            let promise;
+            if (idCompte) {
+                promise = compteService.getCommandes(idCompte);
+            } else {
+                promise = commandeService.getCommandes();
+            }
+
+            promise
                 .then(response => {
                     this.commandes = response.data.map(commande => ({
                         ...commande,
@@ -70,43 +79,49 @@ export default {
                         comments: null
                     }));
 
-                    const compteIds = [...new Set(this.commandes.map(c => c.compteId))];
-                    Promise.all(compteIds.map(id => compteService.getCompte(id)))
-                        .then(results => {
-                            const compteMap = Object.fromEntries(results.map(res => [res.data.id, res.data]));
+                    if (this.commandes.length > 0) {
+                        const compteIds = [...new Set(this.commandes.map(c => c.compteId))];
+                        Promise.all(compteIds.map(id => compteService.getCompte(id)))
+                            .then(results => {
+                                const compteMap = Object.fromEntries(results.map(res => [res.data.id, res.data]));
 
-                            this.commandes.forEach(commande => {
-                                commande.compte = compteMap[commande.compteId] || null;
+                                this.commandes.forEach(commande => {
+                                    commande.compte = compteMap[commande.compteId] || null;
+                                });
+                            })
+                            .catch(error => {
+                                console.error("Erreur lors de la récupération des comptes", error);
                             });
-                        })
-                        .catch(error => {
-                            console.error("Erreur lors de la récupération des comptes", error);
+
+                        this.commandes.forEach(commande => {
+                            commandeService.getCommentaires(commande.id)
+                                .then(response => {
+                                    commande.comments = response.data;
+                                })
+                                .catch(error => {
+                                    console.error(`Erreur lors de la récupération des commentaires pour la commande ${commande.id}`, error);
+                                });
                         });
+                    }
                 })
                 .catch(error => {
                     console.error("Erreur lors de la récupération des commandes", error);
                 });
         },
+
         togglePizzaDetails(commande) {
             commande.showPizzaDetails = !commande.showPizzaDetails;
         },
+
         toggleComments(commande) {
             commande.showComments = !commande.showComments;
-            if (commande.showComments && !commande.comments) {
-                commandeService.getCommentaires(commande.id)
-                    .then(response => {
-                        commande.comments = response.data;
-                    })
-                    .catch(error => {
-                        console.error("Erreur lors de la récupération des commentaires", error);
-                    });
-            }
         }
     },
     mounted() {
         this.fetchCommandes();
     }
 };
+
 </script>
 
 <style scoped>

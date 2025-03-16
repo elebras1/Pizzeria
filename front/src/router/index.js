@@ -8,6 +8,7 @@ import PizzaForm from '@/components/pizza/PizzaForm.vue';
 import IngredientList from '@/components/ingredient/IngredientList.vue';
 import IngredientForm from '@/components/ingredient/IngredientForm.vue';
 import CommandeList from '@/components/commande/CommandeList.vue';
+import CompteList from '@/components/compte/CompteList.vue';
 
 const routes = [
     { path: '/login', name: 'Login', component: Login },
@@ -20,7 +21,9 @@ const routes = [
     { path: '/administration/ingredients', name: 'IngredientList', component: IngredientList },
     { path: '/administration/ingredients/new', name: 'IngredientCreate', component: IngredientForm },
     { path: '/administration/ingredients/edit/:id', name: 'IngredientEdit', component: IngredientForm, props: route => ({ ingredientId: Number(route.params.id) }) },
-    { path: '/administration/commandes', name: 'CommandeList', component: CommandeList }
+    { path: '/administration/commandes', name: 'CommandeListAll', component: CommandeList },
+    { path: '/administration/commandes/:idCompte', name: 'CommandeListByCompte', component: CommandeList, props: route => ({ idCompte: Number(route.params.idCompte) }) },
+    { path: '/administration/comptes', name: 'CompteList', component: CompteList }
 ];
 
 const router = createRouter({
