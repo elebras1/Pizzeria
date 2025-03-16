@@ -1,5 +1,6 @@
 package com.projetm1.pizzeria.compte;
 
+import com.projetm1.pizzeria.commande.dto.CommandeDto;
 import com.projetm1.pizzeria.compte.dto.CompteRequestDto;
 import com.projetm1.pizzeria.compte.dto.CompteDto;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +39,11 @@ public class CompteController {
     @DeleteMapping("/{id}")
     public void deleteCompteById(@PathVariable Long id) {
         this.compteService.deleteCompteById(id);
+    }
+
+    @GetMapping("/{id}/commandes")
+    public List<CommandeDto> getCommandesByCompteId(@PathVariable Long id) {
+        return this.compteService.getCommandesByCompteId(id);
     }
 
 }

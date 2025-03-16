@@ -1,5 +1,8 @@
 package com.projetm1.pizzeria.compte;
 
+import com.projetm1.pizzeria.commande.Commande;
+import com.projetm1.pizzeria.commande.CommandeMapper;
+import com.projetm1.pizzeria.commande.dto.CommandeDto;
 import com.projetm1.pizzeria.compte.dto.CompteRequestDto;
 import com.projetm1.pizzeria.compte.dto.CompteDto;
 import org.springframework.stereotype.Service;
@@ -14,11 +17,13 @@ import java.util.List;
 public class CompteService {
     private final CompteRepository compteRepository;
     private final CompteMapper compteMapper;
+    private final CommandeMapper commandeMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public CompteService(CompteRepository compteRepository, CompteMapper compteMapper, PasswordEncoder passwordEncoder) {
+    public CompteService(CompteRepository compteRepository, CompteMapper compteMapper, CommandeMapper commandeMapper, PasswordEncoder passwordEncoder) {
         this.compteRepository = compteRepository;
         this.compteMapper = compteMapper;
+        this.commandeMapper = commandeMapper;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -62,5 +67,15 @@ public class CompteService {
         return this.compteMapper.toDto(compte);
     }
 
-
+    public List<CommandeDto> getCommandesByCompteId(Long id) {
+        Compte compte = this.compteRepository.findById(id).orElse(null);
+        if (compte == null) {
+            return null;
+        }
+        List<CommandeDto> commandeDtos = new ArrayList<>();
+        for (Commande commande : compte.getCommandes()) {
+            commandeDtos.add(this.commandeMapper.toDto(commande));
+        }
+        return commandeDtos;
+    }
 }

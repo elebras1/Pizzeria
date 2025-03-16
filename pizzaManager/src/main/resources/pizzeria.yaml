@@ -337,6 +337,26 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CompteDto'
+  /comptes/{id}/commandes:
+    get:
+      summary: Récupérer les commandes d'un compte
+      parameters:
+        - name: id
+          in: path
+          description: ID du compte
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Liste des CommandeDto
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CommandeDto'
   /commandes:
     get:
       summary: Récupérer toutes les commandes
