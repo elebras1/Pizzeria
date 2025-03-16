@@ -2,6 +2,7 @@ package com.projetm1.pizzeria.pizza;
 
 import com.projetm1.pizzeria.pizza.dto.PizzaDto;
 import com.projetm1.pizzeria.pizza.dto.PizzaRequestDto;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,8 +26,8 @@ public class PizzaController {
         return this.pizzaService.getPizzaById(id);
     }
 
-    @PostMapping
-    public PizzaDto savePizza(@RequestBody PizzaRequestDto pizzaDto) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public PizzaDto savePizza(@ModelAttribute PizzaRequestDto pizzaDto) {
         return this.pizzaService.savePizza(pizzaDto);
     }
 
@@ -35,8 +36,8 @@ public class PizzaController {
         this.pizzaService.deletePizzaById(id);
     }
 
-    @PutMapping("/{id}")
-    public PizzaDto updatePizza(@PathVariable Long id, @RequestBody PizzaRequestDto pizzaDto) {
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public PizzaDto updatePizza(@PathVariable Long id, @ModelAttribute PizzaRequestDto pizzaDto) {
         return this.pizzaService.updatePizza(id, pizzaDto);
     }
 }

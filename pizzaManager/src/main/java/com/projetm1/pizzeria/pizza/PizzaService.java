@@ -1,10 +1,10 @@
 package com.projetm1.pizzeria.pizza;
 
+import com.projetm1.pizzeria.image.ImageService;
 import com.projetm1.pizzeria.pizza.dto.PizzaDto;
 import com.projetm1.pizzeria.pizza.dto.PizzaRequestDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,14 +13,15 @@ import java.util.List;
 public class PizzaService {
     private final PizzaRepository pizzaRepository;
     private final PizzaMapper pizzaMapper;
+    private final ImageService imageService;
 
-    public PizzaService(PizzaRepository pizzaRepository, PizzaMapper pizzaMapper) {
+    public PizzaService(PizzaRepository pizzaRepository, PizzaMapper pizzaMapper, ImageService imageService) {
         this.pizzaRepository = pizzaRepository;
         this.pizzaMapper = pizzaMapper;
+        this.imageService = imageService;
     }
 
     public PizzaDto getPizzaById(Long id) {
-        System.out.println(this.pizzaRepository.findByIdWithIngredients(id).orElse(null));
         return this.pizzaMapper.toDto(this.pizzaRepository.findByIdWithIngredients(id).orElse(null));
     }
 
@@ -34,7 +35,9 @@ public class PizzaService {
     }
 
     public PizzaDto savePizza(PizzaRequestDto pizzaDto) {
+        String fileName = this.imageService.saveImage(pizzaDto.getPhoto());
         Pizza pizza = this.pizzaMapper.toEntity(pizzaDto);
+        pizza.setPhoto(fileName);
         pizza = this.pizzaRepository.save(pizza);
 
         return this.pizzaMapper.toDto(pizza);
@@ -49,8 +52,12 @@ public class PizzaService {
             return null;
         }
 
+        String fileName = this.imageService.saveImage(pizzaDto.getPhoto());
         Pizza pizza = this.pizzaMapper.toEntity(pizzaDto);
         pizza.setId(id);
+        if(fileName != null) {
+            pizza.setPhoto(fileName);
+        }
 
         return this.pizzaMapper.toDto(this.pizzaRepository.save(pizza));
     }

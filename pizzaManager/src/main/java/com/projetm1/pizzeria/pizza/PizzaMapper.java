@@ -19,6 +19,7 @@ public interface PizzaMapper {
     PizzaLightDto toLightDto(Pizza pizza);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "photo", ignore = true)
     @Mapping(target = "standardIngredients", expression = "java(mapIngredientIdsToIngredients(pizzaRequestDto.getStandardIngredientsIds()))")
     @Mapping(target = "optionalIngredients", expression = "java(mapIngredientIdsToIngredients(pizzaRequestDto.getOptionalIngredientsIds()))")
     @Mapping(target = "pizzaPaniers", ignore = true)
