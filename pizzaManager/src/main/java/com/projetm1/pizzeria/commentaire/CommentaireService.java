@@ -32,15 +32,42 @@ public class CommentaireService {
         return this.commentaireRepository.findAll().stream().map(this.commentaireMapper::toDto).collect(Collectors.toList());
     }
 
-    public CommentaireDto saveCommentaire(String commandeId, CommentaireRequestDto commentaireDto) {
+    public CommentaireDto saveCommentaire(Long commandeId, CommentaireRequestDto commentaireDto) {
+        Commande commande = this.commandeRepository.findById(commandeId).orElseThrow();
+
         Commentaire commentaire = this.commentaireMapper.toEntity(commentaireDto);
-        commentaire.setIdCommande(commandeId);
+        commentaire.setIdCommande(commandeId.toString());
         commentaire = this.commentaireRepository.save(commentaire);
+
+        List<String> commentairesIds = commande.getIdCommentaires();
+        if (commentairesIds == null) {
+            commentairesIds = new ArrayList<>();
+            commande.setIdCommentaires(commentairesIds);
+        }
+        commentairesIds.add(commentaire.getId());
+        this.commandeRepository.save(commande);
 
         return this.commentaireMapper.toDto(commentaire);
     }
 
     public void deleteCommentaireById(String id) {
+        Commentaire commentaire = this.commentaireRepository.findById(id)
+                .orElse(null);
+
+        if (commentaire != null && commentaire.getIdCommande() != null) {
+            try {
+                Long cmdId = Long.parseLong(commentaire.getIdCommande());
+                Commande commande = this.commandeRepository.findById(cmdId).orElse(null);
+
+                if (commande != null && commande.getIdCommentaires() != null) {
+                    commande.getIdCommentaires().remove(id);
+                    this.commandeRepository.save(commande);
+                }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
         this.commentaireRepository.deleteById(id);
     }
 
@@ -49,16 +76,22 @@ public class CommentaireService {
             return null;
         }
 
+        Commentaire existingCommentaire = this.commentaireRepository.findById(id).orElse(null);
+        if (existingCommentaire == null) {
+            return null;
+        }
+
         Commentaire commentaire = this.commentaireMapper.toEntity(commentaireDto);
         commentaire.setId(id);
+        commentaire.setIdCommande(existingCommentaire.getIdCommande());
 
         return this.commentaireMapper.toDto(this.commentaireRepository.save(commentaire));
     }
 
     public List<CommentaireDto> getCommentairesByCommandeId(Long commandeId) {
         Commande commande = this.commandeRepository.findById(commandeId).orElse(null);
-        if(commande == null) {
-            return null;
+        if(commande == null || commande.getIdCommentaires() == null || commande.getIdCommentaires().isEmpty()) {
+            return new ArrayList<>();
         }
 
         List<Commentaire> commentaires = new ArrayList<>();

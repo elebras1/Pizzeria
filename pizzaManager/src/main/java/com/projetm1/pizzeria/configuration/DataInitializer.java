@@ -85,6 +85,9 @@ public class DataInitializer implements CommandLineRunner {
         Commentaire com1 = this.createCommentaire(String.valueOf(commande1.getId()), "Délicieuse pizza, super croustillante !");
         Commentaire com2 = this.createCommentaire(String.valueOf(commande2.getId()), "Un peu trop salée à mon goût.");
         this.commentaireRepository.saveAll(List.of(com1, com2));
+        commande1.setIdCommentaires(List.of(com1.getId()));
+        commande2.setIdCommentaires(List.of(com2.getId()));
+        this.commandeRepository.saveAll(List.of(commande1, commande2));
 
         System.out.println("Jeu de données initialisé !");
     }

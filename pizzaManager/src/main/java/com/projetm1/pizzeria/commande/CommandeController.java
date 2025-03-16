@@ -46,7 +46,7 @@ public class CommandeController {
     }
 
     @PostMapping("/{id}/commentaires")
-    public CommentaireDto addCommentaireToCommande(@PathVariable String id, @RequestBody CommentaireRequestDto commentaireDto) {
+    public CommentaireDto addCommentaireToCommande(@PathVariable Long id, @RequestBody CommentaireRequestDto commentaireDto) {
         return this.commentaireService.saveCommentaire(id, commentaireDto);
     }
 
