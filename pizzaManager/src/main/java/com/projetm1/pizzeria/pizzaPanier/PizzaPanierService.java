@@ -52,7 +52,7 @@ public class PizzaPanierService {
             this.ingredientRepository.findById(ingredientId).ifPresent(ingredients::add);
         }
         pizzaPanier.setPizza(pizza);
-        pizzaPanier.setIngredients(ingredients);
+        pizzaPanier.setIngredients((List<Ingredient>) ingredients);
 
         pizzaPanier = this.pizzaPanierRepository.save(pizzaPanier);
 
@@ -76,7 +76,7 @@ public class PizzaPanierService {
             this.ingredientRepository.findById(ingredientId).ifPresent(ingredients::add);
         }
         pizzaPanier.setPizza(pizza);
-        pizzaPanier.setIngredients(ingredients);
+        pizzaPanier.setIngredients((List<Ingredient>) ingredients);
         pizzaPanier = this.pizzaPanierRepository.save(pizzaPanier);
         return this.pizzaPanierMapper.toDto(pizzaPanier);
     }

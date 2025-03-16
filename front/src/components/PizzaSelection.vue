@@ -56,30 +56,19 @@ export default {
       this.Price = total.toFixed(2);
     },
     toggleIngredient(id) {
-      const ingredient = this.Pizza.optionalIngredients.find((ing) => ing.id === id)
-          || this.Pizza.standardIngredients.find((ing) => ing.id === id);
-
-      if (ingredient) {
-        const index = this.selectedIngredients.findIndex((ing) => ing.id === id);
-        if (index !== -1) {
-          this.selectedIngredients.splice(index, 1);  // Supprimer l'ingrédient existant
-        } else {
-          this.selectedIngredients.push(ingredient);  // Ajouter l'ingrédient
-        }
-        this.calculatePrice();
+      const index = this.selectedIngredients.indexOf(id);
+      if (index !== -1) {
+        this.selectedIngredients.splice(index, 1);
+      } else {
+        this.selectedIngredients.push(id);
       }
+      this.calculatePrice();
     },
     addToCart() {
       console.log("Ajouté au panier avec un prix de " + this.Price + " €");
       this.panier = {
-        id: null,
-        pizza: {
-          id: this.Pizza.id,
-          nom: this.Pizza.nom,
-          description: this.Pizza.description,
-          photo: this.Pizza.photo,
-        },
-        ingredients: this.selectedIngredients,
+        pizzaId: this.pizza.id,
+        ingredientsIds: this.selectedIngredients,
       };
       usePanierStore().addPizza(this.panier);
     },
@@ -88,7 +77,7 @@ export default {
     },
     getPizza() {
       this.Pizza = this.pizza;
-      this.selectedIngredients = [...this.Pizza.standardIngredients];
+      this.selectedIngredients = this.Pizza.standardIngredients.map((ing) => ing.id);
       this.calculatePrice();
     },
 

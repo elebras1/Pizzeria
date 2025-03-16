@@ -12,42 +12,31 @@ export const usePanierStore = defineStore('panier', {
         },
         async addPizza(pizza) {
             try {
-                if (this.Panier.length === 0) {
-                    this.Panier.push(pizza);
-                    const commande={
-                        compteId : null,
-                        enCours : true,
-                        panier : this.Panier,
-                        commentairesIds : null
-                    }
-                    console.log(JSON.stringify(commande));
-                    const response = await api.post('/commandes',commande , {
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    console.log(response.data);
-                    this.setPanier(response.data);
-                    console.log('Pizza ajoutée via POST:', response.data);
-                } else {
-                    const updatedPanier = [...this.Panier, pizza];
-                    const response = await api.put('/commandes', {
-                        compteId : 0,
-                        enCours : true,
-                        panier : updatedPanier,
-                        commentairesIds : [""]
-                    }, {
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    this.setPanier(response.data);
-                    console.log('Pizza ajoutée via UPDATE:', response.data);
-                }
+
             } catch (error) {
                 console.error('Erreur lors de l\'ajout de la pizza:', error);
             }
         },
+        async removePizza(pizza) {
+            try {
 
+            } catch (error) {
+                console.error('Erreur lors de la suppression de la pizza:', error);
+            }
+        },
+        async clearPanier() {
+            try {
+
+            } catch (error) {
+                console.error('Erreur lors de la suppression du panier:', error);
+            }
+        },
+        async getPanier() {
+            try {
+
+            } catch (error) {
+                console.error('Erreur lors de la récupération du panier:', error);
+            }
+        }
     }
 });

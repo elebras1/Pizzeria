@@ -13,6 +13,7 @@ import com.projetm1.pizzeria.compte.dto.CompteDto;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -40,26 +41,15 @@ public class CommandeController {
     }
 
     @PostMapping
-    public CommandeDto saveCommande(@RequestHeader("x-compte") String xCompte,@RequestBody CommandeRequestDto commandeDto) {
-        System.out.println(commandeDto);
-        System.out.println("En-tête x-compte brut : " + xCompte);
-/*
+    public CommandeDto saveCommande(@RequestHeader("x-compte") String compteJson,@RequestBody CommandeRequestDto commandeDto) {
         try {
-            System.out.println(commandeDto);
-            System.out.println("En-tête x-compte brut : " + compteJson);
-
             ObjectMapper objectMapper = new ObjectMapper();
             CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
             commandeDto.setCompteId(compte.getId());
-            commandeDto.setEnCours(true);
-            commandeDto.setCommentairesIds(null);
             return this.commandeService.saveCommande(commandeDto);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
- */
-        return null;
     }
 
     @DeleteMapping("/{id}")
@@ -69,15 +59,12 @@ public class CommandeController {
 
     @PutMapping
     public CommandeDto updateCommande(@RequestBody CommandeRequestDto commandeDto,@RequestHeader(value = "x-compte", required = true) String compteJson) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            CompteDto compteDto = objectMapper.readValue(compteJson, CompteDto.class);
-            commandeDto.setCompteId(compteDto.getId());
-            Long commandeId=this.commandeService.getLastCommandeIdByCompteId(compteDto.getId());
-            return this.commandeService.updateCommande(commandeId, commandeDto);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        //ObjectMapper objectMapper = new ObjectMapper();
+        //CompteDto compteDto = objectMapper.readValue(compteJson, CompteDto.class);
+        //commandeDto.setCompteId(compteDto.getId());
+        //Long commandeId=this.commandeService.getLastCommandeIdByCompteId(compteDto.getId());
+        //return this.commandeService.updateCommande(commandeId, commandeDto);
+        return null;
     }
 
     @PostMapping("/{id}/commentaires")

@@ -60,7 +60,7 @@ function authMiddleware(req, res, next) {
         req.user = decoded.compte;
 
         if (req.user) {
-            req.headers['x-compte'] = req.user.id.toString();
+            req.headers['x-compte'] = JSON.stringify(req.user);
             console.log("En-tête x-compte ajouté dans le proxy :", req.headers['x-compte']);
         }
 

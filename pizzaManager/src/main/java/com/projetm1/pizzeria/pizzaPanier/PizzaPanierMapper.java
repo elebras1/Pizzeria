@@ -6,6 +6,8 @@ import com.projetm1.pizzeria.pizzaPanier.dto.PizzaPanierDto;
 import com.projetm1.pizzeria.pizzaPanier.dto.PizzaPanierRequestDto;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", uses = {PizzaMapper.class, IngredientMapper.class})
 public interface PizzaPanierMapper {
 
@@ -16,4 +18,8 @@ public interface PizzaPanierMapper {
     @Mapping(target = "pizza", ignore = true)
     @Mapping(target = "ingredients", ignore = true)
     PizzaPanier toEntity(PizzaPanierRequestDto dto);
+
+    List<PizzaPanier> toEntityList(List<PizzaPanierRequestDto> dtos);
+
+    List<PizzaPanierRequestDto> toDtoList(List<PizzaPanier> entities);
 }
