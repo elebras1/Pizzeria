@@ -37,7 +37,9 @@ public class PizzaService {
     public PizzaDto savePizza(PizzaRequestDto pizzaDto) {
         String fileName = this.imageService.saveImage(pizzaDto.getPhoto());
         Pizza pizza = this.pizzaMapper.toEntity(pizzaDto);
-        pizza.setPhoto(fileName);
+        if(fileName != null) {
+            pizza.setPhoto(fileName);
+        }
         pizza = this.pizzaRepository.save(pizza);
 
         return this.pizzaMapper.toDto(pizza);
@@ -48,7 +50,8 @@ public class PizzaService {
     }
 
     public PizzaDto updatePizza(Long id, PizzaRequestDto pizzaDto) {
-        if(!this.pizzaRepository.existsById(id)) {
+        Pizza pizzaOld = this.pizzaRepository.findById(id).orElse(null);
+        if(pizzaOld == null) {
             return null;
         }
 
@@ -57,6 +60,8 @@ public class PizzaService {
         pizza.setId(id);
         if(fileName != null) {
             pizza.setPhoto(fileName);
+        } else {
+            pizza.setPhoto(pizzaOld.getPhoto());
         }
 
         return this.pizzaMapper.toDto(this.pizzaRepository.save(pizza));

@@ -5,6 +5,7 @@ import com.projetm1.pizzeria.commande.dto.CommandeRequestDto;
 import com.projetm1.pizzeria.commentaire.CommentaireService;
 import com.projetm1.pizzeria.commentaire.dto.CommentaireDto;
 import com.projetm1.pizzeria.commentaire.dto.CommentaireRequestDto;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -45,8 +46,8 @@ public class CommandeController {
         return this.commandeService.updateCommande(id, commandeDto);
     }
 
-    @PostMapping("/{id}/commentaires")
-    public CommentaireDto addCommentaireToCommande(@PathVariable Long id, @RequestBody CommentaireRequestDto commentaireDto) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CommentaireDto addCommentaireToCommande(@PathVariable Long id, @ModelAttribute CommentaireRequestDto commentaireDto) {
         return this.commentaireService.saveCommentaire(id, commentaireDto);
     }
 

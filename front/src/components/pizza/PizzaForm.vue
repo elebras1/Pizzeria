@@ -68,7 +68,7 @@ export default {
             pizza: {
                 nom: '',
                 description: '',
-                photo: null,  // Changer de string à un objet File
+                photo: null,
                 standardIngredientsIds: [],
                 optionalIngredientsIds: []
             },
@@ -81,7 +81,6 @@ export default {
             return this.pizzaId !== null;
         },
         photoPreviewUrl() {
-            // Générer l'URL de prévisualisation si un fichier a été sélectionné
             return this.pizza.photo ? URL.createObjectURL(this.pizza.photo) : '';
         }
     },
@@ -91,7 +90,9 @@ export default {
             const formData = new FormData();
             formData.append('nom', this.pizza.nom);
             formData.append('description', this.pizza.description);
-            formData.append('photo', this.pizza.photo);  // Envoyer l'objet photo
+            if (this.pizza.photo && this.pizza.photo instanceof File) {
+                formData.append('photo', this.pizza.photo);
+            }
 
             this.pizza.standardIngredientsIds.forEach(id => formData.append('standardIngredientsIds', id));
             this.pizza.optionalIngredientsIds.forEach(id => formData.append('optionalIngredientsIds', id));
@@ -119,7 +120,7 @@ export default {
         onFileChange(e) {
             const file = e.target.files[0];
             if (file) {
-                this.pizza.photo = file; // Stocke l'objet File directement
+                this.pizza.photo = file;
             }
         },
         fetchPizza() {

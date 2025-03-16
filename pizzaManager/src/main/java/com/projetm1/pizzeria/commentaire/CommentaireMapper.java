@@ -12,5 +12,6 @@ public interface CommentaireMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "idCommande", ignore = true)
+    @Mapping(target = "photo", ignore = true)
     Commentaire toEntity(CommentaireRequestDto commentaireRequestDto);
 }

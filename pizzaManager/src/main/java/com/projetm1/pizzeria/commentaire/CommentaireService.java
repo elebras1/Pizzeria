@@ -4,6 +4,7 @@ import com.projetm1.pizzeria.commande.Commande;
 import com.projetm1.pizzeria.commande.CommandeRepository;
 import com.projetm1.pizzeria.commentaire.dto.CommentaireDto;
 import com.projetm1.pizzeria.commentaire.dto.CommentaireRequestDto;
+import com.projetm1.pizzeria.image.ImageService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,11 +18,13 @@ public class CommentaireService {
     private final CommentaireRepository commentaireRepository;
     private final CommentaireMapper commentaireMapper;
     private final CommandeRepository commandeRepository;
+    private final ImageService imageService;
 
-    public CommentaireService(CommentaireRepository commentaireRepository, CommentaireMapper commentaireMapper, CommandeRepository commandeRepository) {
+    public CommentaireService(CommentaireRepository commentaireRepository, CommentaireMapper commentaireMapper, CommandeRepository commandeRepository, ImageService imageService) {
         this.commentaireRepository = commentaireRepository;
         this.commentaireMapper = commentaireMapper;
         this.commandeRepository = commandeRepository;
+        this.imageService = imageService;
     }
 
     public CommentaireDto getCommentaireById(String id) {
@@ -35,8 +38,13 @@ public class CommentaireService {
     public CommentaireDto saveCommentaire(Long commandeId, CommentaireRequestDto commentaireDto) {
         Commande commande = this.commandeRepository.findById(commandeId).orElseThrow();
 
+        String fileName = this.imageService.saveImage(commentaireDto.getPhoto());
+
         Commentaire commentaire = this.commentaireMapper.toEntity(commentaireDto);
         commentaire.setIdCommande(commandeId.toString());
+        if(fileName != null) {
+            commentaire.setPhoto(fileName);
+        }
         commentaire = this.commentaireRepository.save(commentaire);
 
         List<String> commentairesIds = commande.getIdCommentaires();
@@ -51,8 +59,7 @@ public class CommentaireService {
     }
 
     public void deleteCommentaireById(String id) {
-        Commentaire commentaire = this.commentaireRepository.findById(id)
-                .orElse(null);
+        Commentaire commentaire = this.commentaireRepository.findById(id).orElse(null);
 
         if (commentaire != null && commentaire.getIdCommande() != null) {
             try {
@@ -76,6 +83,8 @@ public class CommentaireService {
             return null;
         }
 
+        String fileName = this.imageService.saveImage(commentaireDto.getPhoto());
+
         Commentaire existingCommentaire = this.commentaireRepository.findById(id).orElse(null);
         if (existingCommentaire == null) {
             return null;
@@ -84,6 +93,11 @@ public class CommentaireService {
         Commentaire commentaire = this.commentaireMapper.toEntity(commentaireDto);
         commentaire.setId(id);
         commentaire.setIdCommande(existingCommentaire.getIdCommande());
+        if (fileName != null) {
+            commentaire.setPhoto(fileName);
+        } else {
+            commentaire.setPhoto(existingCommentaire.getPhoto());
+        }
 
         return this.commentaireMapper.toDto(this.commentaireRepository.save(commentaire));
     }

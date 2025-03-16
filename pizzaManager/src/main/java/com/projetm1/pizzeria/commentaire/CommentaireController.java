@@ -2,6 +2,7 @@ package com.projetm1.pizzeria.commentaire;
 
 import com.projetm1.pizzeria.commentaire.dto.CommentaireDto;
 import com.projetm1.pizzeria.commentaire.dto.CommentaireRequestDto;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,8 +31,8 @@ public class CommentaireController {
         this.commentaireService.deleteCommentaireById(id);
     }
 
-    @PutMapping("/{id}")
-    public CommentaireDto updateCommentaire(@PathVariable String id, @RequestBody CommentaireRequestDto commentaireDto) {
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CommentaireDto updateCommentaire(@PathVariable String id, @ModelAttribute CommentaireRequestDto commentaireDto) {
         return this.commentaireService.updateCommentaire(id, commentaireDto);
     }
 }

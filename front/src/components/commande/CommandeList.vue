@@ -32,10 +32,10 @@
             </div>
             <button @click="toggleComments(commande)">Afficher commentaire</button>
             <div v-if="commande.showComments" class="details-comments">
-                <div v-if="commande.comments">
+                <div v-if="commande.comments && commande.comments.length > 0">
                     <div v-for="(comment, i) in commande.comments" :key="i" class="comment">
                         <p>{{ comment.texte }}</p>
-                        <img v-if="comment.photo" :src="comment.photo" alt="photo du commentaire" />
+                        <img v-if="comment.photoUrl" :src="comment.photoUrl" alt="photo du commentaire" />
                     </div>
                 </div>
                 <div v-else>
@@ -50,6 +50,7 @@
 <script>
 import commandeService from '@/services/commandeService';
 import compteService from '@/services/compteService';
+import imageService from '@/services/imageService';
 
 export default {
     name: 'CommandeList',
@@ -97,6 +98,19 @@ export default {
                             commandeService.getCommentaires(commande.id)
                                 .then(response => {
                                     commande.comments = response.data;
+
+                                    commande.comments.forEach(comment => {
+                                        if (comment.photo) {
+                                            imageService.getImage(comment.photo)
+                                                .then(response => {
+                                                    const url = URL.createObjectURL(response.data);
+                                                    comment.photoUrl = url;
+                                                })
+                                                .catch(error => {
+                                                    console.error(`Erreur lors du chargement de l'image pour le commentaire ${comment.id}`, error);
+                                                });
+                                        }
+                                    });
                                 })
                                 .catch(error => {
                                     console.error(`Erreur lors de la récupération des commentaires pour la commande ${commande.id}`, error);
@@ -121,7 +135,6 @@ export default {
         this.fetchCommandes();
     }
 };
-
 </script>
 
 <style scoped>
