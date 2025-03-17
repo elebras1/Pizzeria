@@ -21,8 +21,8 @@ public class Commande {
     private Compte compte;
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL)
     private List<PizzaPanier> panier;
-    private BigDecimal enCours;
-    private BigDecimal isPaye;
+    private Boolean enCours;
+    private Boolean isPaye;
     private Date dateCommande;
     @ElementCollection
     @CollectionTable(name = "commentaires", joinColumns = @JoinColumn(name = "commande_id"))
