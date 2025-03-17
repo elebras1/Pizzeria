@@ -18,7 +18,7 @@ onMounted(() => {
 
 const getAllPizzas = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/api/pizzas");
+    const response = await axios.get("http://localhost:8081/api/pizzas");
     pizzas.value = response.data;
   } catch (error) {
     console.error(error);
@@ -64,19 +64,12 @@ const calculatePrice = (pizza) => {
     </div>
 
     <!-- Modal de Sélection de Pizza -->
-    <PizzaSelection
-        v-if="showPizzaModal && authStore.isLoggedIn"
-        :pizza="selectedPizza"
-        :isVisible="showPizzaModal"
-        @close="closePizzaModal"
-    />
+    <PizzaSelection v-if="showPizzaModal && authStore.isLoggedIn" :pizza="selectedPizza" :isVisible="showPizzaModal"
+      @close="closePizzaModal" />
 
     <!-- Modal de Connexion -->
-    <ModalConnexion
-        v-if="showLoginModal && !authStore.isLoggedIn"
-        :isVisible="showLoginModal"
-        @close="closeLoginModal"
-    />
+    <ModalConnexion v-if="showLoginModal && !authStore.isLoggedIn" :isVisible="showLoginModal"
+      @close="closeLoginModal" />
   </div>
 </template>
 
@@ -129,7 +122,10 @@ h2 {
   color: black;
 }
 
-h3, h4, h5, p {
+h3,
+h4,
+h5,
+p {
   color: black;
 }
 </style>

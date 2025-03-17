@@ -162,4 +162,10 @@ button {
     margin-right: 0.5em;
     margin-top: 0.5em;
 }
+
+.comment img {
+    max-width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+}
 </style>

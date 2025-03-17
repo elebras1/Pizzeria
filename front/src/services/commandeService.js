@@ -12,6 +12,9 @@ export default {
     getCommentaires(id) {
         return axios.get(`${API_URL}/${id}/commentaires`);
     },
+    addCommentaireToCommande(id, commentaire) {
+        return axios.post(`${API_URL}/${id}/commentaires`, commentaire);
+    },
     createCommande(commande) {
         return axios.post(API_URL, commande);
     },
