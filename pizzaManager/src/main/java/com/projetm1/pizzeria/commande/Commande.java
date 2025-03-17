@@ -5,8 +5,7 @@ import com.projetm1.pizzeria.pizzaPanier.PizzaPanier;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -23,7 +22,7 @@ public class Commande {
     private List<PizzaPanier> panier;
     private Boolean enCours;
     private Boolean isPaye;
-    private Date dateCommande;
+    private LocalDateTime date;
     @ElementCollection
     @CollectionTable(name = "commentaires", joinColumns = @JoinColumn(name = "commande_id"))
     @Column(name = "commentaire")

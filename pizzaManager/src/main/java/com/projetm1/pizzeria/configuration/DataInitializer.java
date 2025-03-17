@@ -37,7 +37,7 @@ public class DataInitializer implements CommandLineRunner {
         this.commentaireRepository = commentaireRepository;
         this.passwordEncoder = passwordEncoder;
     }
-/*
+
     @Override
     public void run(String... args) throws Exception {
         List<Ingredient> ingredients = new ArrayList<>();
@@ -91,7 +91,7 @@ public class DataInitializer implements CommandLineRunner {
 
         System.out.println("Jeu de données initialisé !");
     }
-*/
+
     private Ingredient createIngredient(String nom, String description, float prix) {
         Ingredient ingredient = new Ingredient();
         ingredient.setNom(nom);
@@ -142,10 +142,5 @@ public class DataInitializer implements CommandLineRunner {
         commentaire.setIdCommande(idCommande);
         commentaire.setTexte(texte);
         return commentaire;
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-
     }
 }
