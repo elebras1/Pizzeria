@@ -81,12 +81,19 @@ export default {
     savePanier(){
       usePanierStore().savePanier();
     },
-    pay() {
-      api.post("/commandes/pay")
-          .then(response => {
-            window.location.href = response.data.url;
-      })
-
+    async pay() {
+      const panierEnregistre = await usePanierStore().savePanier();
+      if (panierEnregistre) {
+        api.post("/commandes/pay")
+            .then(response => {
+              window.location.href = response.data.url;
+            })
+            .catch(error => {
+              console.error("Erreur lors du paiement :", error);
+            });
+      } else {
+        console.error("Le panier n'a pas pu être enregistré.");
+      }
     },
   },
   mounted() {

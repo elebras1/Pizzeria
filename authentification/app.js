@@ -10,7 +10,7 @@ const cors = require('cors');
 
 app.use(cookieParser());
 app.use(cors({
-    origin: process.env.FRONT,
+    origin: [process.env.FRONT,'https://checkout.stripe.com'],
     credentials: true,
 }));
 
@@ -112,7 +112,7 @@ app.post('/api/auth/login', express.json(), async (req, res) => {
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'Strict'
+                sameSite: 'None'
             });
 
             return res.json({ message: 'Connexion réussie', accessToken });

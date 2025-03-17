@@ -1,8 +1,8 @@
 <template>
   <header class="navbar">
     <div class="logo">
-      <p>
-        <a href="/">PizzaYolo</a>
+      <p class="jsp" @click="goToHome">
+        PizzaYolo
       </p>
     </div>
     <div class="auth">
@@ -42,6 +42,9 @@ export default {
     },
     goToAccount() {
       router.push('/account');
+    },
+    goToHome() {
+      router.push('/');
     }
   }
 };
@@ -88,5 +91,8 @@ export default {
 
 .auth button:hover {
   background-color: #777;
+}
+.jsp{
+  cursor: pointer;
 }
 </style>

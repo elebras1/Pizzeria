@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service("commandeService")
@@ -53,8 +54,8 @@ public class CommandeService {
         commande.setIdCommentaires(new ArrayList<>());
         return updatePanier(commandeDto, commande);
     }
-    public Commande getCommandeEnCoursByCompteId(Long compteId) {
-        return this.commandeRepository.findByCompteIdAndEnCoursTrue(compteId);
+    public Optional<Commande> getCommandeEnCoursByCompteId(Long compteId) {
+        return this.commandeRepository.findByCompteIdAndEnCoursTrueAndIsPayeFalse(compteId);
 
     }
 

@@ -22,6 +22,7 @@ import com.stripe.param.checkout.SessionCreateParams;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/commandes")
@@ -53,7 +54,8 @@ public class CommandeController {
         try{
             ObjectMapper objectMapper = new ObjectMapper();
             CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
-            return this.commandeMapper.toDto(this.commandeService.getCommandeEnCoursByCompteId(compte.getId()));
+            Optional<Commande> commande=this.commandeService.getCommandeEnCoursByCompteId(compte.getId());
+            return commande.map(this.commandeMapper::toDto).orElse(null);
         }catch (JsonProcessingException e){
             return null;
         }
@@ -68,8 +70,9 @@ public class CommandeController {
             ObjectMapper objectMapper = new ObjectMapper();
             CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
             commandeDto.setCompteId(compte.getId());
-            Commande commandeEnCours = this.commandeService.getCommandeEnCoursByCompteId(compte.getId());
-            if(commandeEnCours != null){
+            Optional<Commande> commandeEnCours = this.commandeService.getCommandeEnCoursByCompteId(compte.getId());
+            System.out.println(commandeEnCours.isEmpty());
+            if(commandeEnCours.isPresent()){
                 return null;
             }
             return this.commandeService.saveCommande(commandeDto);
@@ -89,12 +92,12 @@ public class CommandeController {
             ObjectMapper objectMapper = new ObjectMapper();
             CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
             commandeDto.setCompteId(compte.getId());
-            Commande commande = this.commandeRepository.findByCompteIdAndEnCoursTrue(commandeDto.getCompteId());
-            if(commande == null){
+            Optional<Commande> commande = this.commandeRepository.findByCompteIdAndEnCoursTrueAndIsPayeFalse(commandeDto.getCompteId());
+            if(commande.isEmpty()){
                 return null;
             }
             System.out.println("test");
-            return this.commandeService.updateCommande(commandeDto,commande);
+            return this.commandeService.updateCommande(commandeDto,commande.get());
         }catch (JsonProcessingException e){
             return null;
         }
@@ -104,9 +107,12 @@ public class CommandeController {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
-            Commande commande = this.commandeRepository.findByCompteIdAndEnCoursTrue(compte.getId());
+            Optional<Commande> commande = this.commandeRepository.findByCompteIdAndEnCoursTrueAndIsPayeFalse(compte.getId());
+            if(commande.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
             Float total = 0.0f;
-            for(PizzaPanier pizzaPanier: commande.getPanier()){
+            for(PizzaPanier pizzaPanier: commande.get().getPanier()){
                 for(Ingredient ingredient: pizzaPanier.getIngredients()){
                     total = total+ ingredient.getPrix();
                 }
@@ -114,6 +120,11 @@ public class CommandeController {
 
             System.out.println(total);
             long montantEnCentimes = (long) (total * 100L);
+            if(montantEnCentimes == 0){
+                Map<String, String> response = new HashMap<>();
+                response.put("url","http://localhost:5173/panier" );
+                return ResponseEntity.ok(response);
+            }
             System.out.println(montantEnCentimes);
             Stripe.apiKey = "sk_test_51R3PKZQxmuo6VLbo318TeqOwaacBuCiV8c4xGEXvqWT43qLtbkpVAkjuuKsfly5xvaoyfSwvE0PqmZJENBjXjaax00duyJFo1M";
 
@@ -137,8 +148,8 @@ public class CommandeController {
 
             SessionCreateParams params = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.PAYMENT)
-                    .setSuccessUrl("http://localhost:5173")
-                    .setCancelUrl("http://localhost:5173/panier")
+                    .setSuccessUrl("http://localhost:5173/payment/sucess")
+                    .setCancelUrl("http://localhost:5173/payment/reject")
                     .addLineItem(lineItem)
                     .build();
 
@@ -159,11 +170,8 @@ public class CommandeController {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
-            Commande commande = this.commandeRepository.findByCompteIdAndEnCoursTrue(compte.getId());
-            if(commande == null){
-                return null;
-            }
-            return this.commandeService.payCommande(commande.getId());
+            Optional<Commande> commande = this.commandeRepository.findByCompteIdAndEnCoursTrueAndIsPayeFalse(compte.getId());
+            return commande.map(value -> this.commandeService.payCommande(value.getId())).orElse(null);
         }catch (JsonProcessingException e){
             return null;
         }

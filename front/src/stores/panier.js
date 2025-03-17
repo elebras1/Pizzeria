@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import api from "@/interceptors/api.js";
+import { useAuthStore } from "@/stores/auth.js";
 
 export const usePanierStore = defineStore('panier', {
     state: () => ({
@@ -34,41 +35,33 @@ export const usePanierStore = defineStore('panier', {
         getPanier() {
             return this.Panier;
         },
-        savePanier() {
+        async savePanier() {
+            try {
+                const res = await api.get('/commandes/enCours');
 
-            api.get('/commandes/enCours').then((res)=> {
-                if(res.data) {
-                    console.log(this.Panier);
-                    console.log(this.reverseTransformData(this.Panier));
-                    api.put('/commandes', {
+                if (res.data) {
+
+                    const response = await api.put('/commandes', {
                         compteId: null,
                         commentairesIds: null,
                         panier: this.reverseTransformData(this.Panier),
-                    })
-                        .then(response => {
-                            console.log("Données avant transformation :", response.data);
-                            this.saveToLocalStorage();
-                            console.log("Données après transformation :", this.Panier);
-                        })
-                        .catch(error => {
-                            console.error("Erreur lors de la création de la commande :", error);
-                        });
-                }else {
-                    api.post('/commandes', {
+                    });
+                    this.saveToLocalStorage();
+                    return true;
+
+                } else {
+                    const response = await api.post('/commandes', {
                         compteId: null,
                         commentairesIds: null,
                         panier: this.reverseTransformData(this.Panier),
-                    })
-                        .then(response => {
-                            console.log("Données avant transformation :", response.data);
-                            this.saveToLocalStorage();
-                            console.log("Données après transformation :", this.Panier);
-                        })
-                        .catch(error => {
-                            console.error("Erreur lors de la création de la commande :", error);
-                        });
+                    });
+                    this.saveToLocalStorage();
+                    return true;
                 }
-            })
+            } catch (error) {
+                console.error("Erreur lors de la création ou mise à jour de la commande :", error);
+                return false;
+            }
         },
         loadPanier() {
             api.get('/commandes/enCours')
@@ -79,7 +72,9 @@ export const usePanierStore = defineStore('panier', {
                     console.log("Données après transformation :", this.Panier);
                 })
                 .catch(error => {
-                    console.error("Erreur lors de la récupération de la commande :", error);
+                    if (useAuthStore().getAccessToken()!=null){
+                        console.error("Erreur lors de la récupération de la commande :", error);
+                    }
                 });
         },
         saveToLocalStorage() {
@@ -93,6 +88,9 @@ export const usePanierStore = defineStore('panier', {
         },
         transformData(data) {
             const transformed = [];
+            if(data==null || data.panier==null){
+                return transformed;
+            }
 
             data.panier.forEach(item => {
                 // Trie les ingrédients par ID pour garantir la comparaison
