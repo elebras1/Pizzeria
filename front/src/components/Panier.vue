@@ -32,8 +32,9 @@
 </template>
 
 <script>
-import { usePanierStore } from '@/stores/panier';
-import { useAuthStore } from '@/stores/auth.js';
+import {usePanierStore} from '@/stores/panier';
+import {useAuthStore} from '@/stores/auth.js';
+import api from "@/interceptors/api.js";
 
 export default {
   name: "Panier",
@@ -81,6 +82,10 @@ export default {
       usePanierStore().savePanier();
     },
     pay() {
+      api.post("/commandes/pay")
+          .then(response => {
+            window.location.href = response.data.url;
+      })
 
     },
   },
