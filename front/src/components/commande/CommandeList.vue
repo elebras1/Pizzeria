@@ -1,7 +1,7 @@
 <template>
     <div>
-        <h1>Liste des Commandes</h1>
-        <div v-for="commande in commandes" :key="commande.id" class="commande">
+        <h1>Liste des Commandes Payées</h1>
+        <div v-for="commande in commandesPayees" :key="commande.id" class="commande">
             <h2>Commande #{{ commande.id }}</h2>
             <p>
                 <strong>Compte : </strong>
@@ -11,6 +11,18 @@
                 <span v-else>
                     Compte inconnu
                 </span>
+            </p>
+            <p>
+                <strong>En cours : </strong>
+                <span>{{ commande.enCours ? 'Oui' : 'Non' }}</span>
+            </p>
+            <p>
+                <strong>Payée : </strong>
+                <span>{{ commande.isPaye ? 'Oui' : 'Non' }}</span>
+            </p>
+            <p>
+                <strong>Date de commande : </strong>
+                <span>{{ formatDate(commande.date) }}</span>
             </p>
             <p>
                 <strong>Pizzas commandées : </strong>
@@ -42,6 +54,8 @@
                     <p>Aucun commentaire</p>
                 </div>
             </div>
+            <!-- Bouton pour terminer la commande affiché uniquement si elle est en cours -->
+            <button v-if="commande.enCours" @click="finishCommande(commande)">Terminer la commande</button>
             <hr>
         </div>
     </div>
@@ -59,13 +73,24 @@ export default {
             commandes: []
         };
     },
+    computed: {
+        commandesPayees() {
+            // Filtrer uniquement les commandes payées et trier selon le statut "en cours"
+            return this.commandes
+                .filter(commande => commande.isPaye)
+                .sort((a, b) => {
+                    if (a.enCours === b.enCours) return 0;
+                    return a.enCours ? -1 : 1;
+                });
+        }
+    },
     methods: {
         fetchCommandes() {
             const idCompte = this.$route.params.idCompte;
-
             let promise;
+
             if (idCompte) {
-                promise = compteService.getCommandes(idCompte);
+                promise = compteService.getCommandesById(idCompte);
             } else {
                 promise = commandeService.getCommandes();
             }
@@ -81,11 +106,11 @@ export default {
                     }));
 
                     if (this.commandes.length > 0) {
+                        // Récupérer les informations des comptes
                         const compteIds = [...new Set(this.commandes.map(c => c.compteId))];
                         Promise.all(compteIds.map(id => compteService.getCompte(id)))
                             .then(results => {
                                 const compteMap = Object.fromEntries(results.map(res => [res.data.id, res.data]));
-
                                 this.commandes.forEach(commande => {
                                     commande.compte = compteMap[commande.compteId] || null;
                                 });
@@ -94,11 +119,11 @@ export default {
                                 console.error("Erreur lors de la récupération des comptes", error);
                             });
 
+                        // Récupérer les commentaires et les images associées
                         this.commandes.forEach(commande => {
                             commandeService.getCommentaires(commande.id)
                                 .then(response => {
                                     commande.comments = response.data;
-
                                     commande.comments.forEach(comment => {
                                         if (comment.photo) {
                                             imageService.getImage(comment.photo)
@@ -122,13 +147,34 @@ export default {
                     console.error("Erreur lors de la récupération des commandes", error);
                 });
         },
-
         togglePizzaDetails(commande) {
             commande.showPizzaDetails = !commande.showPizzaDetails;
         },
-
         toggleComments(commande) {
             commande.showComments = !commande.showComments;
+        },
+        formatDate(date) {
+            if (!date) return '';
+            const parsedDate = new Date(date);
+            return parsedDate.toLocaleString('fr-FR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric'
+            });
+        },
+        finishCommande(commande) {
+            // Appel du service pour finir la commande (passer "enCours" à false)
+            commandeService.finishCommande(commande.id)
+                .then(response => {
+                    commande.enCours = false;
+                })
+                .catch(error => {
+                    console.error("Erreur lors de la fin de la commande", error);
+                });
         }
     },
     mounted() {

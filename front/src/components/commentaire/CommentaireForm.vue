@@ -10,7 +10,7 @@
 
             <div class="form-group">
                 <label>Photo</label>
-                <input type="file" @change="onFileChange" :required="!isEditMode">
+                <input type="file" @change="onFileChange">
                 <div v-if="commentaire.photo && !isEditMode" class="image-preview">
                     <img :src="photoPreviewUrl" alt="Prévisualisation de la commentaire">
                 </div>

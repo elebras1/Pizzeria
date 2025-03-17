@@ -1,5 +1,7 @@
 package com.projetm1.pizzeria.compte;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projetm1.pizzeria.commande.dto.CommandeDto;
 import com.projetm1.pizzeria.compte.dto.CompteRequestDto;
 import com.projetm1.pizzeria.compte.dto.CompteDto;
@@ -46,4 +48,10 @@ public class CompteController {
         return this.compteService.getCommandesByCompteId(id);
     }
 
+    @GetMapping("/commandes")
+    public List<CommandeDto> getCommandesByCompteId(@RequestHeader("x-compte") String compteJson) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        CompteDto compteDto = objectMapper.readValue(compteJson, CompteDto.class);
+        return this.compteService.getCommandesByCompteId(compteDto.getId());
+    }
 }

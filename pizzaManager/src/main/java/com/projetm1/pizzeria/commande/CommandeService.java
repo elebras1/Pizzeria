@@ -63,11 +63,11 @@ public class CommandeService {
         this.commandeRepository.deleteById(id);
     }
     
-    public Boolean finishCommande(Long id) {
+    public CommandeDto finishCommande(Long id) {
         Commande commande = this.commandeRepository.findById(id).orElseThrow();
         commande.setEnCours(false);
         this.commandeRepository.save(commande);
-        return commande.getEnCours();
+        return this.commandeMapper.toDto(commande);
     }
     public Boolean payCommande(Long id) {
         Commande commande = this.commandeRepository.findById(id).orElseThrow();
