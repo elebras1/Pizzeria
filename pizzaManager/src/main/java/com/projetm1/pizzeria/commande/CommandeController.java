@@ -91,7 +91,7 @@ public class CommandeController {
     }
 
     @PostMapping(value = "/{id}/commentaires", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public CommentaireDto addCommentaireToCommande(@PathVariable Long id, @RequestBody CommentaireRequestDto commentaireDto) {
+    public CommentaireDto addCommentaireToCommande(@PathVariable Long id, @ModelAttribute CommentaireRequestDto commentaireDto) {
         return this.commentaireService.saveCommentaire(id, commentaireDto);
     }
 
