@@ -52,7 +52,7 @@ public class CommandeService {
         Commande commande = this.commandeMapper.toEntity(commandeDto);
         Compte compte = this.compteRepository.findById(commandeDto.getCompteId()).orElseThrow();
         commande.setCompte(compte);
-        commande.setEnCours(Boolean.TRUE);
+        commande.setEnCours(true);
         commande.setIdCommentaires(commandeDto.getCommentairesIds());
 
         List<PizzaPanier> pizzaPanier = new ArrayList<>();
