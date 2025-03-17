@@ -18,10 +18,14 @@ import java.util.List;
 public class CommandeController {
     private final CommandeService commandeService;
     private final CommentaireService commentaireService;
+    private final CommandeMapper commandeMapper;
+    private final CommandeRepository commandeRepository;
 
-    public CommandeController(CommandeService commandeService, CommentaireService commentaireService, CommentaireService commentaireService1) {
+    public CommandeController(CommandeService commandeService, CommentaireService commentaireService, CommentaireService commentaireService1, CommandeMapper commandeMapper, CommandeRepository commandeRepository) {
         this.commandeService = commandeService;
         this.commentaireService = commentaireService1;
+        this.commandeMapper = commandeMapper;
+        this.commandeRepository = commandeRepository;
     }
 
     @GetMapping
@@ -33,6 +37,18 @@ public class CommandeController {
     public CommandeDto getCommandeById(@PathVariable Long id) {
         return this.commandeService.getCommandeById(id);
     }
+
+    @GetMapping("/enCours")
+    public CommandeDto getCommandeEnCoursByCompteId(@RequestHeader("x-compte") String compteJson) {
+        try{
+            ObjectMapper objectMapper = new ObjectMapper();
+            CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
+            return this.commandeMapper.toDto(this.commandeService.getCommandeEnCoursByCompteId(compte.getId()));
+        }catch (JsonProcessingException e){
+            return null;
+        }
+    }
+
 
     @PostMapping
     public CommandeDto saveCommande(@RequestHeader("x-compte") String compteJson,@RequestBody CommandeRequestDto commandeDto) {
@@ -63,7 +79,12 @@ public class CommandeController {
             ObjectMapper objectMapper = new ObjectMapper();
             CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
             commandeDto.setCompteId(compte.getId());
-            return this.commandeService.updateCommande(commandeDto);
+            Commande commande = this.commandeRepository.findByCompteIdAndEnCoursTrue(commandeDto.getCompteId());
+            if(commande == null){
+                return null;
+            }
+            System.out.println("test");
+            return this.commandeService.updateCommande(commandeDto,commande);
         }catch (JsonProcessingException e){
             return null;
         }

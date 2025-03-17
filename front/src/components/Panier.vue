@@ -1,4 +1,8 @@
 <template>
+  <div>
+    <button @click="loadPanier">Load Panier</button>
+    <button @click="savePanier">Save Panier</button>
+  </div>
   <div class="panier-container">
     <h1>Panier</h1>
     <div v-for="(pizza, index) in panier" :key="index" class="pizza-card">
@@ -13,13 +17,13 @@
           <span class="ingredient-price">{{ ing.prix.toFixed(2) }} €</span>
         </li>
         <li class="ingredient-price">
-          Total : {{ pizza.prix.toFixed(2) }} €
+          Total : {{ pizzaPrice(pizza) }} €
         </li>
       </ul>
     </div>
     <div class="total">
       <div v-for="(pizza, index) in panier" :key="index">
-        <p>{{ pizza.pizza.nom }} - {{ pizza.prix.toFixed(2) }} € x {{ pizza.quantity }} = {{ pizzaPrice(pizza) }}</p>
+        <p>{{ pizza.pizza.nom }} - {{ pizzaPrice(pizza) }} € x {{ pizza.quantity }} = {{ pizzaPrice(pizza) }}</p>
       </div>
       <h2>Total : {{ totalPrice.toFixed(2) }} €</h2>
     </div>
@@ -29,6 +33,7 @@
 
 <script>
 import { usePanierStore } from '@/stores/panier';
+import { useAuthStore } from '@/stores/auth.js';
 
 export default {
   name: "Panier",
@@ -69,12 +74,20 @@ export default {
         this.removePizza(pizza);
       }
     },
+    loadPanier() {
+      usePanierStore().loadPanier();
+    },
+    savePanier(){
+      usePanierStore().savePanier();
+    },
     pay() {
 
     },
   },
   mounted() {
+    useAuthStore().initialize();
     usePanierStore().loadFromLocalStorage();
+
   },
 };
 </script>

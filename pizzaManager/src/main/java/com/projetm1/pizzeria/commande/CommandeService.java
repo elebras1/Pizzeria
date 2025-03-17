@@ -51,7 +51,6 @@ public class CommandeService {
         commande.setIsPaye(false);
         commande.setDate(LocalDateTime.now());
         commande.setIdCommentaires(new ArrayList<>());
-        System.out.println(commande);
         return updatePanier(commandeDto, commande);
     }
     public Commande getCommandeEnCoursByCompteId(Long compteId) {
@@ -76,21 +75,14 @@ public class CommandeService {
         return commande.getIsPaye();
     }
 
-    public CommandeDto updateCommande(CommandeRequestDto commandeDto) {
-
-        if(!this.commandeRepository.existsById(commandeDto.getCompteId())) {
-            return null;
-        }
-        Commande commande = this.commandeRepository.findByCompteIdAndEnCoursTrue(commandeDto.getCompteId());
-        if(commande == null) {
-            return null;
-        }
+    public CommandeDto updateCommande(CommandeRequestDto commandeDto,Commande commande) {
         return updatePanier(commandeDto, commande);
     }
 
     private CommandeDto updatePanier(CommandeRequestDto commandeDto, Commande commande) {
-        List<PizzaPanier> pizzaPanier = new ArrayList<>();
-        commande.setPanier(pizzaPanier);
+        commande.getPanier().clear();
+
+        System.out.println(commande.getPanier().toArray().length);
 
         for (PizzaPanierRequestDto pizzaPanierRequestDto : commandeDto.getPanier()) {
             PizzaPanier pizzaPanier1 = new PizzaPanier();
@@ -103,7 +95,7 @@ public class CommandeService {
                 ingredients.add(ingredient);
             }
             pizzaPanier1.setIngredients(ingredients);
-            pizzaPanier.add(pizzaPanier1);
+            commande.getPanier().add(pizzaPanier1);
         }
         commande = this.commandeRepository.save(commande);
         return this.commandeMapper.toDto(commande);
