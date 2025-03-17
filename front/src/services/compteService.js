@@ -1,24 +1,27 @@
-import axios from 'axios';
+import api from '@/interceptors/api';
 
-const API_URL = 'http://localhost:8081/api/comptes';
+const API_URL = '/comptes';
 
 export default {
     getComptes() {
-        return axios.get(API_URL);
+        return api.get(API_URL);
     },
     getCompte(id) {
-        return axios.get(`${API_URL}/${id}`);
+        return api.get(`${API_URL}/${id}`);
     },
-    getCommandes(id) {
-        return axios.get(`${API_URL}/${id}/commandes`);
+    getCommandesById(id) {
+        return api.get(`${API_URL}/${id}/commandes`);
+    },
+    getCommandes() {
+        return api.get(`${API_URL}/commandes`);
     },
     createCompte(compte) {
-        return axios.post(API_URL, compte);
+        return api.post(API_URL, compte);
     },
     updateCompte(id, compte) {
-        return axios.put(`${API_URL}/${id}`, compte);
+        return api.put(`${API_URL}/${id}`, compte);
     },
     deleteCompte(id) {
-        return axios.delete(`${API_URL}/${id}`);
+        return api.delete(`${API_URL}/${id}`);
     }
 };

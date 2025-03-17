@@ -23,5 +23,8 @@ export default {
     },
     deleteCommande(id) {
         return axios.delete(`${API_URL}/${id}`);
+    },
+    finishCommande(id) {
+        return axios.put(`${API_URL}/${id}/finish`);
     }
 };

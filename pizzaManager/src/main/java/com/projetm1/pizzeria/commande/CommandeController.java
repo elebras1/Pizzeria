@@ -178,4 +178,9 @@ public class CommandeController {
     public List<CommentaireDto> getCommentairesByCommandeId(@PathVariable Long id) {
         return this.commentaireService.getCommentairesByCommandeId(id);
     }
+
+    @PutMapping("/{id}/finish")
+    public CommandeDto finishCommande(@PathVariable Long id) {
+        return this.commandeService.finishCommande(id);
+    }
 }
