@@ -6,6 +6,7 @@ import com.projetm1.pizzeria.pizza.Pizza;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -27,5 +28,5 @@ public class PizzaPanier {
             joinColumns = @JoinColumn(name = "pizza_panier_id"),
             inverseJoinColumns = @JoinColumn(name = "ingredient_id")
     )
-    private Set<Ingredient> ingredients;
+    private List<Ingredient> ingredients;
 }

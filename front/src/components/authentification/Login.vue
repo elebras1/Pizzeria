@@ -18,8 +18,10 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.js';
+import { usePanierStore} from "@/stores/panier.js";
 
 const authStore = useAuthStore();
+const panierStore = usePanierStore();
 const username = ref('');
 const password = ref('');
 const router = useRouter();
@@ -27,6 +29,7 @@ const router = useRouter();
 const handleLogin = async () => {
   const success = await authStore.login(username.value, password.value);
   if (success) {
+    panierStore.loadFromLocalStorage();
     await router.push('/');
   } else {
     console.error("Échec de la connexion");

@@ -6,8 +6,14 @@
       </p>
     </div>
     <div class="auth">
-      <button v-if="!isLoggedIn" @click="handleLogin">Connexion</button>
-      <button v-else @click="handleLogout">Déconnexion</button>
+      <template v-if="isLoggedIn">
+        <button @click="goToPanier">Panier</button>
+        <button @click="goToAccount">Mon Compte</button>
+        <button @click="handleLogout">Déconnexion</button>
+      </template>
+      <template v-else>
+        <button @click="handleLogin">Connexion</button>
+      </template>
     </div>
   </header>
 </template>
@@ -29,11 +35,16 @@ export default {
     },
     handleLogout() {
       useAuthStore().logout();
+    },
+    goToPanier() {
+      router.push('/panier');
+    },
+    goToAccount() {
+      router.push('/account');
     }
   }
 };
 </script>
-
 
 <style scoped>
 .navbar {
@@ -61,6 +72,8 @@ export default {
 
 .auth {
   padding-right: 1em;
+  display: flex;
+  gap: 0.5rem;
 }
 
 .auth button {

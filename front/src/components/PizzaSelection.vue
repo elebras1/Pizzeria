@@ -8,7 +8,10 @@
         <div v-for="ingrediant in Pizza.standardIngredients" :key="ingrediant.id" class="ingredient">
           <label>{{ ingrediant.nom }}</label>
           <input v-if="ingrediant.nom === 'pate'" type="checkbox" checked disabled />
-          <input v-else type="checkbox" checked />
+          <input v-else type="checkbox" checked
+                 :value="ingrediant.id"
+                 @change="toggleIngredient(ingrediant)"
+          />
         </div>
         <h3>Ingrédients Optionnels</h3>
         <div v-for="ingredient in Pizza.optionalIngredients" :key="ingredient.id" class="ingredient">
@@ -19,7 +22,7 @@
           <input
               type="checkbox"
               :value="ingredient.id"
-              @change="toggleIngredient(ingredient.id)"
+              @change="toggleIngredient(ingredient)"
           />
         </div>
         <button @click="addToCart">{{ Price }} € - Ajouter au panier</button>
@@ -29,7 +32,8 @@
 </template>
 
 <script>
-import axios from "axios";
+import { usePanierStore } from '@/stores/panier';
+import {ref, toRaw} from "vue";
 
 export default {
   name: "PizzaSelection",
@@ -37,7 +41,7 @@ export default {
   data() {
     return {
       Price: 0,
-      selectedOptionalIngredients: [],
+      selectedIngredients: [],
       Pizza: {
         nom: "",
         image: "",
@@ -48,35 +52,46 @@ export default {
   },
   methods: {
     async calculatePrice() {
-      let total = this.Pizza.standardIngredients.reduce((acc, ing) => acc + ing.prix, 0);
-      total += this.selectedOptionalIngredients.reduce((acc, id) => {
-        const ingredient = this.Pizza.optionalIngredients.find((ing) => ing.id === id);
-        return ingredient ? acc + ingredient.prix : acc;
-      }, 0);
+      let total = this.selectedIngredients.reduce((acc, ing) => acc + ing.prix, 0);
       this.Price = total.toFixed(2);
     },
-    toggleIngredient(id) {
-      if (this.selectedOptionalIngredients.includes(id)) {
-        this.selectedOptionalIngredients = this.selectedOptionalIngredients.filter((i) => i !== id);
+    toggleIngredient(ingredient) {
+      const index = this.selectedIngredients.findIndex(item => item.id === ingredient.id);
+      if (index !== -1) {
+        this.selectedIngredients.splice(index, 1);
       } else {
-        this.selectedOptionalIngredients.push(id);
+        this.selectedIngredients.push(ingredient);
       }
       this.calculatePrice();
     },
     addToCart() {
-      console.log("Ajouté au panier avec un prix de " + this.Price + " €");
+      const cartItem = {
+        pizza: {
+          id: toRaw(this.Pizza).id,
+          nom: toRaw(this.Pizza).nom,
+          image: toRaw(this.Pizza).image,
+        },
+        ingredients: JSON.parse(JSON.stringify(toRaw(this.selectedIngredients))), // Copie profonde
+        prix: parseFloat(this.Price),
+        cartItemId: Date.now(),
+        quantity: 1,
+      };
+      usePanierStore().addPizza(cartItem);
+      this.closeModal();
     },
     closeModal() {
       this.$emit("close");
     },
     getPizza() {
       this.Pizza = this.pizza;
+      this.selectedIngredients = [...this.Pizza.standardIngredients];
       this.calculatePrice();
     },
 
   },
   mounted() {
     this.getPizza();
+    usePanierStore().loadFromLocalStorage();
   },
 };
 </script>

@@ -21,7 +21,7 @@ public class AuthentificationService {
     }
 
     public Boolean verifyLogin(AuthentificationDto authentificationDto) {
-        Compte compte = this.authentificationRepository.findByPseudo(authentificationDto.getUsername());
+        Compte compte = this.authentificationRepository.findByNom(authentificationDto.getUsername());
         return compte!=null && verifyPassword(authentificationDto.getPassword(), compte.getMotDePasse());
     }
 }

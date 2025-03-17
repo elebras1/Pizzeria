@@ -3,8 +3,8 @@ import api from '@/interceptors/api.js';
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
-        accessToken: null,
-        isLoggedIn: false,
+        accessToken: localStorage.getItem('accessToken') || null,
+        isLoggedIn: !!localStorage.getItem('accessToken'),
     }),
 
     actions: {
@@ -13,6 +13,7 @@ export const useAuthStore = defineStore('auth', {
                 const response = await api.post('/auth/login', { username, password });
                 this.accessToken = response.data.accessToken;
                 this.isLoggedIn = true;
+                localStorage.setItem('accessToken', this.accessToken);
                 api.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`;
                 return true;
             } catch (error) {
@@ -24,11 +25,17 @@ export const useAuthStore = defineStore('auth', {
         async logout() {
             try {
                 await api.post("/auth/logout");
-                this.isLoggedIn = false;
-                this.accessToken = null;
+                this.clearAuth();
             } catch (error) {
                 console.error("Erreur lors de la déconnexion", error);
             }
         },
+
+        clearAuth() {
+            this.isLoggedIn = false;
+            this.accessToken = null;
+            localStorage.removeItem('accessToken');
+            delete api.defaults.headers.common['Authorization'];
+        }
     }
 });

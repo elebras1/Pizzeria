@@ -1,5 +1,6 @@
 package com.projetm1.pizzeria.authentification;
 
+import com.projetm1.pizzeria.compte.dto.CompteDto;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -12,7 +13,7 @@ public class AuthentificationController {
     }
 
     @PostMapping
-    public Boolean verifyLogin(@RequestBody AuthentificationDto authentificationDto) {
+    public CompteDto verifyLogin(@RequestBody AuthentificationDto authentificationDto) {
         return this.authentificationService.verifyLogin(authentificationDto);
     }
 }
