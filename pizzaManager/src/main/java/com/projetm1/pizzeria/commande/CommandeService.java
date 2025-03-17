@@ -48,8 +48,9 @@ public class CommandeService {
         Compte compte = this.compteRepository.findById(commandeDto.getCompteId()).orElseThrow();
         commande.setCompte(compte);
         commande.setEnCours(true);
+        commande.setIsPaye(false);
         commande.setDate(LocalDateTime.now());
-        commande.setIdCommentaires(commandeDto.getCommentairesIds());
+        commande.setIdCommentaires(new ArrayList<>());
 
         List<PizzaPanier> pizzaPanier = new ArrayList<>();
         commande.setPanier(pizzaPanier);
@@ -70,6 +71,10 @@ public class CommandeService {
         commande = this.commandeRepository.save(commande);
 
         return this.commandeMapper.toDto(commande);
+    }
+    public Commande getCommandeEnCoursByCompteId(Long compteId) {
+        return this.commandeRepository.findByCompteIdAndEnCoursTrue(compteId);
+
     }
 
     public void deleteCommandeById(Long id) {

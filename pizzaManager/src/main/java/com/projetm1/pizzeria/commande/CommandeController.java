@@ -1,10 +1,13 @@
 package com.projetm1.pizzeria.commande;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projetm1.pizzeria.commande.dto.CommandeDto;
 import com.projetm1.pizzeria.commande.dto.CommandeRequestDto;
 import com.projetm1.pizzeria.commentaire.CommentaireService;
 import com.projetm1.pizzeria.commentaire.dto.CommentaireDto;
 import com.projetm1.pizzeria.commentaire.dto.CommentaireRequestDto;
+import com.projetm1.pizzeria.compte.dto.CompteDto;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,8 +35,19 @@ public class CommandeController {
     }
 
     @PostMapping
-    public CommandeDto saveCommande(@RequestBody CommandeRequestDto commandeDto) {
-        return this.commandeService.saveCommande(commandeDto);
+    public CommandeDto saveCommande(@RequestHeader("x-compte") String compteJson,@RequestBody CommandeRequestDto commandeDto) {
+        try{
+            ObjectMapper objectMapper = new ObjectMapper();
+            CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
+            commandeDto.setCompteId(compte.getId());
+            Commande commandeEnCours = this.commandeService.getCommandeEnCoursByCompteId(compte.getId());
+            if(commandeEnCours != null){
+                return null;
+            }
+            return this.commandeService.saveCommande(commandeDto);
+        }catch (JsonProcessingException e){
+            return  null;
+        }
     }
 
     @DeleteMapping("/{id}")
