@@ -8,6 +8,11 @@ export const useAuthStore = defineStore('auth', {
     }),
 
     actions: {
+        initialize() {
+            if (this.accessToken) {
+                api.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`;
+            }
+        },
         async login(username, password) {
             try {
                 const response = await api.post('/auth/login', { username, password });
@@ -15,6 +20,7 @@ export const useAuthStore = defineStore('auth', {
                 this.isLoggedIn = true;
                 localStorage.setItem('accessToken', this.accessToken);
                 api.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`;
+                console.log(response.data);
                 return true;
             } catch (error) {
                 console.error('Erreur de connexion:', error);
@@ -24,7 +30,9 @@ export const useAuthStore = defineStore('auth', {
 
         async logout() {
             try {
-                await api.post("/auth/logout");
+                await api.post("/auth/logout").then(response => {
+                    console.log(response.data);
+                });
                 this.clearAuth();
             } catch (error) {
                 console.error("Erreur lors de la déconnexion", error);

@@ -35,6 +35,7 @@ export default {
     },
     handleLogout() {
       useAuthStore().logout();
+      router.push('/');
     },
     goToPanier() {
       router.push('/panier');

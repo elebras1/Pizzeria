@@ -41,6 +41,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        /*
         List<Ingredient> ingredients = new ArrayList<>();
         ingredients.add(this.createIngredient("Tomate", "Tomate fraîche", 0.5f));
         ingredients.add(this.createIngredient("Mozzarella", "Mozzarella de bufflonne", 1.0f));
@@ -91,6 +92,8 @@ public class DataInitializer implements CommandLineRunner {
         this.commandeRepository.saveAll(List.of(commande1, commande2));
 
         System.out.println("Jeu de données initialisé !");
+
+         */
     }
 
     private Ingredient createIngredient(String nom, String description, float prix) {

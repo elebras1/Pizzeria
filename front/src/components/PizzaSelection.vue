@@ -66,12 +66,15 @@ export default {
     },
     addToCart() {
       const cartItem = {
+        pizzaId: toRaw(this.Pizza).id,
         pizza: {
           id: toRaw(this.Pizza).id,
           nom: toRaw(this.Pizza).nom,
-          image: toRaw(this.Pizza).image,
+          description: toRaw(this.Pizza).description,
+          photo: toRaw(this.Pizza).photo,
         },
         ingredients: JSON.parse(JSON.stringify(toRaw(this.selectedIngredients))), // Copie profonde
+        ingredientsIds: this.selectedIngredients.map(ing => ing.id),
         prix: parseFloat(this.Price),
         cartItemId: Date.now(),
         quantity: 1,

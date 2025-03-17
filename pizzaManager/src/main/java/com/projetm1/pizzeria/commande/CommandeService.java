@@ -51,6 +51,7 @@ public class CommandeService {
         commande.setIsPaye(false);
         commande.setDate(LocalDateTime.now());
         commande.setIdCommentaires(new ArrayList<>());
+        System.out.println(commande);
         return updatePanier(commandeDto, commande);
     }
     public Commande getCommandeEnCoursByCompteId(Long compteId) {

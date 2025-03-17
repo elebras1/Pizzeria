@@ -68,7 +68,7 @@ function isRouteAllowed(routes, method, path) {
     return routes[method]?.includes(path);
 }
 function authMiddleware(req, res, next) {
-    if (publicRoutes.includes(req.path)) {
+    if (isRouteAllowed(publicRoutes, req.method, req.path)) {
         return next();
     }
 
@@ -76,7 +76,7 @@ function authMiddleware(req, res, next) {
     if (!token) {
         return res.status(401).json({ message: 'Accès non autorisé, jeton manquant' });
     }
-
+    console.log(req.headers);
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded.compte;
@@ -90,8 +90,6 @@ function authMiddleware(req, res, next) {
             req.headers['x-compte'] = JSON.stringify(req.user);
             console.log("En-tête x-compte ajouté dans le proxy :", req.headers['x-compte']);
         }
-
-        console.log("Corps de la requête envoyé au backend :", JSON.stringify(req.body));
         console.log("URL de la requête :", req.path);
         next();
     } catch (error) {

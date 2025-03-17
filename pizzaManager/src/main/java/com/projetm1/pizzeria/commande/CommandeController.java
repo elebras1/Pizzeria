@@ -37,6 +37,8 @@ public class CommandeController {
     @PostMapping
     public CommandeDto saveCommande(@RequestHeader("x-compte") String compteJson,@RequestBody CommandeRequestDto commandeDto) {
         try{
+            System.out.println(compteJson);
+            System.out.println(commandeDto);
             ObjectMapper objectMapper = new ObjectMapper();
             CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
             commandeDto.setCompteId(compte.getId());
