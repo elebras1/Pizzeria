@@ -51,7 +51,43 @@ public class CommandeService {
         commande.setIsPaye(false);
         commande.setDate(LocalDateTime.now());
         commande.setIdCommentaires(new ArrayList<>());
+        return updatePanier(commandeDto, commande);
+    }
+    public Commande getCommandeEnCoursByCompteId(Long compteId) {
+        return this.commandeRepository.findByCompteIdAndEnCoursTrue(compteId);
 
+    }
+
+    public void deleteCommandeById(Long id) {
+        this.commandeRepository.deleteById(id);
+    }
+    
+    public Boolean finishCommande(Long id) {
+        Commande commande = this.commandeRepository.findById(id).orElseThrow();
+        commande.setEnCours(false);
+        this.commandeRepository.save(commande);
+        return commande.getEnCours();
+    }
+    public Boolean payCommande(Long id) {
+        Commande commande = this.commandeRepository.findById(id).orElseThrow();
+        commande.setIsPaye(true);
+        this.commandeRepository.save(commande);
+        return commande.getIsPaye();
+    }
+
+    public CommandeDto updateCommande(CommandeRequestDto commandeDto) {
+
+        if(!this.commandeRepository.existsById(commandeDto.getCompteId())) {
+            return null;
+        }
+        Commande commande = this.commandeRepository.findByCompteIdAndEnCoursTrue(commandeDto.getCompteId());
+        if(commande == null) {
+            return null;
+        }
+        return updatePanier(commandeDto, commande);
+    }
+
+    private CommandeDto updatePanier(CommandeRequestDto commandeDto, Commande commande) {
         List<PizzaPanier> pizzaPanier = new ArrayList<>();
         commande.setPanier(pizzaPanier);
 
@@ -69,36 +105,7 @@ public class CommandeService {
             pizzaPanier.add(pizzaPanier1);
         }
         commande = this.commandeRepository.save(commande);
-
         return this.commandeMapper.toDto(commande);
-    }
-    public Commande getCommandeEnCoursByCompteId(Long compteId) {
-        return this.commandeRepository.findByCompteIdAndEnCoursTrue(compteId);
-
-    }
-
-    public void deleteCommandeById(Long id) {
-        this.commandeRepository.deleteById(id);
-    }
-    
-    public Boolean finishCommande(Long id) {
-        Commande commande = this.commandeRepository.findById(id).orElseThrow();
-        commande.setEnCours(false);
-        this.commandeRepository.save(commande);
-        return true;
-    }
-
-    public CommandeDto updateCommande(Long id, CommandeRequestDto commandeDto) {
-        if(!this.commandeRepository.existsById(id)) {
-            return null;
-        }
-
-        Commande commande = this.commandeMapper.toEntity(commandeDto);
-        Compte compte = this.compteRepository.findById(commandeDto.getCompteId()).orElseThrow();
-        commande.setCompte(compte);
-        commande.setId(id);
-
-        return this.commandeMapper.toDto(this.commandeRepository.save(commande));
     }
 
     public Long getLastCommandeIdByCompteId(Long id) {

@@ -55,9 +55,16 @@ public class CommandeController {
         this.commandeService.deleteCommandeById(id);
     }
 
-    @PutMapping("/{id}")
-    public CommandeDto updateCommande(@PathVariable Long id, @RequestBody CommandeRequestDto commandeDto) {
-        return this.commandeService.updateCommande(id, commandeDto);
+    @PutMapping
+    public CommandeDto updateCommande(@RequestHeader("x-compte") String compteJson,@RequestBody CommandeRequestDto commandeDto) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
+            commandeDto.setCompteId(compte.getId());
+            return this.commandeService.updateCommande(commandeDto);
+        }catch (JsonProcessingException e){
+            return null;
+        }
     }
 
     @PostMapping(value = "/{id}/commentaires", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
