@@ -28,11 +28,21 @@ const publicRoutes = {
 // Routes admin
 const adminRoutes = {
     GET: [
-        '/api/admin',
-        '/api/users'
+        '/api/comptes',
+        '/api/commentaires'
+    ],
+    POST: [
+        '/api/pizzas',
+        '/api/ingredients'
     ],
     DELETE: [
-        '/api/delete'
+        '/api/comptes/:id',
+        '/api/pizzas/:id',
+        '/api/ingredients/:id'
+    ],
+    PUT: [
+        '/api/pizzas/:id',
+        '/api/ingredients/:id'
     ]
 };
 
