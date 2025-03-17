@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AuthentificationRepository extends JpaRepository<Compte, Long> {
 
-    Compte findByNom(String username);
+    Compte findByPseudo(String username);
 }

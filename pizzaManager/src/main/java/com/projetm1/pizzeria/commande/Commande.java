@@ -5,6 +5,7 @@ import com.projetm1.pizzeria.pizzaPanier.PizzaPanier;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.sql.Date;
 import java.util.List;
 
 @Data
@@ -19,6 +20,9 @@ public class Commande {
     private Compte compte;
     @OneToMany(mappedBy = "commande", cascade = CascadeType.ALL)
     private List<PizzaPanier> panier;
+    private Boolean enCours;
+    private Boolean estPaye;
+    private Date date;
     @ElementCollection
     @CollectionTable(name = "commentaires", joinColumns = @JoinColumn(name = "commande_id"))
     @Column(name = "commentaire")
