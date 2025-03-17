@@ -3,24 +3,19 @@ package com.projetm1.pizzeria.commande;
 import com.projetm1.pizzeria.commande.dto.CommandeDto;
 import com.projetm1.pizzeria.commande.dto.CommandeRequestDto;
 import com.projetm1.pizzeria.compte.Compte;
-import com.projetm1.pizzeria.compte.CompteMapper;
 import com.projetm1.pizzeria.compte.CompteRepository;
 import com.projetm1.pizzeria.ingredient.Ingredient;
-import com.projetm1.pizzeria.ingredient.IngredientMapper;
 import com.projetm1.pizzeria.ingredient.IngredientRepository;
 import com.projetm1.pizzeria.pizza.Pizza;
 import com.projetm1.pizzeria.pizza.PizzaRepository;
 import com.projetm1.pizzeria.pizzaPanier.PizzaPanier;
-import com.projetm1.pizzeria.pizzaPanier.PizzaPanierMapper;
-import com.projetm1.pizzeria.pizzaPanier.PizzaPanierRepository;
 import com.projetm1.pizzeria.pizzaPanier.dto.PizzaPanierRequestDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service("commandeService")
@@ -53,6 +48,7 @@ public class CommandeService {
         Compte compte = this.compteRepository.findById(commandeDto.getCompteId()).orElseThrow();
         commande.setCompte(compte);
         commande.setEnCours(true);
+        commande.setDate(LocalDateTime.now());
         commande.setIdCommentaires(commandeDto.getCommentairesIds());
 
         List<PizzaPanier> pizzaPanier = new ArrayList<>();
