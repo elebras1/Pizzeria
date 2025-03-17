@@ -32,11 +32,6 @@ const clientRoutes = [
     '/api/account'
 ];
 
-const compteNeededRoutes = [
-    '/api/profile',
-    '/api/settings'
-];
-
 function generateAccessToken(payload) {
     return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '15m' });
 }
@@ -60,6 +55,11 @@ function authMiddleware(req, res, next) {
         req.user = decoded.compte;
 
         if (req.user) {
+            if (adminRoutes.includes(req.path)) {
+                if(!req.user.isAdmin){
+                    return res.status(403).json({ message: 'Access Denied' });
+                }
+            }
             req.headers['x-compte'] = JSON.stringify(req.user);
             console.log("En-tête x-compte ajouté dans le proxy :", req.headers['x-compte']);
         }

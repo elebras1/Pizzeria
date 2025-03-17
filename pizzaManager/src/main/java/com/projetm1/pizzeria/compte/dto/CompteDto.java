@@ -8,4 +8,5 @@ public class CompteDto {
     private String pseudo;
     private String prenom;
     private String nom;
+    private Boolean isAdmin;
 }
