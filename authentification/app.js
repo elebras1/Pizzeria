@@ -15,22 +15,36 @@ app.use(cors({
 }));
 
 // Routes publiques sans authentification
-const publicRoutes = [
-    '/api/auth/login',
-    '/api/auth/register',
-    '/api/pizzas',
-];
+const publicRoutes = {
+    GET: [
+        '/api/pizzas'
+    ],
+    POST: [
+        '/api/auth/login',
+        '/api/auth/register'
+    ]
+};
 
-const adminRoutes = [
-    '/api/admin',
-    '/api/users',
-    '/api/delete'
-];
+// Routes admin
+const adminRoutes = {
+    GET: [
+        '/api/admin',
+        '/api/users'
+    ],
+    DELETE: [
+        '/api/delete'
+    ]
+};
 
-const clientRoutes = [
-    '/api/orders',
-    '/api/account'
-];
+// Routes client
+const clientRoutes = {
+    GET: [
+        '/api/account'
+    ],
+    POST: [
+        '/api/orders'
+    ]
+};
 
 function generateAccessToken(payload) {
     return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '15m' });
@@ -40,6 +54,9 @@ function generateRefreshToken(payload) {
     return jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 }
 
+function isRouteAllowed(routes, method, path) {
+    return routes[method]?.includes(path);
+}
 function authMiddleware(req, res, next) {
     if (publicRoutes.includes(req.path)) {
         return next();
@@ -55,9 +72,9 @@ function authMiddleware(req, res, next) {
         req.user = decoded.compte;
 
         if (req.user) {
-            if (adminRoutes.includes(req.path)) {
-                if(!req.user.isAdmin){
-                    return res.status(403).json({ message: 'Access Denied' });
+            if (isRouteAllowed(adminRoutes, req.method, req.path)) {
+                if (!req.user.isAdmin) {
+                    return res.status(403).json({ message: 'Accès refusé' });
                 }
             }
             req.headers['x-compte'] = JSON.stringify(req.user);
