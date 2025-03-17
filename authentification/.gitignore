@@ -12,9 +12,6 @@
 .DS_Store
 Thumbs.db
 
-# Local environment variables (env files)
-.env
-
 # Build directories
 /dist/
 /build/
