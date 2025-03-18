@@ -7,6 +7,7 @@ const app = express();
 require('dotenv').config();
 const axios = require('axios');
 const cors = require('cors');
+const {response} = require("express");
 
 app.use(cookieParser());
 app.use(cors({
@@ -80,7 +81,7 @@ function authMiddleware(req, res, next) {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded.compte;
-
+        console.log(req.user);
         if (req.user) {
             if (isRouteAllowed(adminRoutes, req.method, req.path)) {
                 if (!req.user.isAdmin) {
@@ -105,9 +106,9 @@ app.post('/api/auth/login', express.json(), async (req, res) => {
     try {
         const response = await axios.post(`${process.env.BACK}/api/authentification`, auth);
         const compte = response.data;
-        if (compte != null) {
-            const accessToken = generateAccessToken({ compte });
-            const refreshToken = generateRefreshToken({ compte });
+        if (compte && Object.keys(compte).length > 0) {
+            const accessToken = generateAccessToken( {compte} );
+            const refreshToken = generateRefreshToken( {compte });
 
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
@@ -135,7 +136,8 @@ app.post('/api/auth/refresh', express.json(), (req, res) => {
 
     try {
         const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-        const accessToken = generateAccessToken({ username: decoded.username });
+        let compte = decoded.compte;
+        const accessToken = generateAccessToken( { compte } );
 
         return res.json({ accessToken: accessToken });
     } catch (error) {

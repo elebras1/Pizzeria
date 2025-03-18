@@ -1,11 +1,14 @@
 <script setup>
 import api from "@/interceptors/api.js";
 import { ref } from "vue";
+import { useAuthStore} from "@/stores/auth.js";
+import router from "@/router/index.js";
 
 const account = ref({
   pseudo: "",
   nom: "",
-  prenom: ""
+  prenom: "",
+  isAdmin: false,
 });
 const editMode = ref(false);
 const changePasswordMode = ref(false);
@@ -15,7 +18,8 @@ const confirmPassword = ref("");
 
 const fetchAccount = async () => {
   try {
-    const response = await api.get("/comptes");
+    const response = await api.get("/comptes/myaccount");
+    console.log(response.data);
     account.value = response.data;
   } catch (error) {
     console.error("Erreur lors du chargement du compte :", error);
@@ -24,9 +28,11 @@ const fetchAccount = async () => {
 
 const updateAccount = async () => {
   try {
-    await api.put("/comptes", {
+    await api.put("/comptes/myaccount", {
+      pseudo:null,
       nom: account.value.nom,
-      prenom: account.value.prenom
+      prenom: account.value.prenom,
+      motDePasse:null,
     });
     alert("Informations mises à jour avec succès !");
     editMode.value = false;
@@ -43,15 +49,18 @@ const changePassword = async () => {
   }
 
   try {
-    await api.put("/comptes/password", {
-      currentPassword: currentPassword.value,
-      newPassword: newPassword.value
+    await api.put("/comptes/myaccount/password", {
+      oldPassword: currentPassword.value,
+      newPassword: newPassword.value,
+      comfirmPassword:confirmPassword.value,
     });
     alert("Mot de passe mis à jour avec succès !");
     changePasswordMode.value = false;
     currentPassword.value = "";
     newPassword.value = "";
     confirmPassword.value = "";
+    await useAuthStore().logout();
+    await router.push("/login");
   } catch (error) {
     console.error("Erreur lors du changement de mot de passe :", error);
     alert("Une erreur est survenue lors du changement de mot de passe.");

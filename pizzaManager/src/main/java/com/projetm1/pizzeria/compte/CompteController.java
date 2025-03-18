@@ -3,6 +3,7 @@ package com.projetm1.pizzeria.compte;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projetm1.pizzeria.commande.dto.CommandeDto;
+import com.projetm1.pizzeria.compte.dto.ComptePasswordChangeDto;
 import com.projetm1.pizzeria.compte.dto.CompteRequestDto;
 import com.projetm1.pizzeria.compte.dto.CompteDto;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,37 @@ public class CompteController {
     public CompteDto getCompteById(@PathVariable String id) {
         return this.compteService.getCompteById(Long.parseLong(id));
     }
+    @GetMapping("/myaccount")
+    public CompteDto getCompteByToken(@RequestHeader("x-compte") String compteJson) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            CompteDto compteDto = objectMapper.readValue(compteJson, CompteDto.class);
+            return this.compteService.getCompteById(compteDto.getId());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @PutMapping("/myaccount")
+    public CompteDto updateCompteByToken(@RequestHeader("x-compte") String compteJson,@RequestBody CompteRequestDto compteRequestDto) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            CompteDto compteDto = objectMapper.readValue(compteJson, CompteDto.class);
+            return this.compteService.updateCompteByToken(compteDto,compteRequestDto);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @PutMapping("/myaccount/password")
+    public CompteDto updateComptePasswordByToken(@RequestHeader("x-compte") String compteJson,@RequestBody ComptePasswordChangeDto comptePasswordChangeDto) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            CompteDto compteDto = objectMapper.readValue(compteJson, CompteDto.class);
+            return this.compteService.updateComptePasswordByToken(compteDto,comptePasswordChangeDto);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     @PostMapping
     public CompteDto saveCompte(@RequestBody CompteRequestDto compteDto) {

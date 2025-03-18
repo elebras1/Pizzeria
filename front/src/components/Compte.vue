@@ -1,16 +1,15 @@
 <template>
   <div class="dashboard">
     <div class="card" @click="toggleInformations">
-      <h2>Informations</h2>
+      <h2>Mes Informations</h2>
     </div>
     <div class="card" @click="toggleCommande">
-      <h2>Commande</h2>
+      <h2>Mes Commande</h2>
     </div>
 
     <!-- Modale Informations -->
     <div v-if="showInformations" class="modal" @click.self="toggleInformations">
       <div class="modal-content">
-        <button class="close" @click="toggleInformations">Fermer</button>
         <Informations></Informations>
       </div>
     </div>

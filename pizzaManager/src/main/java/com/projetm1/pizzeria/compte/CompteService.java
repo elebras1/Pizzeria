@@ -3,6 +3,7 @@ package com.projetm1.pizzeria.compte;
 import com.projetm1.pizzeria.commande.Commande;
 import com.projetm1.pizzeria.commande.CommandeMapper;
 import com.projetm1.pizzeria.commande.dto.CommandeDto;
+import com.projetm1.pizzeria.compte.dto.ComptePasswordChangeDto;
 import com.projetm1.pizzeria.compte.dto.CompteRequestDto;
 import com.projetm1.pizzeria.compte.dto.CompteDto;
 import org.springframework.stereotype.Service;
@@ -65,6 +66,35 @@ public class CompteService {
         compte = this.compteRepository.save(compte);
 
         return this.compteMapper.toDto(compte);
+    }
+    public CompteDto updateCompteByToken(CompteDto compteDto, CompteRequestDto compteRequestDto){
+        System.out.println(compteRequestDto);
+        Compte compte = this.compteRepository.findById(compteDto.getId()).orElse(null);
+        if (compte == null) {
+            return null;
+        }
+        compte.setNom(compteRequestDto.getNom());
+        compte.setPrenom(compteRequestDto.getPrenom());
+        this.compteRepository.save(compte);
+        return compteDto;
+    }
+    public CompteDto updateComptePasswordByToken(CompteDto compteDto, ComptePasswordChangeDto comptePasswordChangeDto){
+        Compte compte = this.compteRepository.findById(compteDto.getId()).orElse(null);
+        if (compte == null) {
+            return null;
+        }
+        if(!passwordEncoder.matches(comptePasswordChangeDto.getOldPassword(), compte.getMotDePasse())) {
+            return null;
+        }
+        if(comptePasswordChangeDto.getOldPassword().equals(comptePasswordChangeDto.getNewPassword())) {
+            return null;
+        }
+        if(!comptePasswordChangeDto.getNewPassword().equals(comptePasswordChangeDto.getComfirmPassword())) {
+            return null;
+        }
+        compte.setMotDePasse(hashPassword(comptePasswordChangeDto.getNewPassword()));
+        this.compteRepository.save(compte);
+        return compteDto;
     }
 
     public List<CommandeDto> getCommandesByCompteId(Long id) {
