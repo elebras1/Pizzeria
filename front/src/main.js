@@ -6,7 +6,6 @@ import App from './App.vue';
 import router from './router';
 import {useAuthStore} from "@/stores/auth.js";
 import {usePanierStore} from '@/stores/panier';
-import chatService from "@/services/chatService.js";
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -19,5 +18,4 @@ authStore.initialize();
 usePanierStore().loadPanier();
 
 app.use(router);
-chatService.connect();
 app.mount('#app');
