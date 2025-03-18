@@ -15,7 +15,6 @@ import PizzaList from "@/components/pizza/PizzaList.vue";
 import CommentaireForm from "@/components/commentaire/CommentaireForm.vue";
 import PaymentSucess from "@/components/PaymentSucess.vue";
 import PaymentReject from "@/components/PaymentReject.vue";
-import Chat from "@/components/Chat.vue";
 
 const routes = [
     { path: '/login', name: 'Login', component: Login },
@@ -37,7 +36,6 @@ const routes = [
     { path: '/administration/comptes', name: 'CompteList', component: CompteList },
     { path: '/account/commandes/:commandeId/commentaires/new', name: 'CommentaireCreate', component: CommentaireForm, props: route => ({ commandeId: Number(route.params.commandeId) }) },
     { path: '/account/commandes/:commandeId/commentaires/edit/:commentaireId', name: 'CommentaireEdit', component: CommentaireForm, props: route => ({ commandeId: Number(route.params.commandeId), commentaireId: Number(route.params.commentaireId) }) },
-    {path: '/cha',name:'chat',component: Chat},
 ];
 
 const router = createRouter({
