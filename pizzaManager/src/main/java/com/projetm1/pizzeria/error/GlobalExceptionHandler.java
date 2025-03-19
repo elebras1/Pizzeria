@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadRequest.class)
-    public ResponseEntity<String> handleInvalidPassword(BadRequest ex) {
+    public ResponseEntity<String> badRequest(BadRequest ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
