@@ -44,7 +44,7 @@ public class CommandeService {
     }
 
     public CommandeDto getCommandeById(Long id) {
-        return this.commandeMapper.toDto(this.commandeRepository.findById(id).orElseThrow());
+        return this.commandeMapper.toDto(this.commandeRepository.findById(id).orElseThrow(() -> new NotFound("Commande introuvable")));
     }
 
     public List<CommandeDto> getAllCommandes() {
@@ -59,8 +59,9 @@ public class CommandeService {
             if(commandeEnCours.isPresent()){
                 throw new NotFound("Commande en cours déjà existante");
             }
+            commandeDto.setCompteId(compteDto.getId());
             Commande commande = this.commandeMapper.toEntity(commandeDto);
-            Compte compte = this.compteRepository.findById(commandeDto.getCompteId()).orElseThrow();
+            Compte compte = this.compteRepository.findById(commandeDto.getCompteId()).orElseThrow(() -> new NotFound("Compte introuvable"));
             commande.setCompte(compte);
             commande.setEnCours(true);
             commande.setIsPaye(false);
@@ -76,6 +77,7 @@ public class CommandeService {
         return this.commandeRepository.findByCompteIdAndEnCoursTrueAndIsPayeFalse(compteId);
 
     }
+
     public CommandeDto getCommandeEnCoursByCompteId(String compteJson) {
         try{
             ObjectMapper objectMapper = new ObjectMapper();
@@ -88,11 +90,12 @@ public class CommandeService {
     }
 
     public void deleteCommandeById(Long id) {
+        this.commandeRepository.findById(id).orElseThrow(() -> new NotFound("Commande introuvable"));
         this.commandeRepository.deleteById(id);
     }
-    
+
     public CommandeDto finishCommande(Long id) {
-        Commande commande = this.commandeRepository.findById(id).orElseThrow();
+        Commande commande = this.commandeRepository.findById(id).orElseThrow(() -> new NotFound("Commande introuvable"));
         commande.setEnCours(false);
         this.commandeRepository.save(commande);
         return this.commandeMapper.toDto(commande);

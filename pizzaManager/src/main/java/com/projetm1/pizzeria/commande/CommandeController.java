@@ -1,28 +1,16 @@
 package com.projetm1.pizzeria.commande;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projetm1.pizzeria.commande.dto.CommandeDto;
 import com.projetm1.pizzeria.commande.dto.CommandeRequestDto;
 import com.projetm1.pizzeria.commentaire.CommentaireService;
 import com.projetm1.pizzeria.commentaire.dto.CommentaireDto;
 import com.projetm1.pizzeria.commentaire.dto.CommentaireRequestDto;
-import com.projetm1.pizzeria.compte.dto.CompteDto;
-import com.projetm1.pizzeria.ingredient.Ingredient;
-import com.projetm1.pizzeria.ingredient.dto.IngredientDto;
-import com.projetm1.pizzeria.pizzaPanier.PizzaPanier;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.stripe.Stripe;
-import com.stripe.model.checkout.Session;
-import com.stripe.param.checkout.SessionCreateParams;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/commandes")
@@ -36,28 +24,29 @@ public class CommandeController {
     }
 
     @GetMapping
-    public List<CommandeDto> getAllCommandes() {
-        return this.commandeService.getAllCommandes();
+    public ResponseEntity<List<CommandeDto>> getAllCommandes() {
+        return ResponseEntity.ok(this.commandeService.getAllCommandes());
     }
 
     @GetMapping("/{id}")
-    public CommandeDto getCommandeById(@PathVariable Long id) {
-        return this.commandeService.getCommandeById(id);
+    public ResponseEntity<CommandeDto> getCommandeById(@PathVariable Long id) {
+        return ResponseEntity.ok(this.commandeService.getCommandeById(id));
     }
 
     @GetMapping("/enCours")
-    public CommandeDto getCommandeEnCoursByCompteId(@RequestHeader("x-compte") String compteJson) {
-        return this.commandeService.getCommandeEnCoursByCompteId(compteJson);
+    public ResponseEntity<CommandeDto> getCommandeEnCoursByCompteId(@RequestHeader("x-compte") String compteJson) {
+        return ResponseEntity.ok(this.commandeService.getCommandeEnCoursByCompteId(compteJson));
     }
 
     @PostMapping
-    public CommandeDto saveCommande(@RequestHeader("x-compte") String compteJson,@RequestBody CommandeRequestDto commandeDto) {
-        return this.commandeService.saveCommande(compteJson,commandeDto);
+    public ResponseEntity<CommandeDto> saveCommande(@RequestHeader("x-compte") String compteJson,@RequestBody CommandeRequestDto commandeDto) {
+        return ResponseEntity.ok(this.commandeService.saveCommande(compteJson,commandeDto));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCommandeById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteCommandeById(@PathVariable Long id) {
         this.commandeService.deleteCommandeById(id);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping
@@ -76,17 +65,17 @@ public class CommandeController {
     }
 
     @PostMapping(value = "/{id}/commentaires", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public CommentaireDto addCommentaireToCommande(@PathVariable Long id, @ModelAttribute CommentaireRequestDto commentaireDto) {
-        return this.commentaireService.saveCommentaire(id, commentaireDto);
+    public ResponseEntity<CommentaireDto> addCommentaireToCommande(@PathVariable Long id, @ModelAttribute CommentaireRequestDto commentaireDto) {
+        return ResponseEntity.ok(this.commentaireService.saveCommentaire(id, commentaireDto));
     }
 
     @GetMapping("/{id}/commentaires")
-    public List<CommentaireDto> getCommentairesByCommandeId(@PathVariable Long id) {
-        return this.commentaireService.getCommentairesByCommandeId(id);
+    public ResponseEntity<List<CommentaireDto>> getCommentairesByCommandeId(@PathVariable Long id) {
+        return ResponseEntity.ok(this.commentaireService.getCommentairesByCommandeId(id));
     }
 
     @PutMapping("/{id}/finish")
-    public CommandeDto finishCommande(@PathVariable Long id) {
-        return this.commandeService.finishCommande(id);
+    public ResponseEntity<CommandeDto> finishCommande(@PathVariable Long id) {
+        return ResponseEntity.ok(this.commandeService.finishCommande(id));
     }
 }
