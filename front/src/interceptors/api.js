@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useAuthStore } from '@/stores/auth';
+import { useErrorStore } from '@/stores/errorStore';
 
 const api = axios.create({
     baseURL: 'http://localhost:3000/api',
@@ -35,10 +36,10 @@ api.interceptors.response.use(
             }
         }
 
-        if (error.response?.status === 403) {
-            console.log('Accès refusé : permissions insuffisantes');
-            return Promise.reject(error);
-        }
+        const errorStore = useErrorStore();
+        const message = error.response?.data?.message || 'Une erreur est survenue';
+        errorStore.setError(message);
+
         return Promise.reject(error);
     }
 );
