@@ -23,86 +23,83 @@
     </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import commentaireService from '@/services/commentaireService';
 import commandeService from '@/services/commandeService';
 
-export default {
-    name: 'CommentaireForm',
-    props: {
-        commentaireId: {
-            type: Number,
-            default: null
-        },
-        commandeId: {
-            type: Number,
-            required: true
-        }
+const props = defineProps({
+    commentaireId: {
+        type: Number,
+        default: null
     },
-    data() {
-        return {
-            commentaire: {
-                texte: '',
-                photo: null,
-            }
-        };
-    },
-    computed: {
-        isEditMode() {
-            return this.commentaireId !== null;
-        },
-        photoPreviewUrl() {
-            return this.commentaire.photo ? URL.createObjectURL(this.commentaire.photo) : '';
-        }
-    },
-    methods: {
-        handleSubmit() {
-            const formData = new FormData();
-            formData.append('texte', this.commentaire.texte);
-            if (this.commentaire.photo && this.commentaire.photo instanceof File) {
-                formData.append('photo', this.commentaire.photo);
-            }
+    commandeId: {
+        type: Number,
+        required: true
+    }
+});
 
-            if (this.isEditMode) {
-                commentaireService.updateCommentaire(this.commentaireId, formData)
-                    .then(() => {
-                        this.$router.push({ name: 'Commande' });
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la mise à jour', error);
-                    });
-            } else {
-                commandeService.addCommentaireToCommande(this.commandeId, formData)
-                    .then(() => {
-                        this.$router.push({ name: 'Commande' });
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la création', error);
-                    });
-            }
-        },
-        onFileChange(e) {
-            const file = e.target.files[0];
-            if (file) {
-                this.commentaire.photo = file;
-            }
-        },
-        fetchCommentaire() {
-            if (this.isEditMode) {
-                commentaireService.getCommentaire(this.commentaireId)
-                    .then(response => {
-                        this.commentaire = response.data;
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la récupération du commentaire', error);
-                    });
-            }
-        }
-    },
-    mounted() {
-        this.fetchCommentaire();
+const commentaire = ref({
+    texte: '',
+    photo: null
+});
+
+const router = useRouter();
+
+const isEditMode = computed(() => props.commentaireId !== null);
+const photoPreviewUrl = computed(() => {
+    return commentaire.value.photo ? URL.createObjectURL(commentaire.value.photo) : '';
+});
+
+const handleSubmit = () => {
+    const formData = new FormData();
+    formData.append('texte', commentaire.value.texte);
+    if (commentaire.value.photo && commentaire.value.photo instanceof File) {
+        formData.append('photo', commentaire.value.photo);
+    }
+
+    if (isEditMode.value) {
+        commentaireService.updateCommentaire(props.commentaireId, formData)
+            .then(() => {
+                router.push({ name: 'Commande' });
+            })
+            .catch(error => {
+                console.error('Erreur lors de la mise à jour', error);
+            });
+    } else {
+        commandeService.addCommentaireToCommande(props.commandeId, formData)
+            .then(() => {
+                router.push({ name: 'Commande' });
+            })
+            .catch(error => {
+                console.error('Erreur lors de la création', error);
+            });
     }
 };
+
+const onFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        commentaire.value.photo = file;
+    }
+};
+
+const fetchCommentaire = () => {
+    if (isEditMode.value) {
+        commentaireService.getCommentaire(props.commentaireId)
+            .then(response => {
+                commentaire.value = response.data;
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération du commentaire', error);
+            });
+    }
+};
+
+onMounted(() => {
+    fetchCommentaire();
+});
 </script>
 
 <style scoped>
