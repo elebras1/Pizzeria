@@ -47,6 +47,9 @@ export const useAuthStore = defineStore('auth', {
             this.accessToken = null;
             localStorage.removeItem('accessToken');
             delete api.defaults.headers.common['Authorization'];
-        }
+        },
+        verifyAdmin() {
+            return api.get("/authentification/verifyAdmin");
+        },
     }
 });
