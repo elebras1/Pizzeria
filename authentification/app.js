@@ -7,18 +7,19 @@ const app = express();
 require('dotenv').config();
 const axios = require('axios');
 const cors = require('cors');
-const {response} = require("express");
+const { response } = require("express");
 
 app.use(cookieParser());
 app.use(cors({
-    origin: [process.env.FRONT,'https://checkout.stripe.com'],
+    origin: [process.env.FRONT, 'https://checkout.stripe.com'],
     credentials: true,
 }));
 
 // Routes publiques sans authentification
 const publicRoutes = {
     GET: [
-        '/api/pizzas'
+        '/api/pizzas',
+        '/api/images/:imageUrl',
     ],
     POST: [
         '/api/auth/login',
@@ -30,7 +31,9 @@ const publicRoutes = {
 const adminRoutes = {
     GET: [
         '/api/comptes',
-        '/api/commentaires'
+        '/api/commentaires',
+        '/api/commandes',
+        '/api/comptes/:id/commandes'
     ],
     POST: [
         '/api/pizzas',
@@ -39,21 +42,32 @@ const adminRoutes = {
     DELETE: [
         '/api/comptes/:id',
         '/api/pizzas/:id',
-        '/api/ingredients/:id'
+        '/api/ingredients/:id',
+        '/api/commentaires/:id'
     ],
     PUT: [
         '/api/pizzas/:id',
-        '/api/ingredients/:id'
+        '/api/ingredients/:id',
+        '/api/commandes/:id/finish'
     ]
 };
 
 // Routes client
 const clientRoutes = {
     GET: [
-        '/api/account'
+        '/api/account',
+        '/api/commandes/:id',
+        '/api/commandes/:id/commentaires',
+        '/api/commentaires/:id',
+        '/api/comptes/commandes'
     ],
     POST: [
-        '/api/orders'
+        '/api/orders',
+        '/api/commandes',
+        '/api/commandes/:id/commentaires'
+    ],
+    PUT: [
+        '/api/commentaires/:id'
     ]
 };
 
@@ -105,8 +119,8 @@ app.post('/api/auth/login', express.json(), async (req, res) => {
         const response = await axios.post(`${process.env.BACK}/api/authentification`, auth);
         const compte = response.data;
         if (compte && Object.keys(compte).length > 0) {
-            const accessToken = generateAccessToken( {compte} );
-            const refreshToken = generateRefreshToken( {compte });
+            const accessToken = generateAccessToken({ compte });
+            const refreshToken = generateRefreshToken({ compte });
 
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
@@ -120,7 +134,7 @@ app.post('/api/auth/login', express.json(), async (req, res) => {
             return res.status(401).json({ message: 'Identifiants incorrects' });
         }
     } catch (error) {
-        if(error.response.status === 404) {
+        if (error.response.status === 404) {
             return res.status(404).json({ message: 'Identifiant ou mot de passe incorrects' });
         }
         console.log(error);
@@ -139,7 +153,7 @@ app.post('/api/auth/refresh', express.json(), (req, res) => {
     try {
         const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
         let compte = decoded.compte;
-        const accessToken = generateAccessToken( { compte } );
+        const accessToken = generateAccessToken({ compte });
 
         return res.json({ accessToken: accessToken });
     } catch (error) {
