@@ -12,8 +12,7 @@ const pinia = createPinia();
 
 app.use(pinia);
 
-const authStore = useAuthStore();
-authStore.initialize();
+useAuthStore().initialize();
 
 useErrorStore().clearError();
 
