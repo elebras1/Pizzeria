@@ -8,22 +8,11 @@
         <span v-if="commande.compte">
           {{ commande.compte.prenom }} {{ commande.compte.nom }} ({{ commande.compte.pseudo }})
         </span>
-        <span v-else>
-          Compte inconnu
-        </span>
+        <span v-else>Compte inconnu</span>
       </p>
-      <p>
-        <strong>En cours : </strong>
-        <span>{{ commande.enCours ? 'Oui' : 'Non' }}</span>
-      </p>
-      <p>
-        <strong>Payée : </strong>
-        <span>{{ commande.isPaye ? 'Oui' : 'Non' }}</span>
-      </p>
-      <p>
-        <strong>Date de commande : </strong>
-        <span>{{ formatDate(commande.date) }}</span>
-      </p>
+      <p><strong>En cours : </strong>{{ commande.enCours ? 'Oui' : 'Non' }}</p>
+      <p><strong>Payée : </strong>{{ commande.isPaye ? 'Oui' : 'Non' }}</p>
+      <p><strong>Date de commande : </strong>{{ formatDate(commande.date) }}</p>
       <p>
         <strong>Pizzas commandées : </strong>
         <span v-for="(panier, index) in commande.panier" :key="index">
@@ -62,96 +51,88 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, reactive, onMounted } from 'vue';
 import commandeService from '@/services/commandeService.js';
 import compteService from '@/services/compteService.js';
 import imageService from '@/services/imageService.js';
 
-export default {
-  name: 'Commande',
-  data() {
-    return {
-      commandes: []
-    };
-  },
-  methods: {
-    fetchCommandes() {
-      compteService.getCommandes()
-        .then(response => {
-          this.commandes = response.data.map(commande => ({
-            ...commande,
-            showPizzaDetails: false,
-            showComments: false,
-            compte: null,
-            comments: null
-          }));
-          if (this.commandes.length > 0) {
-            const compteIds = [...new Set(this.commandes.map(c => c.compteId))];
-            Promise.all(compteIds.map(id => compteService.getCompte(id)))
-              .then(results => {
-                const compteMap = {};
-                results.forEach(res => {
-                  compteMap[res.data.id] = res.data;
-                });
-                this.commandes.forEach(commande => {
-                  commande.compte = compteMap[commande.compteId] || null;
-                });
-              })
-              .catch(error => {
-                console.error("Erreur lors de la récupération des comptes", error);
-              });
+const commandes = ref([]);
 
-            this.commandes.forEach(commande => {
-              commandeService.getCommentaires(commande.id)
-                .then(response => {
-                  commande.comments = response.data;
-                  commande.comments.forEach(comment => {
-                    if (comment.photo) {
-                      imageService.getImage(comment.photo)
-                        .then(response => {
-                          const url = URL.createObjectURL(response.data);
-                          comment.photoUrl = url;
-                        })
-                        .catch(error => {
-                          console.error(`Erreur lors du chargement de l'image pour le commentaire ${comment.id}`, error);
-                        });
-                    }
-                  });
-                })
-                .catch(error => {
-                  console.error(`Erreur lors de la récupération des commentaires pour la commande ${commande.id}`, error);
-                });
-            });
-          }
-        })
-        .catch(error => {
-          console.error("Erreur lors de la récupération des commandes", error);
+const fetchCommandes = async () => {
+  try {
+    const response = await compteService.getCommandes();
+    commandes.value = response.data.map(commande => ({
+      ...commande,
+      showPizzaDetails: false,
+      showComments: false,
+      compte: null,
+      comments: null
+    }));
+
+    if (commandes.value.length > 0) {
+      const compteIds = [...new Set(commandes.value.map(c => c.compteId))];
+
+      try {
+        const results = await Promise.all(compteIds.map(id => compteService.getCompte(id)));
+        const compteMap = Object.fromEntries(results.map(res => [res.data.id, res.data]));
+
+        commandes.value.forEach(commande => {
+          commande.compte = compteMap[commande.compteId] || null;
         });
-    },
-    togglePizzaDetails(commande) {
-      commande.showPizzaDetails = !commande.showPizzaDetails;
-    },
-    toggleComments(commande) {
-      commande.showComments = !commande.showComments;
-    },
-    formatDate(date) {
-      if (!date) return '';
-      const parsedDate = new Date(date);
-      return parsedDate.toLocaleString('fr-FR', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric'
+      } catch (error) {
+        console.error("Erreur lors de la récupération des comptes", error);
+      }
+
+      commandes.value.forEach(async commande => {
+        try {
+          const response = await commandeService.getCommentaires(commande.id);
+          commande.comments = response.data;
+
+          for (const comment of commande.comments) {
+            if (comment.photo) {
+              try {
+                const imgResponse = await imageService.getImage(comment.photo);
+                const url = URL.createObjectURL(imgResponse.data);
+                comment.photoUrl = url;
+              } catch (error) {
+                console.error(`Erreur lors du chargement de l'image pour le commentaire ${comment.id}`, error);
+              }
+            }
+          }
+        } catch (error) {
+          console.error(`Erreur lors de la récupération des commentaires pour la commande ${commande.id}`, error);
+        }
       });
     }
-  },
-  mounted() {
-    this.fetchCommandes();
+  } catch (error) {
+    console.error("Erreur lors de la récupération des commandes", error);
   }
 };
+
+const togglePizzaDetails = (commande) => {
+  commande.showPizzaDetails = !commande.showPizzaDetails;
+};
+
+const toggleComments = (commande) => {
+  commande.showComments = !commande.showComments;
+};
+
+const formatDate = (date) => {
+  if (!date) return '';
+  const parsedDate = new Date(date);
+  return parsedDate.toLocaleString('fr-FR', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric'
+  });
+};
+
+onMounted(fetchCommandes);
 </script>
 
 <style scoped>
