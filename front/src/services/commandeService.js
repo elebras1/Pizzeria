@@ -1,30 +1,30 @@
-import axios from 'axios';
+import api from "@/interceptors/api";
 
-const API_URL = 'http://localhost:8081/api/commandes';
+const API_URL = '/commandes';
 
 export default {
     getCommandes() {
-        return axios.get(API_URL);
+        return api.get(API_URL);
     },
     getCommande(id) {
-        return axios.get(`${API_URL}/${id}`);
+        return api.get(`${API_URL}/${id}`);
     },
     getCommentaires(id) {
-        return axios.get(`${API_URL}/${id}/commentaires`);
+        return api.get(`${API_URL}/${id}/commentaires`);
     },
     addCommentaireToCommande(id, commentaire) {
-        return axios.post(`${API_URL}/${id}/commentaires`, commentaire);
+        return api.post(`${API_URL}/${id}/commentaires`, commentaire);
     },
     createCommande(commande) {
-        return axios.post(API_URL, commande);
+        return api.post(API_URL, commande);
     },
     updateCommande(id, commande) {
-        return axios.put(`${API_URL}/${id}`, commande);
+        return api.put(`${API_URL}/${id}`, commande);
     },
     deleteCommande(id) {
-        return axios.delete(`${API_URL}/${id}`);
+        return api.delete(`${API_URL}/${id}`);
     },
     finishCommande(id) {
-        return axios.put(`${API_URL}/${id}/finish`);
+        return api.put(`${API_URL}/${id}/finish`);
     }
 };

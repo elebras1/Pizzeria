@@ -41,7 +41,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        /*List<Ingredient> ingredients = new ArrayList<>();
+        List<Ingredient> ingredients = new ArrayList<>();
         ingredients.add(this.createIngredient("Tomate", "Tomate fraîche", 0.5f));
         ingredients.add(this.createIngredient("Mozzarella", "Mozzarella de bufflonne", 1.0f));
         ingredients.add(this.createIngredient("Basilic", "Feuilles de basilic", 0.2f));
@@ -74,14 +74,13 @@ public class DataInitializer implements CommandLineRunner {
         Compte admin = this.createCompte("admin", "Super", "Admin", "adminpass", true);
         this.compteRepository.saveAll(List.of(client1, client2, admin));
 
-        Commande commande1 = this.createCommande(client1);
-        Commande commande2 = this.createCommande(client2);
-        this.commandeRepository.saveAll(List.of(commande1, commande2));
+        PizzaPanier panier1 = this.createPizzaPanier(pizzas.get(0), Set.of(ingredients.get(8)));
+        PizzaPanier panier2 = this.createPizzaPanier(pizzas.get(2), Set.of());
+        PizzaPanier panier3 = this.createPizzaPanier(pizzas.get(1), Set.of(ingredients.get(7)));
 
-        PizzaPanier panier1 = this.createPizzaPanier(commande1, pizzas.get(0), Set.of(ingredients.get(8)));
-        PizzaPanier panier2 = this.createPizzaPanier(commande1, pizzas.get(2), Set.of());
-        PizzaPanier panier3 = this.createPizzaPanier(commande2, pizzas.get(1), Set.of(ingredients.get(7)));
-        this.pizzaPanierRepository.saveAll(List.of(panier1, panier2, panier3));
+        Commande commande1 = this.createCommande(client1, List.of(panier1, panier2));
+        Commande commande2 = this.createCommande(client2, List.of(panier3));
+        this.commandeRepository.saveAll(List.of(commande1, commande2));
 
         Commentaire com1 = this.createCommentaire(String.valueOf(commande1.getId()), "Délicieuse pizza, super croustillante !");
         Commentaire com2 = this.createCommentaire(String.valueOf(commande2.getId()), "Un peu trop salée à mon goût.");
@@ -90,7 +89,7 @@ public class DataInitializer implements CommandLineRunner {
         commande2.setIdCommentaires(List.of(com2.getId()));
         this.commandeRepository.saveAll(List.of(commande1, commande2));
 
-        System.out.println("Jeu de données initialisé !");*/
+        System.out.println("Jeu de données initialisé !");
     }
 
     private Ingredient createIngredient(String nom, String description, float prix) {
@@ -121,26 +120,28 @@ public class DataInitializer implements CommandLineRunner {
         return compte;
     }
 
-    private Commande createCommande(Compte compte) {
+    private Commande createCommande(Compte compte, List<PizzaPanier> panier) {
         Commande commande = new Commande();
         commande.setCompte(compte);
         commande.setDate(LocalDateTime.now());
+        for(PizzaPanier pizzaPanier : panier) {
+            pizzaPanier.setCommande(commande);
+        }
+        commande.setPanier(panier);
         commande.setEnCours(true);
         commande.setIsPaye(true);
         return commande;
     }
 
-    private PizzaPanier createPizzaPanier(Commande commande, Pizza pizza, Set<Ingredient> ingredients) {
+    private PizzaPanier createPizzaPanier(Pizza pizza, Set<Ingredient> ingredients) {
         Set<Ingredient> finalIngredients = new HashSet<>(ingredients);
         finalIngredients.addAll(pizza.getStandardIngredients());
         PizzaPanier pizzaPanier = new PizzaPanier();
-        pizzaPanier.setCommande(commande);
         pizzaPanier.setPizza(pizza);
         pizzaPanier.setIngredients(new ArrayList<>(finalIngredients));
 
         return pizzaPanier;
     }
-
 
     private Commentaire createCommentaire(String idCommande, String texte) {
         Commentaire commentaire = new Commentaire();

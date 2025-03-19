@@ -1,9 +1,9 @@
-import axios from 'axios';
+import api from '@/interceptors/api';
 
-const API_URL = 'http://localhost:8081/api/images';
+const API_URL = '/images';
 
 export default {
     getImage(imageUrl) {
-        return axios.get(`${API_URL}/${imageUrl}`, { responseType: 'blob' });
+        return api.get(`${API_URL}/${imageUrl}`, { responseType: 'blob' });
     }
 };

@@ -1,21 +1,21 @@
-import axios from 'axios';
+import api from '@/interceptors/api';
 
-const API_URL = 'http://localhost:8081/api/pizzas';
+const API_URL = '/pizzas';
 
 export default {
     getPizzas() {
-        return axios.get(API_URL);
+        return api.get(API_URL);
     },
     getPizza(id) {
-        return axios.get(`${API_URL}/${id}`);
+        return api.get(`${API_URL}/${id}`);
     },
     createPizza(pizza) {
-        return axios.post(API_URL, pizza);
+        return api.post(API_URL, pizza);
     },
     updatePizza(id, pizza) {
-        return axios.put(`${API_URL}/${id}`, pizza);
+        return api.put(`${API_URL}/${id}`, pizza);
     },
     deletePizza(id) {
-        return axios.delete(`${API_URL}/${id}`);
+        return api.delete(`${API_URL}/${id}`);
     }
 };
