@@ -1,12 +1,11 @@
 <template>
-    <div>
+    <div v-if="isAdmin">
         <h1>Liste des ingrédients</h1>
         <div>
             <router-link :to="{ name: 'IngredientCreate' }" class="action-button add">
                 Ajouter
             </router-link>
         </div>
-        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         <table class="custom-table" v-if="ingredients.length">
             <thead>
                 <tr>
@@ -39,44 +38,52 @@
     </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import ingredientService from '@/services/ingredientService';
 
-export default {
-    name: 'IngredientList',
-    data() {
-        return {
-            ingredients: [],
-            errorMessage: ''
-        };
-    },
-    methods: {
-        fetchIngredients() {
-            ingredientService.getIngredients()
-                .then(response => {
-                    this.ingredients = response.data;
-                })
-                .catch(error => console.error('Erreur lors de la récupération des ingrédients', error));
-        },
-        deleteIngredient(id) {
-            if (confirm("Voulez-vous vraiment supprimer cet ingrédient ?")) {
-                ingredientService.deleteIngredient(id)
-                    .then(() => {
-                        this.fetchIngredients();
-                        this.errorMessage = '';
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la suppression', error);
-                        this.errorMessage = 'Erreur : Impossible de supprimer cet ingrédient.';
-                    });
-            }
-        }
+const router = useRouter();
+const authStore = useAuthStore();
+const isAdmin = ref(false);
+const ingredients = ref([]);
 
-    },
-    mounted() {
-        this.fetchIngredients();
+const fetchIngredients = () => {
+    ingredientService.getIngredients()
+        .then(response => {
+            ingredients.value = response.data;
+        })
+        .catch(error => console.error('Erreur lors de la récupération des ingrédients', error));
+};
+
+const deleteIngredient = (id) => {
+    if (confirm("Voulez-vous vraiment supprimer cet ingrédient ?")) {
+        ingredientService.deleteIngredient(id)
+            .then(() => {
+                fetchIngredients();
+            })
+            .catch(error => {
+                console.error('Erreur lors de la suppression', error);
+            });
     }
 };
+
+onMounted(async () => {
+    try {
+        const response = await authStore.verifyAdmin();
+        const compteDto = response.data;
+        if (compteDto && compteDto.isAdmin) {
+            isAdmin.value = true;
+            fetchIngredients();
+        } else {
+            router.push({ name: 'Home' });
+        }
+    } catch (error) {
+        console.error("Erreur lors de la vérification admin :", error);
+        router.push({ name: 'Home' });
+    }
+});
 </script>
 
 <style scoped>

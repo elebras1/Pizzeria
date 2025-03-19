@@ -1,5 +1,5 @@
 <template>
-    <div class="form-container">
+    <div class="form-container" v-if="isAdmin">
         <h1>{{ isEditMode ? 'Modifier' : 'Créer' }} un ingrédient</h1>
 
         <form @submit.prevent="handleSubmit">
@@ -18,11 +18,6 @@
                 <input v-model="ingredient.prix" type="number" step="any" required>
             </div>
 
-
-            <div v-if="error" class="error-message">
-                {{ error }}
-            </div>
-
             <button type="submit" class="submit-button">
                 {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
             </button>
@@ -30,85 +25,79 @@
     </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import ingredientService from '@/services/ingredientService';
 
-export default {
-    name: 'IngredientForm',
-    props: {
-        ingredientId: {
-            type: Number,
-            default: null
-        }
-    },
-    data() {
-        return {
-            ingredient: {
-                nom: '',
-                description: '',
-                photo: '',
-                prix: 0
-            },
-            ingredients: [],
-            error: null
-        };
-    },
-    computed: {
-        isEditMode() {
-            return this.ingredientId !== null;
-        }
-    },
-    methods: {
-        handleSubmit() {
-            this.error = null;
-            if (this.isEditMode) {
-                ingredientService.updateIngredient(this.ingredientId, this.ingredient)
-                    .then(() => {
-                        this.$router.push({ name: 'IngredientList' });
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la mise à jour', error);
-                        this.error = 'Erreur lors de la mise à jour de l\'ingrédient.';
-                    });
-            } else {
-                ingredientService.createIngredient(this.ingredient)
-                    .then(() => {
-                        this.$router.push({ name: 'IngredientList' });
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la création', error);
-                        this.error = 'Erreur lors de la création de l\'ingrédient.';
-                    });
-            }
-        },
-        fetchIngredient() {
-            if (this.isEditMode) {
-                ingredientService.getIngredient(this.ingredientId)
-                    .then(response => {
-                        this.ingredient = response.data;
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la récupération de la ingredient', error);
-                        this.error = 'Erreur lors de la récupération de la ingredient.';
-                    });
-            }
-        },
-        onFileChange(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    // Stocke l'image au format Base64 dans ingredient.photo
-                    this.ingredient.photo = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-    },
-    mounted() {
-        this.fetchIngredient();
+const router = useRouter();
+const route = useRoute();
+const authStore = useAuthStore();
+
+const isAdmin = ref(false);
+const ingredient = ref({
+    nom: '',
+    description: '',
+    photo: '',
+    prix: 0
+});
+
+const ingredientId = computed(() => {
+    return route.params.id ? parseInt(route.params.id) : null;
+});
+
+const isEditMode = computed(() => {
+    return ingredientId.value !== null;
+});
+
+const handleSubmit = () => {
+    if (isEditMode.value) {
+        ingredientService.updateIngredient(ingredientId.value, ingredient.value)
+            .then(() => {
+                router.push({ name: 'IngredientList' });
+            })
+            .catch(error => {
+                console.error('Erreur lors de la mise à jour', error);
+            });
+    } else {
+        ingredientService.createIngredient(ingredient.value)
+            .then(() => {
+                router.push({ name: 'IngredientList' });
+            })
+            .catch(error => {
+                console.error('Erreur lors de la création', error);
+            });
     }
 };
+
+const fetchIngredient = () => {
+    if (isEditMode.value) {
+        ingredientService.getIngredient(ingredientId.value)
+            .then(response => {
+                ingredient.value = response.data;
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération de l\'ingrédient', error);
+            });
+    }
+};
+
+onMounted(async () => {
+    try {
+        const response = await authStore.verifyAdmin();
+        const compteDto = response.data;
+        if (compteDto && compteDto.isAdmin) {
+            isAdmin.value = true;
+            fetchIngredient();
+        } else {
+            router.push({ name: 'Home' });
+        }
+    } catch (error) {
+        console.error("Erreur lors de la vérification admin :", error);
+        router.push({ name: 'Home' });
+    }
+});
 </script>
 
 <style scoped>
@@ -165,12 +154,6 @@ select:focus {
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     margin-top: 10px;
-}
-
-.error-message {
-    color: red;
-    text-align: center;
-    font-weight: bold;
 }
 
 .submit-button {

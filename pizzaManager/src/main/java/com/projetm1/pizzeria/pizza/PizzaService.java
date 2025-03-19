@@ -68,10 +68,6 @@ public class PizzaService {
             throw new UnprocessableEntity(message.toString());
         }
 
-        if(!message.isEmpty()) {
-            throw new UnprocessableEntity(message.toString());
-        }
-
         Pizza pizza = this.pizzaMapper.toEntity(pizzaDto);
         pizza.setPhoto(fileName);
         pizza = this.pizzaRepository.save(pizza);
@@ -109,10 +105,6 @@ public class PizzaService {
 
         if(pizzaDto.getOptionalIngredientsIds() == null || pizzaDto.getOptionalIngredientsIds().isEmpty()) {
             message.append("Les ingrédients optionnels de la pizza sont obligatoires\n");
-        }
-
-        if(fileName == null) {
-            message.append("La photo de la pizza est obligatoire");
         }
 
         if(!message.isEmpty()) {

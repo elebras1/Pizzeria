@@ -1,5 +1,5 @@
 <template>
-    <div class="form-container">
+    <div class="form-container" v-if="isAdmin">
         <h1>{{ isEditMode ? 'Modifier' : 'Créer' }} une pizza</h1>
 
         <form @submit.prevent="handleSubmit">
@@ -40,10 +40,6 @@
                 </select>
             </div>
 
-            <div v-if="error" class="error-message">
-                {{ error }}
-            </div>
-
             <button type="submit" class="submit-button">
                 {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
             </button>
@@ -51,108 +47,127 @@
     </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import pizzaService from '@/services/pizzaService';
 import ingredientService from '@/services/ingredientService';
 
-export default {
-    name: 'PizzaForm',
-    props: {
-        pizzaId: {
-            type: Number,
-            default: null
-        }
-    },
-    data() {
-        return {
-            pizza: {
-                nom: '',
-                description: '',
-                photo: null,
-                standardIngredientsIds: [],
-                optionalIngredientsIds: []
-            },
-            ingredients: [],
-            error: null
-        };
-    },
-    computed: {
-        isEditMode() {
-            return this.pizzaId !== null;
-        },
-        photoPreviewUrl() {
-            return this.pizza.photo ? URL.createObjectURL(this.pizza.photo) : '';
-        }
-    },
-    methods: {
-        handleSubmit() {
-            this.error = null;
-            const formData = new FormData();
-            formData.append('nom', this.pizza.nom);
-            formData.append('description', this.pizza.description);
-            if (this.pizza.photo && this.pizza.photo instanceof File) {
-                formData.append('photo', this.pizza.photo);
-            }
+const router = useRouter();
+const route = useRoute();
+const authStore = useAuthStore();
 
-            this.pizza.standardIngredientsIds.forEach(id => formData.append('standardIngredientsIds', id));
-            this.pizza.optionalIngredientsIds.forEach(id => formData.append('optionalIngredientsIds', id));
+const isAdmin = ref(false);
+const ingredients = ref([]);
+const pizza = ref({
+    nom: '',
+    description: '',
+    photo: null,
+    standardIngredientsIds: [],
+    optionalIngredientsIds: []
+});
 
-            if (this.isEditMode) {
-                pizzaService.updatePizza(this.pizzaId, formData)
-                    .then(() => {
-                        this.$router.push({ name: 'PizzaList' });
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la mise à jour', error);
-                        this.error = 'Erreur lors de la mise à jour de la pizza.';
-                    });
-            } else {
-                pizzaService.createPizza(formData)
-                    .then(() => {
-                        this.$router.push({ name: 'PizzaList' });
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la création', error);
-                        this.error = 'Erreur lors de la création de la pizza.';
-                    });
-            }
-        },
-        onFileChange(e) {
-            const file = e.target.files[0];
-            if (file) {
-                this.pizza.photo = file;
-            }
-        },
-        fetchPizza() {
-            if (this.isEditMode) {
-                pizzaService.getPizza(this.pizzaId)
-                    .then(response => {
-                        this.pizza = response.data;
-                        this.pizza.standardIngredientsIds = this.pizza.standardIngredients.map(ing => ing.id);
-                        this.pizza.optionalIngredientsIds = this.pizza.optionalIngredients.map(ing => ing.id);
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la récupération de la pizza', error);
-                        this.error = 'Erreur lors de la récupération de la pizza.';
-                    });
-            }
-        },
-        fetchIngredients() {
-            ingredientService.getIngredients()
-                .then(response => {
-                    this.ingredients = response.data;
-                })
-                .catch(error => {
-                    console.error('Erreur lors de la récupération des ingrédients', error);
-                    this.error = 'Erreur lors de la récupération des ingrédients.';
-                });
-        }
-    },
-    mounted() {
-        this.fetchIngredients();
-        this.fetchPizza();
+// Récupérer l'id de la pizza si dans les props
+const pizzaId = computed(() => {
+    return route.params.id ? parseInt(route.params.id) : null;
+});
+
+// Vérifier si édition ou création
+const isEditMode = computed(() => {
+    return pizzaId.value !== null;
+});
+
+// Url prévisualtion de la photo
+const photoPreviewUrl = computed(() => {
+    return pizza.value.photo instanceof File ? URL.createObjectURL(pizza.value.photo) : '';
+});
+
+// Gestion du changement de fichier
+const onFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        pizza.value.photo = file;
     }
 };
+
+// Soumission formulaire
+const handleSubmit = () => {
+    const formData = new FormData();
+    formData.append('nom', pizza.value.nom);
+    formData.append('description', pizza.value.description);
+    if (pizza.value.photo && pizza.value.photo instanceof File) {
+        formData.append('photo', pizza.value.photo);
+    }
+
+    pizza.value.standardIngredientsIds.forEach(id => formData.append('standardIngredientsIds', id));
+    pizza.value.optionalIngredientsIds.forEach(id => formData.append('optionalIngredientsIds', id));
+
+    if (isEditMode.value) {
+        pizzaService.updatePizza(pizzaId.value, formData)
+            .then(() => {
+                router.push({ name: 'PizzaList' });
+            })
+            .catch(error => {
+                console.error('Erreur lors de la mise à jour', error);
+            });
+    } else {
+        pizzaService.createPizza(formData)
+            .then(() => {
+                router.push({ name: 'PizzaList' });
+            })
+            .catch(error => {
+                console.error('Erreur lors de la création', error);
+            });
+    }
+};
+
+// Récupérer les données de la pizza pour l'édition
+const fetchPizza = () => {
+    if (isEditMode.value) {
+        pizzaService.getPizza(pizzaId.value)
+            .then(response => {
+                const pizzaData = response.data;
+                pizza.value = {
+                    ...pizzaData,
+                    standardIngredientsIds: pizzaData.standardIngredients.map(ing => ing.id),
+                    optionalIngredientsIds: pizzaData.optionalIngredients.map(ing => ing.id)
+                };
+            })
+            .catch(error => {
+                console.error('Erreur lors de la récupération de la pizza', error);
+            });
+    }
+};
+
+// Récpérer les ingrédients
+const fetchIngredients = () => {
+    ingredientService.getIngredients()
+        .then(response => {
+            ingredients.value = response.data;
+        })
+        .catch(error => {
+            console.error('Erreur lors de la récupération des ingrédients', error);
+        });
+};
+
+// Vérifier si admin + récupérer les données
+onMounted(async () => {
+    try {
+        const response = await authStore.verifyAdmin();
+        const compteDto = response.data;
+        if (compteDto && compteDto.isAdmin) {
+            isAdmin.value = true;
+            fetchIngredients();
+            fetchPizza();
+        } else {
+            router.push({ name: 'Home' });
+        }
+    } catch (error) {
+        console.error("Erreur lors de la vérification admin :", error);
+        router.push({ name: 'Home' });
+    }
+});
 </script>
 
 <style scoped>
@@ -209,12 +224,6 @@ select:focus {
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     margin-top: 10px;
-}
-
-.error-message {
-    color: red;
-    text-align: center;
-    font-weight: bold;
 }
 
 .submit-button {

@@ -1,7 +1,6 @@
 <template>
-    <div>
+    <div v-if="isAdmin">
         <h1>Liste des comptes</h1>
-        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         <table class="custom-table" v-if="comptes.length">
             <thead>
                 <tr>
@@ -34,44 +33,52 @@
     </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import compteService from '@/services/compteService';
 
-export default {
-    name: 'CompteList',
-    data() {
-        return {
-            comptes: [],
-            errorMessage: ''
-        };
-    },
-    methods: {
-        fetchComptes() {
-            compteService.getComptes()
-                .then(response => {
-                    this.comptes = response.data;
-                })
-                .catch(error => console.error('Erreur lors de la récupération des comptes', error));
-        },
-        deleteCompte(id) {
-            if (confirm("Voulez-vous vraiment supprimer ce compte ?")) {
-                compteService.deleteCompte(id)
-                    .then(() => {
-                        this.fetchComptes();
-                        this.errorMessage = '';
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la suppression', error);
-                        this.errorMessage = 'Erreur : Impossible de supprimer ce compte.';
-                    });
-            }
-        }
+const router = useRouter();
+const authStore = useAuthStore();
+const isAdmin = ref(false);
+const comptes = ref([]);
 
-    },
-    mounted() {
-        this.fetchComptes();
+const fetchComptes = () => {
+    compteService.getComptes()
+        .then(response => {
+            comptes.value = response.data;
+        })
+        .catch(error => console.error('Erreur lors de la récupération des comptes', error));
+};
+
+const deleteCompte = (id) => {
+    if (confirm("Voulez-vous vraiment supprimer ce compte ?")) {
+        compteService.deleteCompte(id)
+            .then(() => {
+                fetchComptes();
+            })
+            .catch(error => {
+                console.error('Erreur lors de la suppression', error);
+            });
     }
 };
+
+onMounted(async () => {
+    try {
+        const response = await authStore.verifyAdmin();
+        const compteDto = response.data;
+        if (compteDto && compteDto.isAdmin) {
+            isAdmin.value = true;
+            fetchComptes();
+        } else {
+            router.push({ name: 'Home' });
+        }
+    } catch (error) {
+        console.error("Erreur lors de la vérification admin :", error);
+        router.push({ name: 'Home' });
+    }
+});
 </script>
 
 <style scoped>

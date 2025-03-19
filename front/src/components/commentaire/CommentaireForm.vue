@@ -16,10 +16,6 @@
                 </div>
             </div>
 
-            <div v-if="error" class="error-message">
-                {{ error }}
-            </div>
-
             <button type="submit" class="submit-button">
                 {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
             </button>
@@ -48,8 +44,7 @@ export default {
             commentaire: {
                 texte: '',
                 photo: null,
-            },
-            error: null
+            }
         };
     },
     computed: {
@@ -62,7 +57,6 @@ export default {
     },
     methods: {
         handleSubmit() {
-            this.error = null;
             const formData = new FormData();
             formData.append('texte', this.commentaire.texte);
             if (this.commentaire.photo && this.commentaire.photo instanceof File) {
@@ -76,7 +70,6 @@ export default {
                     })
                     .catch(error => {
                         console.error('Erreur lors de la mise à jour', error);
-                        this.error = 'Erreur lors de la mise à jour du commentaire.';
                     });
             } else {
                 commandeService.addCommentaireToCommande(this.commandeId, formData)
@@ -85,7 +78,6 @@ export default {
                     })
                     .catch(error => {
                         console.error('Erreur lors de la création', error);
-                        this.error = 'Erreur lors de la création du commentaire.';
                     });
             }
         },
@@ -103,7 +95,6 @@ export default {
                     })
                     .catch(error => {
                         console.error('Erreur lors de la récupération du commentaire', error);
-                        this.error = 'Erreur lors de la récupération du commentaire.';
                     });
             }
         }
@@ -168,12 +159,6 @@ select:focus {
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     margin-top: 10px;
-}
-
-.error-message {
-    color: red;
-    text-align: center;
-    font-weight: bold;
 }
 
 .submit-button {

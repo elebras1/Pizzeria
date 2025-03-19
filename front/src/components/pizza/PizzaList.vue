@@ -1,12 +1,11 @@
 <template>
-    <div>
+    <div v-if="isAdmin">
         <h1>Liste des pizzas</h1>
         <div>
             <router-link :to="{ name: 'PizzaCreate' }" class="action-button add">
                 Ajouter
             </router-link>
         </div>
-        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         <table class="custom-table" v-if="pizzas.length">
             <thead>
                 <tr>
@@ -53,59 +52,65 @@
     </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import pizzaService from '@/services/pizzaService';
 import imageService from '@/services/imageService';
 
-export default {
-    name: 'PizzaList',
-    data() {
-        return {
-            pizzas: [],
-            errorMessage: ''
-        };
-    },
-    methods: {
-        fetchPizzas() {
-            pizzaService.getPizzas()
-                .then(response => {
-                    this.pizzas = response.data;
-                    this.pizzas.forEach(pizza => {
-                        imageService.getImage(pizza.photo)
-                            .then(imageResponse => {
-                                // Convertir le Blob en URL utilisable par la balise <img>
-                                pizza.photoUrl = URL.createObjectURL(imageResponse.data);
-                                console.log('Image récupérée', pizza.photoUrl);
-                            })
-                            .catch(error => {
-                                console.error('Erreur lors de la récupération de l\'image', error);
-                                pizza.photoUrl = 'default-image-url.jpg'; // Image par défaut en cas d'erreur
-                            });
-                    });
-                })
-                .catch(error => {
-                    console.error('Erreur lors de la récupération des pizzas', error);
-                    this.errorMessage = 'Erreur lors de la récupération des pizzas.';
-                });
-        },
-        deletePizza(id) {
-            if (confirm("Voulez-vous vraiment supprimer cette pizza ?")) {
-                pizzaService.deletePizza(id)
-                    .then(() => {
-                        this.fetchPizzas();
-                        this.errorMessage = '';
+const router = useRouter();
+const authStore = useAuthStore();
+const isAdmin = ref(false);
+const pizzas = ref([]);
+
+const fetchPizzas = () => {
+    pizzaService.getPizzas()
+        .then(response => {
+            pizzas.value = response.data;
+            pizzas.value.forEach(pizza => {
+                imageService.getImage(pizza.photo)
+                    .then(imageResponse => {
+                        pizza.photoUrl = URL.createObjectURL(imageResponse.data);
+                        console.log('Image récupérée', pizza.photoUrl);
                     })
                     .catch(error => {
-                        console.error('Erreur lors de la suppression', error);
-                        this.errorMessage = 'Erreur : Impossible de supprimer cette pizza.';
+                        console.error('Erreur lors de la récupération de l\'image', error);
                     });
-            }
-        }
-    },
-    mounted() {
-        this.fetchPizzas();
+            });
+        })
+        .catch(error => {
+            console.error('Erreur lors de la récupération des pizzas', error);
+        });
+};
+
+const deletePizza = (id) => {
+    if (confirm("Voulez-vous vraiment supprimer cette pizza ?")) {
+        pizzaService.deletePizza(id)
+            .then(() => {
+                fetchPizzas();
+            })
+            .catch(error => {
+                console.error('Erreur lors de la suppression', error);
+            });
     }
 };
+
+onMounted(async () => {
+    try {
+        const response = await authStore.verifyAdmin();
+        const compteDto = response.data;
+        if (compteDto && compteDto.isAdmin) {
+            isAdmin.value = true;
+            fetchPizzas();
+        } else {
+            router.push({ name: 'Home' });
+        }
+    } catch (error) {
+        console.error("Erreur lors de la vérification admin :", error);
+        router.push({ name: 'Home' });
+    }
+});
 </script>
 
 <style scoped>

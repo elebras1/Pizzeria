@@ -53,7 +53,7 @@ public class IngredientService {
             message.append("Le prix de l'ingrédient est obligatoire et doit être supérieur à 0");
         }
 
-        if(message.length() > 0) {
+        if(!message.isEmpty()) {
             throw new Conflict(message.toString());
         }
 
@@ -75,11 +75,12 @@ public class IngredientService {
     }
 
     public IngredientDto updateIngredient(Long id, IngredientRequestDto ingredientDto) {
-        if(!this.ingredientRepository.existsById(id)) {
-            throw new Conflict("L'ingrédient n'existe pas");
+        Ingredient ingredientOld = this.ingredientRepository.findById(id).orElse(null);
+        if(ingredientOld == null) {
+            throw new NotFound("L'ingrédient n'existe pas");
         }
 
-        if(this.ingredientRepository.findByNom(ingredientDto.getNom()) != null) {
+        if(!ingredientOld.getNom().equals(ingredientDto.getNom()) && this.ingredientRepository.countByNom(ingredientDto.getNom()) > 0) {
             throw new Conflict("L'ingrédient " + ingredientDto.getNom() + " existe déjà");
         }
 
@@ -96,7 +97,7 @@ public class IngredientService {
             message.append("Le prix de l'ingrédient est obligatoire et doit être supérieur à 0");
         }
 
-        if(message.length() > 0) {
+        if(!message.isEmpty()) {
             throw new Conflict(message.toString());
         }
 

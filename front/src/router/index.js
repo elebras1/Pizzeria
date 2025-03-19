@@ -15,7 +15,7 @@ import PizzaList from "@/components/pizza/PizzaList.vue";
 import CommentaireForm from "@/components/commentaire/CommentaireForm.vue";
 import PaymentSucess from "@/components/payment/PaymentSucess.vue";
 import PaymentReject from "@/components/payment/PaymentReject.vue";
-import Administration from "@/components/Administration.vue"
+import Administration from "@/components/administration/Administration.vue"
 import Statistique from "@/components/statistique/Statistique.vue";
 
 const routes = [
