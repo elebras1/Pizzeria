@@ -15,6 +15,7 @@ import PizzaList from "@/components/pizza/PizzaList.vue";
 import CommentaireForm from "@/components/commentaire/CommentaireForm.vue";
 import PaymentSucess from "@/components/PaymentSucess.vue";
 import PaymentReject from "@/components/PaymentReject.vue";
+import Administration from "@/components/Administration.vue"
 
 const routes = [
     { path: '/login', name: 'Login', component: Login },
@@ -25,6 +26,7 @@ const routes = [
     { path: '/payment/sucess', name: 'PaymentSucess', component: PaymentSucess },
     { path: '/payment/reject', name: 'PaymentReject', component: PaymentReject },
     { path: '/account/commandes', name: 'Commande', component: Commande },
+    { path: '/administration/', name: 'Administration', component: Administration },
     { path: '/administration/pizzas', name: 'PizzaList', component: PizzaList },
     { path: '/administration/pizzas/new', name: 'PizzaCreate', component: PizzaForm },
     { path: '/administration/pizzas/edit/:id', name: 'PizzaEdit', component: PizzaForm, props: route => ({ pizzaId: Number(route.params.id) }) },
