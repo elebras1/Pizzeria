@@ -4,6 +4,8 @@ import com.projetm1.pizzeria.commande.Commande;
 import com.projetm1.pizzeria.commande.CommandeRepository;
 import com.projetm1.pizzeria.commentaire.dto.CommentaireDto;
 import com.projetm1.pizzeria.commentaire.dto.CommentaireRequestDto;
+import com.projetm1.pizzeria.error.NotFound;
+import com.projetm1.pizzeria.error.UnprocessableEntity;
 import com.projetm1.pizzeria.image.ImageService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +30,7 @@ public class CommentaireService {
     }
 
     public CommentaireDto getCommentaireById(String id) {
-        return this.commentaireMapper.toDto(this.commentaireRepository.findById(id).orElse(null));
+        return this.commentaireMapper.toDto(this.commentaireRepository.findById(id).orElseThrow(() -> new NotFound("Le commentaire n'existe pas")));
     }
 
     public List<CommentaireDto> getAllCommentaires() {
@@ -36,12 +38,15 @@ public class CommentaireService {
     }
 
     public CommentaireDto saveCommentaire(Long commandeId, CommentaireRequestDto commentaireDto) {
-        Commande commande = this.commandeRepository.findById(commandeId).orElseThrow();
+        Commande commande = this.commandeRepository.findById(commandeId).orElseThrow(() -> new NotFound("La commande n'existe pas"));
 
-        String fileName = this.imageService.saveImage(commentaireDto.getPhoto());
+        if(commentaireDto.getTexte() == null || commentaireDto.getTexte().isEmpty()) {
+            throw new UnprocessableEntity("Le texte du commentaire est obligatoire");
+        }
 
         Commentaire commentaire = this.commentaireMapper.toEntity(commentaireDto);
         commentaire.setIdCommande(commandeId.toString());
+        String fileName = this.imageService.saveImage(commentaireDto.getPhoto());
         if(fileName != null) {
             commentaire.setPhoto(fileName);
         }
@@ -59,7 +64,7 @@ public class CommentaireService {
     }
 
     public void deleteCommentaireById(String id) {
-        Commentaire commentaire = this.commentaireRepository.findById(id).orElse(null);
+        Commentaire commentaire = this.commentaireRepository.findById(id).orElseThrow(() -> new NotFound("Le commentaire n'existe pas"));
 
         if (commentaire != null && commentaire.getIdCommande() != null) {
             try {
@@ -79,20 +84,17 @@ public class CommentaireService {
     }
 
     public CommentaireDto updateCommentaire(String id, CommentaireRequestDto commentaireDto) {
-        if(!this.commentaireRepository.existsById(id)) {
-            return null;
-        }
+        Commentaire existingCommentaire = this.commentaireRepository.findById(id).orElseThrow(() -> new NotFound("Le commentaire n'existe pas"));
 
-        String fileName = this.imageService.saveImage(commentaireDto.getPhoto());
-
-        Commentaire existingCommentaire = this.commentaireRepository.findById(id).orElse(null);
-        if (existingCommentaire == null) {
-            return null;
+        if(commentaireDto.getTexte() == null || commentaireDto.getTexte().isEmpty()) {
+            throw new UnprocessableEntity("Le texte du commentaire est obligatoire");
         }
 
         Commentaire commentaire = this.commentaireMapper.toEntity(commentaireDto);
         commentaire.setId(id);
         commentaire.setIdCommande(existingCommentaire.getIdCommande());
+
+        String fileName = this.imageService.saveImage(commentaireDto.getPhoto());
         if (fileName != null) {
             commentaire.setPhoto(fileName);
         } else {
@@ -103,17 +105,14 @@ public class CommentaireService {
     }
 
     public List<CommentaireDto> getCommentairesByCommandeId(Long commandeId) {
-        Commande commande = this.commandeRepository.findById(commandeId).orElse(null);
+        Commande commande = this.commandeRepository.findById(commandeId).orElseThrow(() -> new NotFound("La commande n'existe pas"));
         if(commande == null || commande.getIdCommentaires() == null || commande.getIdCommentaires().isEmpty()) {
             return new ArrayList<>();
         }
 
         List<Commentaire> commentaires = new ArrayList<>();
         for(String commentaireId : commande.getIdCommentaires()) {
-            Commentaire commentaire = this.commentaireRepository.findById(commentaireId).orElse(null);
-            if(commentaire != null) {
-                commentaires.add(commentaire);
-            }
+            this.commentaireRepository.findById(commentaireId).ifPresent(commentaires::add);
         }
 
         return commentaires.stream().map(this.commentaireMapper::toDto).collect(Collectors.toList());

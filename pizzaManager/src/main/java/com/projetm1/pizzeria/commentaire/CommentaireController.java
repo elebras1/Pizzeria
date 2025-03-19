@@ -3,6 +3,7 @@ package com.projetm1.pizzeria.commentaire;
 import com.projetm1.pizzeria.commentaire.dto.CommentaireDto;
 import com.projetm1.pizzeria.commentaire.dto.CommentaireRequestDto;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,22 +18,23 @@ public class CommentaireController {
     }
 
     @GetMapping
-    public List<CommentaireDto> getAllCommentaires() {
-        return this.commentaireService.getAllCommentaires();
+    public ResponseEntity<List<CommentaireDto>> getAllCommentaires() {
+        return ResponseEntity.ok(this.commentaireService.getAllCommentaires());
     }
 
     @GetMapping("/{id}")
-    public CommentaireDto getCommentaireById(@PathVariable String id) {
-        return this.commentaireService.getCommentaireById(id);
+    public ResponseEntity<CommentaireDto> getCommentaireById(@PathVariable String id) {
+        return ResponseEntity.ok(this.commentaireService.getCommentaireById(id));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCommentaireById(@PathVariable String id) {
+    public ResponseEntity<Void> deleteCommentaireById(@PathVariable String id) {
         this.commentaireService.deleteCommentaireById(id);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public CommentaireDto updateCommentaire(@PathVariable String id, @ModelAttribute CommentaireRequestDto commentaireDto) {
-        return this.commentaireService.updateCommentaire(id, commentaireDto);
+    public ResponseEntity<CommentaireDto> updateCommentaire(@PathVariable String id, @ModelAttribute CommentaireRequestDto commentaireDto) {
+        return ResponseEntity.ok(this.commentaireService.updateCommentaire(id, commentaireDto));
     }
 }
