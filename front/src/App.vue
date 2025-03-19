@@ -3,16 +3,19 @@
     <Header/>
     <div class="container" style="padding-top: 150px; padding-bottom: 50px;">
       <router-view></router-view>
+      <ErrorModal />
     </div>
   </div>
 </template>
 
 <script>
 import Header from './components/Header.vue';
+import ErrorModal from "@/components/ErrorModal.vue";
 
 export default {
   name: 'App',
   components: {
+    ErrorModal,
     Header
   },
 };
