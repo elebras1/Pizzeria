@@ -29,14 +29,10 @@ import java.util.Optional;
 public class CommandeController {
     private final CommandeService commandeService;
     private final CommentaireService commentaireService;
-    private final CommandeMapper commandeMapper;
-    private final CommandeRepository commandeRepository;
 
-    public CommandeController(CommandeService commandeService, CommentaireService commentaireService, CommentaireService commentaireService1, CommandeMapper commandeMapper, CommandeRepository commandeRepository) {
+    public CommandeController(CommandeService commandeService,CommentaireService commentaireService1) {
         this.commandeService = commandeService;
         this.commentaireService = commentaireService1;
-        this.commandeMapper = commandeMapper;
-        this.commandeRepository = commandeRepository;
     }
 
     @GetMapping
@@ -51,33 +47,12 @@ public class CommandeController {
 
     @GetMapping("/enCours")
     public CommandeDto getCommandeEnCoursByCompteId(@RequestHeader("x-compte") String compteJson) {
-        try{
-            ObjectMapper objectMapper = new ObjectMapper();
-            CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
-            Optional<Commande> commande=this.commandeService.getCommandeEnCoursByCompteId(compte.getId());
-            return commande.map(this.commandeMapper::toDto).orElse(null);
-        }catch (JsonProcessingException e){
-            return null;
-        }
+        return this.commandeService.getCommandeEnCoursByCompteId(compteJson);
     }
 
     @PostMapping
     public CommandeDto saveCommande(@RequestHeader("x-compte") String compteJson,@RequestBody CommandeRequestDto commandeDto) {
-        try{
-            System.out.println(compteJson);
-            System.out.println(commandeDto);
-            ObjectMapper objectMapper = new ObjectMapper();
-            CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
-            commandeDto.setCompteId(compte.getId());
-            Optional<Commande> commandeEnCours = this.commandeService.getCommandeEnCoursByCompteId(compte.getId());
-            System.out.println(commandeEnCours.isEmpty());
-            if(commandeEnCours.isPresent()){
-                return null;
-            }
-            return this.commandeService.saveCommande(commandeDto);
-        }catch (JsonProcessingException e){
-            return  null;
-        }
+        return this.commandeService.saveCommande(compteJson,commandeDto);
     }
 
     @DeleteMapping("/{id}")
@@ -86,20 +61,8 @@ public class CommandeController {
     }
 
     @PutMapping
-    public CommandeDto updateCommande(@RequestHeader("x-compte") String compteJson,@RequestBody CommandeRequestDto commandeDto) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
-            commandeDto.setCompteId(compte.getId());
-            Optional<Commande> commande = this.commandeRepository.findByCompteIdAndEnCoursTrueAndIsPayeFalse(commandeDto.getCompteId());
-            if(commande.isEmpty()){
-                return null;
-            }
-            System.out.println("test");
-            return this.commandeService.updateCommande(commandeDto,commande.get());
-        }catch (JsonProcessingException e){
-            return null;
-        }
+    public ResponseEntity<CommandeDto> updateCommande(@RequestHeader("x-compte") String compteJson, @RequestBody CommandeRequestDto commandeDto) {
+        return ResponseEntity.ok(this.commandeService.updateCommande(compteJson, commandeDto));
     }
 
     @PostMapping("/pay")
@@ -109,14 +72,7 @@ public class CommandeController {
 
     @PutMapping("/paySuccess")
     public Boolean payerSuccess(@RequestHeader("x-compte") String compteJson) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
-            Optional<Commande> commande = this.commandeRepository.findByCompteIdAndEnCoursTrueAndIsPayeFalse(compte.getId());
-            return commande.map(value -> this.commandeService.payCommande(value.getId())).orElse(null);
-        }catch (JsonProcessingException e){
-            return null;
-        }
+        return this.commandeService.payerSuccess(compteJson);
     }
 
     @PostMapping(value = "/{id}/commentaires", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -30,33 +30,15 @@ public class CompteController {
     }
     @GetMapping("/myaccount")
     public CompteDto getCompteByToken(@RequestHeader("x-compte") String compteJson) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            CompteDto compteDto = objectMapper.readValue(compteJson, CompteDto.class);
-            return this.compteService.getCompteById(compteDto.getId());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return this.compteService.getCompteByToken(compteJson);
     }
     @PutMapping("/myaccount")
     public CompteDto updateCompteByToken(@RequestHeader("x-compte") String compteJson,@RequestBody CompteRequestDto compteRequestDto) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            CompteDto compteDto = objectMapper.readValue(compteJson, CompteDto.class);
-            return this.compteService.updateCompteByToken(compteDto,compteRequestDto);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return this.compteService.updateCompteByToken(compteJson,compteRequestDto);
     }
     @PutMapping("/myaccount/password")
     public CompteDto updateComptePasswordByToken(@RequestHeader("x-compte") String compteJson,@RequestBody ComptePasswordChangeDto comptePasswordChangeDto) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            CompteDto compteDto = objectMapper.readValue(compteJson, CompteDto.class);
-            return this.compteService.updateComptePasswordByToken(compteDto,comptePasswordChangeDto);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return this.compteService.updateCompteByToken(compteJson,comptePasswordChangeDto);
     }
 
 
