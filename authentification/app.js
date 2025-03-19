@@ -120,6 +120,9 @@ app.post('/api/auth/login', express.json(), async (req, res) => {
             return res.status(401).json({ message: 'Identifiants incorrects' });
         }
     } catch (error) {
+        if(error.response.status === 404) {
+            return res.status(404).json({ message: 'Identifiant ou mot de passe incorrects' });
+        }
         console.log(error);
         return res.status(401).json({ message: 'Problème avec le Serveur' });
     }
