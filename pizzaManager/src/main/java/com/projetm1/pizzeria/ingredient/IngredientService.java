@@ -1,7 +1,10 @@
 package com.projetm1.pizzeria.ingredient;
 
+import com.projetm1.pizzeria.error.Conflict;
+import com.projetm1.pizzeria.error.NotFound;
 import com.projetm1.pizzeria.ingredient.dto.IngredientDto;
 import com.projetm1.pizzeria.ingredient.dto.IngredientRequestDto;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +23,7 @@ public class IngredientService {
     }
 
     public IngredientDto getIngredientById(Long id) {
-        return this.ingredientMapper.toDto(this.ingredientRepository.findById(id).orElse(null));
+        return this.ingredientMapper.toDto(this.ingredientRepository.findById(id).orElseThrow(() -> new NotFound("L'ingrédient n'existe pas")));
     }
 
     public List<IngredientDto> getAllIngredients() {
@@ -33,16 +36,68 @@ public class IngredientService {
     }
 
     public IngredientDto saveIngredient(IngredientRequestDto ingredientDto) {
+        if(this.ingredientRepository.findByNom(ingredientDto.getNom()) != null) {
+            throw new Conflict("L'ingrédient " + ingredientDto.getNom() + " existe déjà");
+        }
+
+        StringBuilder message = new StringBuilder();
+        if(ingredientDto.getNom().isEmpty()) {
+            message.append("Le nom de l'ingrédient est obligatoire\n");
+        }
+
+        if(ingredientDto.getDescription().isEmpty()) {
+            message.append("La description de l'ingrédient est obligatoire\n");
+        }
+
+        if(ingredientDto.getPrix() == null || ingredientDto.getPrix() <= 0) {
+            message.append("Le prix de l'ingrédient est obligatoire et doit être supérieur à 0\n");
+        }
+
+        if(message.length() > 0) {
+            throw new Conflict(message.toString());
+        }
+
         return this.ingredientMapper.toDto(this.ingredientRepository.save(this.ingredientMapper.toEntity(ingredientDto)));
     }
 
+    @Transactional(noRollbackFor = DataIntegrityViolationException.class)
     public void deleteIngredientById(Long id) {
-        this.ingredientRepository.deleteById(id);
+        if (!this.ingredientRepository.existsById(id)) {
+            throw new Conflict("L'ingrédient n'existe pas");
+        }
+
+        try {
+            this.ingredientRepository.deleteById(id);
+            this.ingredientRepository.flush();
+        } catch (DataIntegrityViolationException e) {
+            throw new Conflict("L'ingrédient est présent dans une ou plusieurs pizzas");
+        }
     }
 
     public IngredientDto updateIngredient(Long id, IngredientRequestDto ingredientDto) {
         if(!this.ingredientRepository.existsById(id)) {
-            return null;
+            throw new Conflict("L'ingrédient n'existe pas");
+        }
+
+        if(this.ingredientRepository.findByNom(ingredientDto.getNom()) != null) {
+            throw new Conflict("L'ingrédient " + ingredientDto.getNom() + " existe déjà");
+        }
+
+        StringBuilder message = new StringBuilder();
+        if(ingredientDto.getNom().isEmpty()) {
+            message.append("Le nom de l'ingrédient est obligatoire\n");
+        }
+
+        if(ingredientDto.getDescription().isEmpty()) {
+            message.append("La description de l'ingrédient est obligatoire\n");
+        }
+
+        if(ingredientDto.getPrix() == null || ingredientDto.getPrix() <= 0) {
+            message.append("Le prix de l'ingrédient est obligatoire et doit être supérieur à 0\n");
+        }
+
+        if(message.length() > 0) {
+            throw new Conflict(message.toString());
         }
 
         Ingredient ingredient = this.ingredientMapper.toEntity(ingredientDto);

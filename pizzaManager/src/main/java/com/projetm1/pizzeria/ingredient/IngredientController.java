@@ -2,6 +2,7 @@ package com.projetm1.pizzeria.ingredient;
 
 import com.projetm1.pizzeria.ingredient.dto.IngredientDto;
 import com.projetm1.pizzeria.ingredient.dto.IngredientRequestDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,27 +17,28 @@ public class IngredientController {
     }
 
     @GetMapping
-    public List<IngredientDto> getAllIngredients() {
-        return this.ingredientService.getAllIngredients();
+    public ResponseEntity<List<IngredientDto>> getAllIngredients() {
+        return ResponseEntity.ok(this.ingredientService.getAllIngredients());
     }
 
     @GetMapping("/{id}")
-    public IngredientDto getIngredientById(@PathVariable Long id) {
-        return this.ingredientService.getIngredientById(id);
+    public ResponseEntity<IngredientDto> getIngredientById(@PathVariable Long id) {
+        return ResponseEntity.ok(this.ingredientService.getIngredientById(id));
     }
 
     @PostMapping
-    public IngredientDto saveIngredient(@RequestBody IngredientRequestDto ingredientDto) {
-        return this.ingredientService.saveIngredient(ingredientDto);
+    public ResponseEntity<IngredientDto> saveIngredient(@RequestBody IngredientRequestDto ingredientDto) {
+        return ResponseEntity.ok(this.ingredientService.saveIngredient(ingredientDto));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteIngredientById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteIngredientById(@PathVariable Long id) {
         this.ingredientService.deleteIngredientById(id);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{id}")
-    public IngredientDto updateIngredient(@PathVariable Long id, @RequestBody IngredientRequestDto ingredientDto) {
-        return this.ingredientService.updateIngredient(id, ingredientDto);
+    public ResponseEntity<IngredientDto> updateIngredient(@PathVariable Long id, @RequestBody IngredientRequestDto ingredientDto) {
+        return ResponseEntity.ok(this.ingredientService.updateIngredient(id, ingredientDto));
     }
 }
