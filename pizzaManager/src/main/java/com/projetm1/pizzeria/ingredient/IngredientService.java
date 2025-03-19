@@ -41,16 +41,16 @@ public class IngredientService {
         }
 
         StringBuilder message = new StringBuilder();
-        if(ingredientDto.getNom().isEmpty()) {
+        if(ingredientDto.getNom() == null || ingredientDto.getNom().isEmpty()) {
             message.append("Le nom de l'ingrédient est obligatoire\n");
         }
 
-        if(ingredientDto.getDescription().isEmpty()) {
+        if(ingredientDto.getDescription() == null || ingredientDto.getDescription().isEmpty()) {
             message.append("La description de l'ingrédient est obligatoire\n");
         }
 
         if(ingredientDto.getPrix() == null || ingredientDto.getPrix() <= 0) {
-            message.append("Le prix de l'ingrédient est obligatoire et doit être supérieur à 0\n");
+            message.append("Le prix de l'ingrédient est obligatoire et doit être supérieur à 0");
         }
 
         if(message.length() > 0) {
@@ -84,16 +84,16 @@ public class IngredientService {
         }
 
         StringBuilder message = new StringBuilder();
-        if(ingredientDto.getNom().isEmpty()) {
+        if(ingredientDto.getNom() == null || ingredientDto.getNom().isEmpty()) {
             message.append("Le nom de l'ingrédient est obligatoire\n");
         }
 
-        if(ingredientDto.getDescription().isEmpty()) {
+        if(ingredientDto.getDescription() == null || ingredientDto.getDescription().isEmpty()) {
             message.append("La description de l'ingrédient est obligatoire\n");
         }
 
         if(ingredientDto.getPrix() == null || ingredientDto.getPrix() <= 0) {
-            message.append("Le prix de l'ingrédient est obligatoire et doit être supérieur à 0\n");
+            message.append("Le prix de l'ingrédient est obligatoire et doit être supérieur à 0");
         }
 
         if(message.length() > 0) {

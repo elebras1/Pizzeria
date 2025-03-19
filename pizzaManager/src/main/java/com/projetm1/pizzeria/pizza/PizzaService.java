@@ -1,5 +1,7 @@
 package com.projetm1.pizzeria.pizza;
 
+import com.projetm1.pizzeria.error.NotFound;
+import com.projetm1.pizzeria.error.UnprocessableEntity;
 import com.projetm1.pizzeria.image.ImageService;
 import com.projetm1.pizzeria.pizza.dto.PizzaDto;
 import com.projetm1.pizzeria.pizza.dto.PizzaRequestDto;
@@ -22,7 +24,11 @@ public class PizzaService {
     }
 
     public PizzaDto getPizzaById(Long id) {
-        return this.pizzaMapper.toDto(this.pizzaRepository.findByIdWithIngredients(id).orElse(null));
+        if(!this.pizzaRepository.existsById(id)) {
+            throw new NotFound("La pizza n'existe pas");
+        }
+
+        return this.pizzaMapper.toDto(this.pizzaRepository.findByIdWithIngredients(id).orElseThrow(() -> new NotFound("La pizza n'existe pas")));
     }
 
     public List<PizzaDto> getAllPizzas() {
@@ -36,16 +42,48 @@ public class PizzaService {
 
     public PizzaDto savePizza(PizzaRequestDto pizzaDto) {
         String fileName = this.imageService.saveImage(pizzaDto.getPhoto());
-        Pizza pizza = this.pizzaMapper.toEntity(pizzaDto);
-        if(fileName != null) {
-            pizza.setPhoto(fileName);
+
+        StringBuilder message = new StringBuilder();
+        if(pizzaDto.getNom() == null || pizzaDto.getNom().isEmpty()) {
+            message.append("Le nom de la pizza est obligatoire\n");
         }
+
+        if(pizzaDto.getDescription() == null || pizzaDto.getDescription().isEmpty()) {
+            message.append("La description de la pizza est obligatoire\n");
+        }
+
+        if(pizzaDto.getStandardIngredientsIds() == null || pizzaDto.getOptionalIngredientsIds().isEmpty()) {
+            message.append("Les ingrédients de base de la pizza sont obligatoires\n");
+        }
+
+        if(pizzaDto.getOptionalIngredientsIds() == null || pizzaDto.getOptionalIngredientsIds().isEmpty()) {
+            message.append("Les ingrédients optionnels de la pizza sont obligatoires\n");
+        }
+
+        if(fileName == null) {
+            message.append("La photo de la pizza est obligatoire");
+        }
+
+        if(!message.isEmpty()) {
+            throw new UnprocessableEntity(message.toString());
+        }
+
+        if(!message.isEmpty()) {
+            throw new UnprocessableEntity(message.toString());
+        }
+
+        Pizza pizza = this.pizzaMapper.toEntity(pizzaDto);
+        pizza.setPhoto(fileName);
         pizza = this.pizzaRepository.save(pizza);
 
         return this.pizzaMapper.toDto(pizza);
     }
 
     public void deletePizzaById(Long id) {
+        if(!this.pizzaRepository.existsById(id)) {
+            throw new NotFound("La pizza n'existe pas");
+        }
+
         this.pizzaRepository.deleteById(id);
     }
 
@@ -54,8 +92,33 @@ public class PizzaService {
         if(pizzaOld == null) {
             return null;
         }
-
         String fileName = this.imageService.saveImage(pizzaDto.getPhoto());
+
+        StringBuilder message = new StringBuilder();
+        if(pizzaDto.getNom() == null || pizzaDto.getNom().isEmpty()) {
+            message.append("Le nom de la pizza est obligatoire\n");
+        }
+
+        if(pizzaDto.getDescription() == null || pizzaDto.getDescription().isEmpty()) {
+            message.append("La description de la pizza est obligatoire\n");
+        }
+
+        if(pizzaDto.getStandardIngredientsIds() == null || pizzaDto.getOptionalIngredientsIds().isEmpty()) {
+            message.append("Les ingrédients de base de la pizza sont obligatoires\n");
+        }
+
+        if(pizzaDto.getOptionalIngredientsIds() == null || pizzaDto.getOptionalIngredientsIds().isEmpty()) {
+            message.append("Les ingrédients optionnels de la pizza sont obligatoires\n");
+        }
+
+        if(fileName == null) {
+            message.append("La photo de la pizza est obligatoire");
+        }
+
+        if(!message.isEmpty()) {
+            throw new UnprocessableEntity(message.toString());
+        }
+
         Pizza pizza = this.pizzaMapper.toEntity(pizzaDto);
         pizza.setId(id);
         if(fileName != null) {
