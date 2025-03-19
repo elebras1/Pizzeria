@@ -4,6 +4,7 @@ import { useAuthStore } from '../stores/auth';
 import axios from "axios";
 import PizzaSelection from "./PizzaSelection.vue";
 import ModalConnexion from "./ModalConnexion.vue";
+import {usePanierStore} from "@/stores/panier.js";
 
 const authStore = useAuthStore();
 const pizzas = ref([]);

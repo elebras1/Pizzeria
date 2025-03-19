@@ -1,23 +1,42 @@
 <template>
-  <div v-if="message" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div class="bg-white p-4 rounded-lg shadow-lg">
-      <p>{{ message }}</p>
-      <button @click="clearError" class="mt-2 bg-red-500 text-white px-3 py-1 rounded">Fermer</button>
+  <div v-if="showModal" class="modal">
+    <div class="modal-content">
+      <p>{{ errorMessage }}</p>
+      <button @click="clearError">Fermer</button>
     </div>
   </div>
 </template>
 
 <script setup>
 import { useErrorStore } from '@/stores/errorStore';
+import { computed } from 'vue';
 
 const errorStore = useErrorStore();
-const message = errorStore.message;
 
-function clearError() {
+const errorMessage = computed(() => errorStore.errorMessage);
+const showModal = computed(() => errorStore.showModal);
+
+const clearError = () => {
   errorStore.clearError();
-}
+};
 </script>
 
 <style>
-/* Ajoute un peu de style si nécessaire */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+}
 </style>

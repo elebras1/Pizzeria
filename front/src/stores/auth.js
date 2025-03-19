@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import api from '@/interceptors/api.js';
+import {usePanierStore} from "@/stores/panier.js";
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
@@ -24,6 +25,7 @@ export const useAuthStore = defineStore('auth', {
                 localStorage.setItem('accessToken', this.accessToken);
                 api.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`;
                 console.log(response.data);
+                usePanierStore().loadPanier();
                 return true;
             } catch (error) {
                 console.error('Erreur de connexion:', error);

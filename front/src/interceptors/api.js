@@ -32,14 +32,13 @@ api.interceptors.response.use(
             } catch (refreshError) {
                 console.log('Erreur de rafraîchissement du token:', refreshError);
                 authStore.clearAuth();
-                return Promise.reject(refreshError);
             }
         }
 
         const errorStore = useErrorStore();
         const message = error.response?.data?.message || 'Une erreur est survenue';
         errorStore.setError(message);
-
+        console.log('Message d\'erreur capturé:', message);
         return Promise.reject(error);
     }
 );

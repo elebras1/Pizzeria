@@ -77,11 +77,9 @@ function authMiddleware(req, res, next) {
     if (!token) {
         return res.status(401).json({ message: 'Accès non autorisé, jeton manquant' });
     }
-    console.log(req.headers);
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded.compte;
-        console.log(req.user);
         if (req.user) {
             if (isRouteAllowed(adminRoutes, req.method, req.path)) {
                 if (!req.user.isAdmin) {
