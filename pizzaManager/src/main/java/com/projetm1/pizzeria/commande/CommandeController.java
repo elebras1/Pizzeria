@@ -61,7 +61,6 @@ public class CommandeController {
         }
     }
 
-
     @PostMapping
     public CommandeDto saveCommande(@RequestHeader("x-compte") String compteJson,@RequestBody CommandeRequestDto commandeDto) {
         try{
@@ -102,67 +101,10 @@ public class CommandeController {
             return null;
         }
     }
+
     @PostMapping("/pay")
     public ResponseEntity<Map<String, String>> createCheckoutSession(@RequestHeader("x-compte") String compteJson) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
-            Optional<Commande> commande = this.commandeRepository.findByCompteIdAndEnCoursTrueAndIsPayeFalse(compte.getId());
-            if(commande.isEmpty()){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
-            Float total = 0.0f;
-            for(PizzaPanier pizzaPanier: commande.get().getPanier()){
-                for(Ingredient ingredient: pizzaPanier.getIngredients()){
-                    total = total+ ingredient.getPrix();
-                }
-            }
-
-            System.out.println(total);
-            long montantEnCentimes = (long) (total * 100L);
-            if(montantEnCentimes == 0){
-                Map<String, String> response = new HashMap<>();
-                response.put("url","http://localhost:5173/panier" );
-                return ResponseEntity.ok(response);
-            }
-            System.out.println(montantEnCentimes);
-            Stripe.apiKey = "sk_test_51R3PKZQxmuo6VLbo318TeqOwaacBuCiV8c4xGEXvqWT43qLtbkpVAkjuuKsfly5xvaoyfSwvE0PqmZJENBjXjaax00duyJFo1M";
-
-            SessionCreateParams.LineItem.PriceData.ProductData productData =
-                    SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                            .setName("Commande de pizzas")
-                            .build();
-
-            SessionCreateParams.LineItem.PriceData priceData =
-                    SessionCreateParams.LineItem.PriceData.builder()
-                            .setCurrency("eur")
-                            .setUnitAmount(montantEnCentimes)
-                            .setProductData(productData)
-                            .build();
-
-            SessionCreateParams.LineItem lineItem =
-                    SessionCreateParams.LineItem.builder()
-                            .setQuantity(1L)
-                            .setPriceData(priceData)
-                            .build();
-
-            SessionCreateParams params = SessionCreateParams.builder()
-                    .setMode(SessionCreateParams.Mode.PAYMENT)
-                    .setSuccessUrl("http://localhost:5173/payment/sucess")
-                    .setCancelUrl("http://localhost:5173/payment/reject")
-                    .addLineItem(lineItem)
-                    .build();
-
-            Session session = Session.create(params);
-
-
-            Map<String, String> response = new HashMap<>();
-            response.put("url", session.getUrl());
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        return this.commandeService.createCheckoutSession(compteJson);
     }
 
     @PutMapping("/paySuccess")

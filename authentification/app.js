@@ -111,7 +111,8 @@ app.post('/api/auth/login', express.json(), async (req, res) => {
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'None'
+                sameSite: 'None',
+                maxAge: 7 * 24 * 60 * 60 * 1000
             });
 
             return res.json({ message: 'Connexion réussie', accessToken });
