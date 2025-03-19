@@ -1,11 +1,15 @@
 package com.projetm1.pizzeria.compte;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projetm1.pizzeria.commande.Commande;
 import com.projetm1.pizzeria.commande.CommandeMapper;
 import com.projetm1.pizzeria.commande.dto.CommandeDto;
 import com.projetm1.pizzeria.compte.dto.ComptePasswordChangeDto;
 import com.projetm1.pizzeria.compte.dto.CompteRequestDto;
 import com.projetm1.pizzeria.compte.dto.CompteDto;
+import com.projetm1.pizzeria.error.NotFound;
+import com.projetm1.pizzeria.error.UnprocessableEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +34,24 @@ public class CompteService {
 
     public CompteDto getCompteById(Long id) {
         return this.compteMapper.toDto(this.compteRepository.findById(id).orElse(null));
+    }
+    public CompteDto getCompteByToken(String compteJson) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            CompteDto compteDto = objectMapper.readValue(compteJson, CompteDto.class);
+            return this.getCompteById(compteDto.getId());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Erreur lors de la récupération du compte");
+        }
+    }
+    public CompteDto updateCompteByToken(String compteJson, CompteRequestDto compteRequestDto) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            CompteDto compteDto = objectMapper.readValue(compteJson, CompteDto.class);
+            return this.updateCompteByToken(compteDto,compteRequestDto);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<CompteDto> getAllCompte() {
@@ -78,19 +100,28 @@ public class CompteService {
         this.compteRepository.save(compte);
         return compteDto;
     }
-    public CompteDto updateComptePasswordByToken(CompteDto compteDto, ComptePasswordChangeDto comptePasswordChangeDto){
+    public CompteDto updateCompteByToken(String compteJson, ComptePasswordChangeDto comptePasswordChangeDto){
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            CompteDto compteDto = objectMapper.readValue(compteJson, CompteDto.class);
+            return this.updateComptePasswordByToken(compteDto,comptePasswordChangeDto);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Erreur lors de la récupération du compte");
+        }
+    }
+    private CompteDto updateComptePasswordByToken(CompteDto compteDto, ComptePasswordChangeDto comptePasswordChangeDto){
         Compte compte = this.compteRepository.findById(compteDto.getId()).orElse(null);
         if (compte == null) {
-            return null;
+            throw new NotFound("Compte non trouvé");
         }
         if(!passwordEncoder.matches(comptePasswordChangeDto.getOldPassword(), compte.getMotDePasse())) {
-            return null;
+            throw new UnprocessableEntity("Mot de passe incorrect");
         }
         if(comptePasswordChangeDto.getOldPassword().equals(comptePasswordChangeDto.getNewPassword())) {
-            return null;
+            throw new UnprocessableEntity("Le nouveau mot de passe doit être différent de l'ancien");
         }
         if(!comptePasswordChangeDto.getNewPassword().equals(comptePasswordChangeDto.getComfirmPassword())) {
-            return null;
+            throw new UnprocessableEntity("Mot de passe incorrect");
         }
         compte.setMotDePasse(hashPassword(comptePasswordChangeDto.getNewPassword()));
         this.compteRepository.save(compte);

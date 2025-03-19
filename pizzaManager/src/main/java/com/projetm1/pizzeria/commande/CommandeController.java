@@ -61,7 +61,7 @@ public class CommandeController {
     }
 
     @PutMapping
-    public ResponseEntity<CommandeDto> updateCommande(@RequestHeader("x-compte") String compteJson,@RequestBody CommandeRequestDto commandeDto) {
+    public ResponseEntity<CommandeDto> updateCommande(@RequestHeader("x-compte") String compteJson, @RequestBody CommandeRequestDto commandeDto) {
         return ResponseEntity.ok(this.commandeService.updateCommande(compteJson, commandeDto));
     }
 
