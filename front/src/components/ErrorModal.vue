@@ -1,8 +1,7 @@
 <template>
-  <div v-if="showModal" class="modal">
+  <div v-if="showModal" class="modal" @click.self="clearError">
     <div class="modal-content">
       <p>{{ errorMessage }}</p>
-      <button @click="clearError">Fermer</button>
     </div>
   </div>
 </template>
