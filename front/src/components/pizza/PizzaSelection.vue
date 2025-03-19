@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { usePanierStore } from '@/stores/panier';
+import { usePanierStore } from '@/stores/panier.js';
 import {ref, toRaw} from "vue";
 
 export default {

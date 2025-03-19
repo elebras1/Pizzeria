@@ -2,8 +2,8 @@
 import { ref, onMounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import axios from "axios";
-import PizzaSelection from "./PizzaSelection.vue";
-import ModalConnexion from "./ModalConnexion.vue";
+import PizzaSelection from "./pizza/PizzaSelection.vue";
+import ModalConnexion from "./authentification/ModalConnexion.vue";
 import {usePanierStore} from "@/stores/panier.js";
 
 const authStore = useAuthStore();

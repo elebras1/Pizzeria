@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import {usePanierStore} from '@/stores/panier';
+import {usePanierStore} from '@/stores/panier.js';
 import {useAuthStore} from '@/stores/auth.js';
 import api from "@/interceptors/api.js";
 

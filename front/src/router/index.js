@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from "../components/Home.vue";
-import PizzaSelection from "@/components/PizzaSelection.vue";
+import PizzaSelection from "@/components/pizza/PizzaSelection.vue";
 import Login from "@/components/authentification/Login.vue";
 import Register from "@/components/authentification/Register.vue";
-import Commande from "@/components/Commande.vue";
-import Compte from "@/components/Compte.vue";
-import Panier from "@/components/Panier.vue";
+import Commande from "@/components/commande/Commande.vue";
+import Compte from "@/components/compte/Compte.vue";
+import Panier from "@/components/commande/Panier.vue";
 import CompteList from "@/components/compte/CompteList.vue";
 import CommandeList from "@/components/commande/CommandeList.vue";
 import IngredientForm from "@/components/ingredient/IngredientForm.vue";
@@ -13,10 +13,10 @@ import IngredientList from "@/components/ingredient/IngredientList.vue";
 import PizzaForm from "@/components/pizza/PizzaForm.vue";
 import PizzaList from "@/components/pizza/PizzaList.vue";
 import CommentaireForm from "@/components/commentaire/CommentaireForm.vue";
-import PaymentSucess from "@/components/PaymentSucess.vue";
-import PaymentReject from "@/components/PaymentReject.vue";
+import PaymentSucess from "@/components/payment/PaymentSucess.vue";
+import PaymentReject from "@/components/payment/PaymentReject.vue";
 import Administration from "@/components/Administration.vue"
-import Statistique from "@/components/Statistique.vue";
+import Statistique from "@/components/statistique/Statistique.vue";
 
 const routes = [
     { path: '/login', name: 'Login', component: Login },

@@ -19,8 +19,8 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import Informations from "@/components/Informations.vue";
-import Commande from "@/components/Commande.vue";
+import Informations from "@/components/compte/Informations.vue";
+import Commande from "@/components/commande/Commande.vue";
 import { useRouter } from "vue-router";
 
 const showInformations = ref(false);

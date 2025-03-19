@@ -63,9 +63,9 @@
 </template>
 
 <script>
-import commandeService from '@/services/commandeService';
-import compteService from '@/services/compteService';
-import imageService from '@/services/imageService';
+import commandeService from '@/services/commandeService.js';
+import compteService from '@/services/compteService.js';
+import imageService from '@/services/imageService.js';
 
 export default {
   name: 'Commande',

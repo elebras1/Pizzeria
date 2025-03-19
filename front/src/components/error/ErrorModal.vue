@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-import { useErrorStore } from '@/stores/errorStore';
+import { useErrorStore } from '@/stores/errorStore.js';
 import { computed } from 'vue';
 
 const errorStore = useErrorStore();

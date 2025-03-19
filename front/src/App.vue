@@ -10,7 +10,7 @@
 
 <script>
 import Header from './components/Header.vue';
-import ErrorModal from "@/components/ErrorModal.vue";
+import ErrorModal from "@/components/error/ErrorModal.vue";
 
 export default {
   name: 'App',
