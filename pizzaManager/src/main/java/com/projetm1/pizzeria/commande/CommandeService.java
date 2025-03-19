@@ -1,11 +1,13 @@
 package com.projetm1.pizzeria.commande;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projetm1.pizzeria.commande.dto.CommandeDto;
 import com.projetm1.pizzeria.commande.dto.CommandeRequestDto;
 import com.projetm1.pizzeria.compte.Compte;
 import com.projetm1.pizzeria.compte.CompteRepository;
 import com.projetm1.pizzeria.compte.dto.CompteDto;
+import com.projetm1.pizzeria.error.NotFound;
 import com.projetm1.pizzeria.ingredient.Ingredient;
 import com.projetm1.pizzeria.ingredient.IngredientRepository;
 import com.projetm1.pizzeria.pizza.Pizza;
@@ -49,20 +51,40 @@ public class CommandeService {
         return this.commandeRepository.findAll().stream().map(this.commandeMapper::toDto).collect(Collectors.toList());
     }
 
-    public CommandeDto saveCommande(CommandeRequestDto commandeDto) {
-        Commande commande = this.commandeMapper.toEntity(commandeDto);
-        Compte compte = this.compteRepository.findById(commandeDto.getCompteId()).orElseThrow();
-        commande.setCompte(compte);
-        commande.setEnCours(true);
-        commande.setIsPaye(false);
-        commande.setDate(LocalDateTime.now());
-        commande.setIdCommentaires(new ArrayList<>());
-        return updatePanier(commandeDto, commande);
+    public CommandeDto saveCommande(String compteJson,CommandeRequestDto commandeDto) {
+        try{
+            ObjectMapper objectMapper = new ObjectMapper();
+            CompteDto compteDto = objectMapper.readValue(compteJson, CompteDto.class);
+            Optional<Commande> commandeEnCours = this.getCommandeEnCoursByCompteId(compteDto.getId());
+            if(commandeEnCours.isPresent()){
+                throw new NotFound("Commande en cours déjà existante");
+            }
+            Commande commande = this.commandeMapper.toEntity(commandeDto);
+            Compte compte = this.compteRepository.findById(commandeDto.getCompteId()).orElseThrow();
+            commande.setCompte(compte);
+            commande.setEnCours(true);
+            commande.setIsPaye(false);
+            commande.setDate(LocalDateTime.now());
+            commande.setIdCommentaires(new ArrayList<>());
+            return updatePanier(commandeDto, commande);
+        }catch (JsonProcessingException e){
+            throw new RuntimeException("Erreur lors de la création de la commande");
+        }
     }
 
-    public Optional<Commande> getCommandeEnCoursByCompteId(Long compteId) {
+    private Optional<Commande> getCommandeEnCoursByCompteId(Long compteId) {
         return this.commandeRepository.findByCompteIdAndEnCoursTrueAndIsPayeFalse(compteId);
 
+    }
+    public CommandeDto getCommandeEnCoursByCompteId(String compteJson) {
+        try{
+            ObjectMapper objectMapper = new ObjectMapper();
+            CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
+            Optional<Commande> commande=this.getCommandeEnCoursByCompteId(compte.getId());
+            return commande.map(this.commandeMapper::toDto).orElse(null);
+        }catch (JsonProcessingException e){
+            throw new RuntimeException("Erreur lors de la récupération de la commande");
+        }
     }
 
     public void deleteCommandeById(Long id) {
@@ -76,15 +98,26 @@ public class CommandeService {
         return this.commandeMapper.toDto(commande);
     }
 
-    public Boolean payCommande(Long id) {
+    private Boolean payCommande(Long id) {
         Commande commande = this.commandeRepository.findById(id).orElseThrow();
         commande.setIsPaye(true);
         this.commandeRepository.save(commande);
         return commande.getIsPaye();
     }
 
-    public CommandeDto updateCommande(CommandeRequestDto commandeDto,Commande commande) {
-        return updatePanier(commandeDto, commande);
+    public CommandeDto updateCommande(String compteJson, CommandeRequestDto commandeDto) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
+            commandeDto.setCompteId(compte.getId());
+            Optional<Commande> commande = this.commandeRepository.findByCompteIdAndEnCoursTrueAndIsPayeFalse(commandeDto.getCompteId());
+            if(commande.isEmpty()){
+                throw new NotFound("Commande introuvable");
+            }
+            return updatePanier(commandeDto, commande.get());
+        }catch (JsonProcessingException e){
+            throw new RuntimeException("Erreur lors de la mise à jour de la commande");
+        }
     }
 
     private CommandeDto updatePanier(CommandeRequestDto commandeDto, Commande commande) {
@@ -169,5 +202,19 @@ public class CommandeService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
 
+    }
+
+    public Boolean payerSuccess(String compteJson) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
+            Optional<Commande> commande = this.commandeRepository.findByCompteIdAndEnCoursTrueAndIsPayeFalse(compte.getId());
+            if(commande.isEmpty()){
+                return false;
+            }
+            return payCommande(commande.get().getId());
+        }catch (JsonProcessingException e){
+            return false;
+        }
     }
 }
