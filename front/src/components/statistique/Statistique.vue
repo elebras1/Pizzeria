@@ -5,6 +5,7 @@ import {
   Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement, PointElement, LineElement
 } from 'chart.js';
 import api from "@/interceptors/api.js";
+import commandeService  from "@/services/commandeService.js";
 
 ChartJS.register(
     Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale,
@@ -56,12 +57,10 @@ export default {
       topPizzas: [],
       monthlySales: [],
     };
-  }
-  ,
+  },
   methods: {
     getCommandes() {
-      api.get("/commandes").then((response) => {
-        console.log("Commandes récupérées :", response.data);
+      commandeService.getCommandes().then((response) => {
         this.Commandes = response.data || [];
         if (this.Commandes.length > 0) {
           this.processData();
