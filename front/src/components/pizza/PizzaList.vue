@@ -24,7 +24,6 @@
                     <td>{{ pizza.nom }}</td>
                     <td>{{ pizza.description }}</td>
                     <td>
-                        <!-- Affichage de l'image récupérée -->
                         <img :src="pizza.photoUrl" :alt="`Photo de ${pizza.nom}`" class="pizza-photo" />
                     </td>
                     <td>

@@ -4,7 +4,8 @@ import { useAuthStore } from '../stores/auth';
 import axios from "axios";
 import PizzaSelection from "./pizza/PizzaSelection.vue";
 import ModalConnexion from "./authentification/ModalConnexion.vue";
-import {usePanierStore} from "@/stores/panier.js";
+import { usePanierStore } from "@/stores/panier.js";
+import imageService from "@/services/imageService.js";
 
 const authStore = useAuthStore();
 const pizzas = ref([]);
@@ -21,6 +22,16 @@ const getAllPizzas = async () => {
   try {
     const response = await axios.get("http://localhost:3000/api/pizzas");
     pizzas.value = response.data;
+    pizzas.value.forEach(pizza => {
+      imageService.getImage(pizza.photo)
+        .then(imageResponse => {
+          pizza.photoUrl = URL.createObjectURL(imageResponse.data);
+          console.log('Image récupérée', pizza.photoUrl);
+        })
+        .catch(error => {
+          console.error('Erreur lors de la récupération de l\'image', error);
+        });
+    });
   } catch (error) {
     console.error(error);
   }
@@ -60,7 +71,7 @@ const calculatePrice = (pizza) => {
           <p>{{ pizza.description }}</p>
           <span v-if="pizza.popular" class="label">Populaire</span>
         </div>
-        <img :src="pizza.image" :alt="pizza.name" class="pizza-image" />
+        <img :src="pizza.photoUrl" :alt="pizza.name" class="pizza-image" />
       </div>
     </div>
 

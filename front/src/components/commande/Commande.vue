@@ -62,13 +62,15 @@ const commandes = ref([]);
 const fetchCommandes = async () => {
   try {
     const response = await compteService.getCommandes();
-    commandes.value = response.data.map(commande => ({
-      ...commande,
-      showPizzaDetails: false,
-      showComments: false,
-      compte: null,
-      comments: null
-    }));
+    commandes.value = response.data
+      .filter(commande => commande.isPaye)
+      .map(commande => ({
+        ...commande,
+        showPizzaDetails: false,
+        showComments: false,
+        compte: null,
+        comments: null
+      }));;
 
     if (commandes.value.length > 0) {
       const compteIds = [...new Set(commandes.value.map(c => c.compteId))];
