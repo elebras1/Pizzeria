@@ -28,9 +28,6 @@ const getAllPizzas = async () => {
           pizza.photoUrl = URL.createObjectURL(imageResponse.data);
           console.log('Image récupérée', pizza.photoUrl);
         })
-        .catch(error => {
-          console.error('Erreur lors de la récupération de l\'image', error);
-        });
     });
   } catch (error) {
     console.error(error);

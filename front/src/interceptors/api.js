@@ -36,7 +36,28 @@ api.interceptors.response.use(
         }
 
         const errorStore = useErrorStore();
-        const message = error.response?.data?.message || 'Une erreur est survenue';
+        let message = 'Une erreur est survenue';
+
+        // Vérification si la réponse est de type Blob (ce qui arrive pour les requêtes d'images par exemple)
+        if (error.response?.data instanceof Blob) {
+            try {
+                const text = await error.response.data.text();
+                const parsed = JSON.parse(text);
+                if (parsed.message) {
+                    message = parsed.message;
+                } else {
+                    message = text;
+                }
+            } catch (e) {
+                message = 'Impossible de parser le message d’erreur';
+            }
+        } else if (error.response?.data?.message) {
+            message = error.response.data.message;
+        } else if (error.response?.data) {
+            message = JSON.stringify(error.response.data);
+        } else if (error.message) {
+            message = error.message;
+        }
         errorStore.setError(message);
         console.log('Message d\'erreur capturé:', message);
         return Promise.reject(error);

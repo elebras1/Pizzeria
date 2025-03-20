@@ -63,7 +63,7 @@ public class ImageService {
         } catch (MalformedURLException e) {
             throw new BadRequest("Invalid URL");
         } catch (RuntimeException e) {
-            throw new NotFound("Image not found: " + fileName);
+            throw new NotFound("Image not found: ");
         }
     }
 
