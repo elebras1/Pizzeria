@@ -15,8 +15,8 @@
       <p><strong>Date de commande : </strong>{{ formatDate(commande.date) }}</p>
       <p>
         <strong>Pizzas commandées : </strong>
-        <span v-for="(panier, index) in commande.panier" :key="index">
-          {{ panier.pizza.nom }}<span v-if="index < commande.panier.length - 1">, </span>
+        <span v-for="(groupe, index) in commande.pizzasGroupees" :key="index">
+          {{ groupe.nom }} x{{ groupe.quantite }}<span v-if="index < commande.pizzasGroupees.length - 1">, </span>
         </span>
       </p>
       <router-link :to="{ name: 'CommentaireCreate', params: { commandeId: commande.id } }">
@@ -24,12 +24,12 @@
       </router-link>
       <button @click="togglePizzaDetails(commande)">Détails pizzas</button>
       <div v-if="commande.showPizzaDetails" class="details-pizzas">
-        <div v-for="(panier, index) in commande.panier" :key="index" class="pizza-detail">
-          <h3>{{ panier.pizza.nom }}</h3>
+        <div v-for="(groupe, index) in commande.pizzasGroupees" :key="index" class="pizza-detail">
+          <h3>{{ groupe.nom }} x{{ groupe.quantite }}</h3>
           <p>
             <strong>Ingrédients : </strong>
-            <span v-for="(ingredient, i) in panier.ingredients" :key="i">
-              {{ ingredient.nom }}<span v-if="i < panier.ingredients.length - 1">, </span>
+            <span v-for="(ingredient, i) in groupe.ingredients" :key="i">
+              {{ ingredient.nom }}<span v-if="i < groupe.ingredients.length - 1">, </span>
             </span>
           </p>
         </div>
@@ -59,18 +59,62 @@ import imageService from '@/services/imageService.js';
 
 const commandes = ref([]);
 
+const ingredientsEqual = (ingredients1, ingredients2) => {
+  if (!ingredients1 || !ingredients2) return false;
+  if (ingredients1.length !== ingredients2.length) return false;
+  
+  const ids1 = new Set(ingredients1.map(ing => ing.id));
+  const ids2 = new Set(ingredients2.map(ing => ing.id));
+  
+  for (const id of ids1) {
+    if (!ids2.has(id)) return false;
+  }
+  
+  return true;
+};
+
+const grouperPizzas = (panier) => {
+  const groupes = [];
+  
+  for (const item of panier) {
+    const pizza = item.pizza;
+    const ingredients = item.ingredients;
+    
+    const groupeExistant = groupes.find(groupe => 
+      groupe.nom === pizza.nom && ingredientsEqual(groupe.ingredients, ingredients)
+    );
+    
+    if (groupeExistant) {
+      groupeExistant.quantite += 1;
+    } else {
+      groupes.push({
+        nom: pizza.nom,
+        ingredients: ingredients,
+        quantite: 1
+      });
+    }
+  }
+  
+  return groupes;
+};
+
 const fetchCommandes = async () => {
   try {
     const response = await compteService.getCommandes();
     commandes.value = response.data
       .filter(commande => commande.isPaye)
-      .map(commande => ({
-        ...commande,
-        showPizzaDetails: false,
-        showComments: false,
-        compte: null,
-        comments: null
-      }));;
+      .map(commande => {
+        const pizzasGroupees = grouperPizzas(commande.panier);
+        
+        return {
+          ...commande,
+          showPizzaDetails: false,
+          showComments: false,
+          compte: null,
+          comments: null,
+          pizzasGroupees
+        };
+      });
 
     if (commandes.value.length > 0) {
       const compteIds = [...new Set(commandes.value.map(c => c.compteId))];
@@ -159,8 +203,17 @@ onMounted(fetchCommandes);
 }
 
 button {
-  margin-right: 0.5em;
-  margin-top: 0.5em;
+  background-color: #555;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 1px;
+}
+
+button:hover {
+  background-color: #777;
 }
 
 .comment img {
