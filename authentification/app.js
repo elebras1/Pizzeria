@@ -23,7 +23,7 @@ const publicRoutes = {
     ],
     POST: [
         '/api/auth/login',
-        '/api/auth/register'
+        '/api/comptes'
     ]
 };
 

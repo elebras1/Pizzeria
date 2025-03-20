@@ -27,6 +27,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import compteService from '@/services/compteService';
 
 const pseudoRegister = ref('');
 const nom = ref('');
@@ -40,7 +41,16 @@ const handleRegister = () => {
     alert("Les mots de passe ne correspondent pas !");
     return;
   }
-  alert(`Inscription avec pseudo: ${pseudoRegister.value}, nom: ${nom.value}, prénom: ${prenom.value}`);
+
+  compteService.createCompte({
+    "pseudo" : pseudoRegister.value,
+    "prenom" : prenom.value,
+    "nom" : nom.value,
+    "motDePasse" : passwordRegister.value
+  }).then(() => {
+    router.push({ name: 'Login' });
+  })
+  
 };
 
 const goToLogin = () => {

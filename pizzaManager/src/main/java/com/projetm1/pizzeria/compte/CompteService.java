@@ -69,6 +69,7 @@ public class CompteService {
         Compte compte = this.compteMapper.toEntity(compteDto);
         if (compte != null) {
             compte.setMotDePasse(hashPassword(compte.getMotDePasse()));
+            compte.setIsAdmin(false);
             compte = this.compteRepository.save(compte);
         }
         return this.compteMapper.toDto(compte);
