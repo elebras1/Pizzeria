@@ -84,8 +84,8 @@ public class CompteService {
             return null;
         }
 
-        Compte compte = this.compteMapper.toEntity(compteDto);
-        compte.setId(id);
+        Compte compte = this.compteRepository.findById(id).orElseThrow(()-> new NotFound("Compte non trouvé"));
+        compte.setIsAdmin(compteDto.getIsAdmin());
         compte = this.compteRepository.save(compte);
 
         return this.compteMapper.toDto(compte);

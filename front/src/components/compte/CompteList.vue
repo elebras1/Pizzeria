@@ -8,6 +8,7 @@
                     <th>Pseudo</th>
                     <th>Prénom</th>
                     <th>nom</th>
+                    <th>estAdmin</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -17,6 +18,7 @@
                     <td>{{ compte.pseudo }}</td>
                     <td>{{ compte.prenom }}</td>
                     <td>{{ compte.nom }}</td>
+                    <td>{{ compte.isAdmin }}</td>
                     <td>
                         <router-link :to="{ name: 'CommandeListByCompte', params: { idCompte: compte.id } }"
                             class="action-button show">
@@ -24,6 +26,9 @@
                         </router-link>
                         <button @click="deleteCompte(compte.id)" class="action-button delete">
                             Supprimer
+                        </button>
+                        <button @click="toAdmin(compte.id)" class="action-button delete" v-if="!compte.isAdmin">
+                            To admin
                         </button>
                     </td>
                 </tr>
@@ -52,6 +57,8 @@ const fetchComptes = () => {
         .catch(error => console.error('Erreur lors de la récupération des comptes', error));
 };
 
+
+
 const deleteCompte = (id) => {
     if (confirm("Voulez-vous vraiment supprimer ce compte ?")) {
         compteService.deleteCompte(id)
@@ -63,6 +70,25 @@ const deleteCompte = (id) => {
             });
     }
 };
+
+const getCompteById = (id) => {
+    return comptes.value.find(compte => compte.id === id);
+};
+
+
+const toAdmin = (id) => {
+    if (confirm("Voulez-vous vraiment mettre ce compte en tant qu'admin ?")) {
+        const compte = getCompteById(id);
+        compte.isAdmin = true;
+        compteService.updateCompte(id, compte)
+            .then(() => {
+                fetchComptes();
+            })
+            .catch(error => {
+                console.error('Erreur lors de la mise a jour du compte', error);
+            });
+    }
+}
 
 onMounted(async () => {
     try {
