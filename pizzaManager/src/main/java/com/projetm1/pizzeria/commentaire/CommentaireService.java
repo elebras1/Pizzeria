@@ -76,7 +76,7 @@ public class CommentaireService {
                     this.commandeRepository.save(commande);
                 }
             } catch (NumberFormatException e) {
-                e.printStackTrace();
+                throw new RuntimeException("Erreur lors de la conversion de l'identifiant de la commande");
             }
         }
 

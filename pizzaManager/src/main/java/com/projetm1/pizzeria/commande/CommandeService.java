@@ -75,7 +75,6 @@ public class CommandeService {
 
     private Optional<Commande> getCommandeEnCoursByCompteId(Long compteId) {
         return this.commandeRepository.findByCompteIdAndEnCoursTrueAndIsPayeFalse(compteId);
-
     }
 
     public CommandeDto getCommandeEnCoursByCompteId(String compteJson) {
@@ -102,7 +101,7 @@ public class CommandeService {
     }
 
     private Boolean payCommande(Long id) {
-        Commande commande = this.commandeRepository.findById(id).orElseThrow();
+        Commande commande = this.commandeRepository.findById(id).orElseThrow(() -> new NotFound("Commande introuvable"));
         commande.setIsPaye(true);
         this.commandeRepository.save(commande);
         return commande.getIsPaye();
@@ -125,9 +124,6 @@ public class CommandeService {
 
     private CommandeDto updatePanier(CommandeRequestDto commandeDto, Commande commande) {
         commande.getPanier().clear();
-
-        System.out.println(commande.getPanier().toArray().length);
-
         for (PizzaPanierRequestDto pizzaPanierRequestDto : commandeDto.getPanier()) {
             PizzaPanier pizzaPanier1 = new PizzaPanier();
             Pizza pizza = pizzaRepository.findById(pizzaPanierRequestDto.getPizzaId()).orElseThrow();
@@ -151,7 +147,7 @@ public class CommandeService {
             CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
             Optional<Commande> commande = this.commandeRepository.findByCompteIdAndEnCoursTrueAndIsPayeFalse(compte.getId());
             if(commande.isEmpty()){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                throw new NotFound("Commande introuvable");
             }
             Float total = 0.0f;
             for(PizzaPanier pizzaPanier: commande.get().getPanier()){
@@ -213,11 +209,11 @@ public class CommandeService {
             CompteDto compte = objectMapper.readValue(compteJson, CompteDto.class);
             Optional<Commande> commande = this.commandeRepository.findByCompteIdAndEnCoursTrueAndIsPayeFalse(compte.getId());
             if(commande.isEmpty()){
-                return false;
+                throw new NotFound("Commande introuvable");
             }
             return payCommande(commande.get().getId());
         }catch (JsonProcessingException e){
-            return false;
+            throw new NotFound("Erreur lors de la récupération de la commande");
         }
     }
 }
