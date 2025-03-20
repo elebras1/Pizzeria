@@ -33,7 +33,7 @@ public class CompteService {
     }
 
     public CompteDto getCompteById(Long id) {
-        return this.compteMapper.toDto(this.compteRepository.findById(id).orElse(null));
+        return this.compteMapper.toDto(this.compteRepository.findById(id).orElseThrow( () -> new NotFound("Compte not found")));
     }
     public CompteDto getCompteByToken(String compteJson) {
         try {
@@ -67,11 +67,28 @@ public class CompteService {
 
     public CompteDto saveCompte(CompteRequestDto compteDto) {
         Compte compte = this.compteMapper.toEntity(compteDto);
-        if (compte != null) {
-            compte.setMotDePasse(hashPassword(compte.getMotDePasse()));
-            compte.setIsAdmin(false);
-            compte = this.compteRepository.save(compte);
+        if(compte==null){
+            throw new UnprocessableEntity("Compte non valide");
         }
+        if(compte.getPseudo() ==null || compte.getPseudo().isEmpty()) {
+            throw new UnprocessableEntity("Le Pseudo est obligatoire");
+        }
+        if(compte.getMotDePasse() ==null || compte.getMotDePasse().isEmpty()) {
+            throw new UnprocessableEntity("Le mot de passe est obligatoire");
+        }
+        if(compte.getNom() ==null || compte.getNom().isEmpty()) {
+            throw new UnprocessableEntity("Le nom est obligatoire");
+        }
+        if(compte.getPrenom() ==null || compte.getPrenom().isEmpty()) {
+            throw new UnprocessableEntity("Le prenom est obligatoire");
+        }
+        if(this.compteRepository.existsByPseudo(compte.getPseudo())) {
+            throw new UnprocessableEntity("Le pseudo est déjà utilisé");
+        }
+        compte.setMotDePasse(hashPassword(compte.getMotDePasse()));
+        compte.setIsAdmin(false);
+        compte = this.compteRepository.save(compte);
+
         return this.compteMapper.toDto(compte);
     }
 
@@ -80,21 +97,19 @@ public class CompteService {
     }
 
     public CompteDto updateCompte(Long id, CompteRequestDto compteDto) {
-        if(!this.compteRepository.existsById(id)) {
-            return null;
-        }
-
         Compte compte = this.compteRepository.findById(id).orElseThrow(()-> new NotFound("Compte non trouvé"));
         compte.setIsAdmin(compteDto.getIsAdmin());
         compte = this.compteRepository.save(compte);
-
         return this.compteMapper.toDto(compte);
     }
     public CompteDto updateCompteByToken(CompteDto compteDto, CompteRequestDto compteRequestDto){
-        Compte compte = this.compteRepository.findById(compteDto.getId()).orElse(null);
-        if (compte == null) {
-            return null;
+        if(compteRequestDto.getNom() ==null || compteRequestDto.getNom().isEmpty()) {
+            throw new UnprocessableEntity("Le nom est obligatoire");
         }
+        if(compteRequestDto.getPrenom() ==null || compteRequestDto.getPrenom().isEmpty()) {
+            throw new UnprocessableEntity("Le prenom est obligatoire");
+        }
+        Compte compte = this.compteRepository.findById(compteDto.getId()).orElseThrow(()-> new NotFound("Compte non trouvé"));
         compte.setNom(compteRequestDto.getNom());
         compte.setPrenom(compteRequestDto.getPrenom());
         this.compteRepository.save(compte);
@@ -110,10 +125,16 @@ public class CompteService {
         }
     }
     private CompteDto updateComptePasswordByToken(CompteDto compteDto, ComptePasswordChangeDto comptePasswordChangeDto){
-        Compte compte = this.compteRepository.findById(compteDto.getId()).orElse(null);
-        if (compte == null) {
-            throw new NotFound("Compte non trouvé");
+        if(comptePasswordChangeDto.getNewPassword() ==null || comptePasswordChangeDto.getNewPassword().isEmpty()) {
+            throw new UnprocessableEntity("Le nouveau mot de passe est obligatoire");
         }
+        if(comptePasswordChangeDto.getOldPassword() ==null || comptePasswordChangeDto.getOldPassword().isEmpty()) {
+            throw new UnprocessableEntity("L'ancien mot de passe est obligatoire");
+        }
+        if(comptePasswordChangeDto.getComfirmPassword() ==null || comptePasswordChangeDto.getComfirmPassword().isEmpty()) {
+            throw new UnprocessableEntity("La confirmation du mot de passe est obligatoire");
+        }
+        Compte compte = this.compteRepository.findById(compteDto.getId()).orElseThrow(() -> new NotFound("Compte non trouvé"));
         if(!passwordEncoder.matches(comptePasswordChangeDto.getOldPassword(), compte.getMotDePasse())) {
             throw new UnprocessableEntity("Mot de passe incorrect");
         }
@@ -129,10 +150,7 @@ public class CompteService {
     }
 
     public List<CommandeDto> getCommandesByCompteId(Long id) {
-        Compte compte = this.compteRepository.findById(id).orElse(null);
-        if (compte == null) {
-            return null;
-        }
+        Compte compte = this.compteRepository.findById(id).orElseThrow(() -> new NotFound("Compte not found"));
         List<CommandeDto> commandeDtos = new ArrayList<>();
         for (Commande commande : compte.getCommandes()) {
             commandeDtos.add(this.commandeMapper.toDto(commande));

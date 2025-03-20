@@ -6,6 +6,7 @@ import com.projetm1.pizzeria.commande.dto.CommandeDto;
 import com.projetm1.pizzeria.compte.dto.ComptePasswordChangeDto;
 import com.projetm1.pizzeria.compte.dto.CompteRequestDto;
 import com.projetm1.pizzeria.compte.dto.CompteDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/comptes")
 public class CompteController {
+    
     private final CompteService compteService;
 
     public CompteController(CompteService compteService) {

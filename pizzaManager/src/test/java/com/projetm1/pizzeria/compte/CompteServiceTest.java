@@ -8,6 +8,7 @@ import com.projetm1.pizzeria.commande.dto.CommandeDto;
 import com.projetm1.pizzeria.compte.dto.CompteDto;
 import com.projetm1.pizzeria.compte.dto.ComptePasswordChangeDto;
 import com.projetm1.pizzeria.compte.dto.CompteRequestDto;
+import com.projetm1.pizzeria.error.UnprocessableEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -129,6 +130,18 @@ public class CompteServiceTest {
 
         CompteDto result = compteService.updateCompteByToken(compteJson, comptePasswordChangeDto);
         assertNotNull(result);
+
+        comptePasswordChangeDto.setOldPassword("newpassword");
+        assertThrows(UnprocessableEntity.class, () -> compteService.updateCompteByToken(compteJson, comptePasswordChangeDto));
+        comptePasswordChangeDto.setOldPassword("password");
+
+        comptePasswordChangeDto.setNewPassword("new4564password");
+        assertThrows(UnprocessableEntity.class, () -> compteService.updateCompteByToken(compteJson, comptePasswordChangeDto));
+
+        comptePasswordChangeDto.setNewPassword("new4564password");
+        assertThrows(UnprocessableEntity.class, () -> compteService.updateCompteByToken(compteJson, comptePasswordChangeDto));
+
+
     }
 
     @Test
