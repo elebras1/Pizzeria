@@ -52,7 +52,7 @@ public class PizzaService {
             message.append("La description de la pizza est obligatoire\n");
         }
 
-        if(pizzaDto.getStandardIngredientsIds() == null || pizzaDto.getOptionalIngredientsIds().isEmpty()) {
+        if(pizzaDto.getStandardIngredientsIds() == null || pizzaDto.getStandardIngredientsIds().isEmpty()) {
             message.append("Les ingrédients de base de la pizza sont obligatoires\n");
         }
 
@@ -99,7 +99,7 @@ public class PizzaService {
             message.append("La description de la pizza est obligatoire\n");
         }
 
-        if(pizzaDto.getStandardIngredientsIds() == null || pizzaDto.getOptionalIngredientsIds().isEmpty()) {
+        if(pizzaDto.getStandardIngredientsIds() == null || pizzaDto.getStandardIngredientsIds().isEmpty()) {
             message.append("Les ingrédients de base de la pizza sont obligatoires\n");
         }
 
