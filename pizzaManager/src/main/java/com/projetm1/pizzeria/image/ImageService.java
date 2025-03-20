@@ -44,10 +44,8 @@ public class ImageService {
 
             return fileName;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Erreur lors de la sauvegarde de l'image");
         }
-
-        return null;
     }
 
     public ResponseEntity<Resource> getImage(String fileName) {

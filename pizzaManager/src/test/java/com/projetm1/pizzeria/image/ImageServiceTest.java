@@ -70,9 +70,7 @@ class ImageServiceTest {
         when(file.getOriginalFilename()).thenReturn("test.jpg");
         doThrow(new IOException("IO error")).when(file).transferTo(any(File.class));
 
-        String result = this.imageService.saveImage(file);
-        // En cas d'erreur, la méthode renvoie null (après avoir catch l'IOException)
-        assertNull(result);
+        assertThrows(RuntimeException.class, () -> this.imageService.saveImage(file));
     }
 
     // Test : sauvegarde réussie
