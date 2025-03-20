@@ -31,7 +31,6 @@ class ImageServiceTest {
     @BeforeEach
     public void setUp() throws Exception {
         this.imageService = new ImageService();
-        // On injecte via réflexion le chemin du dossier temporaire
         Field field = ImageService.class.getDeclaredField("image_directory");
         field.setAccessible(true);
         field.set(this.imageService, this.tempDir.toString() + File.separator);
