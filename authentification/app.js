@@ -80,8 +80,15 @@ function generateRefreshToken(payload) {
 }
 
 function isRouteAllowed(routes, method, path) {
-    return routes[method]?.includes(path);
+    const dynamicParamRegex = /:\w+/g;
+
+    return routes[method]?.some((route) => {
+        // Remplace les paramètres dynamiques par une expression générique
+        const routeRegex = new RegExp(`^${route.replace(dynamicParamRegex, '[^/]+')}$`);
+        return routeRegex.test(path);
+    });
 }
+
 function authMiddleware(req, res, next) {
     if (isRouteAllowed(publicRoutes, req.method, req.path)) {
         return next();
