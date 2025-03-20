@@ -1,7 +1,6 @@
 package com.projetm1.pizzeria.pizzaPanier;
 
-import com.projetm1.pizzeria.commande.Commande;
-import com.projetm1.pizzeria.commande.CommandeRepository;
+import com.projetm1.pizzeria.error.NotFound;
 import com.projetm1.pizzeria.ingredient.Ingredient;
 import com.projetm1.pizzeria.ingredient.IngredientRepository;
 import com.projetm1.pizzeria.pizza.Pizza;
@@ -32,7 +31,7 @@ public class PizzaPanierService {
     }
 
     public PizzaPanierDto getPizzaPanierById(Long id) {
-        return this.pizzaPanierMapper.toDto(this.pizzaPanierRepository.findById(id).orElse(null));
+        return this.pizzaPanierMapper.toDto(this.pizzaPanierRepository.findById(id).orElseThrow(() -> new NotFound("PizzaPanier not found")));
     }
 
     public List<PizzaPanierDto> getAllPizzasPaniers() {
@@ -46,13 +45,13 @@ public class PizzaPanierService {
 
     public PizzaPanierDto savePizzaPanier(PizzaPanierRequestDto pizzaPanierDto) {
         PizzaPanier pizzaPanier = this.pizzaPanierMapper.toEntity(pizzaPanierDto);
-        Pizza pizza = this.pizzaRepository.findById(pizzaPanierDto.getPizzaId()).orElse(null);
+        Pizza pizza = this.pizzaRepository.findById(pizzaPanierDto.getPizzaId()).orElseThrow(() -> new NotFound("Pizza not found"));
         Set<Ingredient> ingredients = new HashSet<>();
         for(Long ingredientId : pizzaPanierDto.getIngredientsIds()) {
             this.ingredientRepository.findById(ingredientId).ifPresent(ingredients::add);
         }
         pizzaPanier.setPizza(pizza);
-        pizzaPanier.setIngredients((List<Ingredient>) ingredients);
+        pizzaPanier.setIngredients(new ArrayList<>(ingredients));
 
         pizzaPanier = this.pizzaPanierRepository.save(pizzaPanier);
 
@@ -65,7 +64,7 @@ public class PizzaPanierService {
 
     public PizzaPanierDto updatePizzaPanier(Long id, PizzaPanierRequestDto pizzaPanierDto) {
         if(!this.pizzaPanierRepository.existsById(id)) {
-            return null;
+            throw new NotFound("PizzaPanier not found");
         }
 
         PizzaPanier pizzaPanier = this.pizzaPanierMapper.toEntity(pizzaPanierDto);
@@ -76,7 +75,7 @@ public class PizzaPanierService {
             this.ingredientRepository.findById(ingredientId).ifPresent(ingredients::add);
         }
         pizzaPanier.setPizza(pizza);
-        pizzaPanier.setIngredients((List<Ingredient>) ingredients);
+        pizzaPanier.setIngredients(new ArrayList<>(ingredients));
         pizzaPanier = this.pizzaPanierRepository.save(pizzaPanier);
         return this.pizzaPanierMapper.toDto(pizzaPanier);
     }
