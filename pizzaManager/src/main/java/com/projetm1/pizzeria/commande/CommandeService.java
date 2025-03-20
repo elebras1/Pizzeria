@@ -15,6 +15,7 @@ import com.projetm1.pizzeria.pizza.PizzaRepository;
 import com.projetm1.pizzeria.pizzaPanier.PizzaPanier;
 import com.projetm1.pizzeria.pizzaPanier.dto.PizzaPanierRequestDto;
 import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import org.springframework.http.HttpStatus;
@@ -149,21 +150,18 @@ public class CommandeService {
             if(commande.isEmpty()){
                 throw new NotFound("Commande introuvable");
             }
-            Float total = 0.0f;
+            float total = 0.0f;
             for(PizzaPanier pizzaPanier: commande.get().getPanier()){
                 for(Ingredient ingredient: pizzaPanier.getIngredients()){
                     total = total+ ingredient.getPrix();
                 }
             }
-
-            System.out.println(total);
             long montantEnCentimes = (long) (total * 100L);
             if(montantEnCentimes == 0){
                 Map<String, String> response = new HashMap<>();
                 response.put("url","http://localhost:5173/panier" );
                 return ResponseEntity.ok(response);
             }
-            System.out.println(montantEnCentimes);
             Stripe.apiKey = "sk_test_51R3PKZQxmuo6VLbo318TeqOwaacBuCiV8c4xGEXvqWT43qLtbkpVAkjuuKsfly5xvaoyfSwvE0PqmZJENBjXjaax00duyJFo1M";
 
             SessionCreateParams.LineItem.PriceData.ProductData productData =
@@ -197,7 +195,7 @@ public class CommandeService {
             Map<String, String> response = new HashMap<>();
             response.put("url", session.getUrl());
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
+        } catch (JsonProcessingException | StripeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
 

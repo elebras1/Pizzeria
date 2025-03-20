@@ -22,9 +22,12 @@ import com.projetm1.pizzeria.pizza.Pizza;
 import com.projetm1.pizzeria.pizza.PizzaRepository;
 import com.projetm1.pizzeria.pizzaPanier.PizzaPanier;
 import com.projetm1.pizzeria.pizzaPanier.dto.PizzaPanierRequestDto;
+import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import java.time.LocalDateTime;
 import java.util.*;
+
+import com.stripe.param.checkout.SessionCreateParams;
 import org.junit.jupiter.api.*;
 import org.mockito.*;
 import org.springframework.http.HttpStatus;
@@ -398,10 +401,14 @@ public class CommandeServiceTest {
         CompteDto compteDto = new CompteDto();
         compteDto.setId(compteId);
         String compteJson = objectMapper.writeValueAsString(compteDto);
+
+        // Simuler qu'aucune commande en cours n'existe pour ce compte
         when(commandeRepository.findByCompteIdAndEnCoursTrueAndIsPayeFalse(compteId))
                 .thenReturn(Optional.empty());
 
-        NotFound exception = assertThrows(NotFound.class, () -> commandeService.createCheckoutSession(compteJson));
+        NotFound exception = assertThrows(NotFound.class, () ->
+                commandeService.createCheckoutSession(compteJson)
+        );
         assertEquals("Commande introuvable", exception.getMessage());
     }
 
