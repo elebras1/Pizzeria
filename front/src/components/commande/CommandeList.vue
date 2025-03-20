@@ -259,8 +259,17 @@ onMounted(async () => {
 }
 
 button {
-    margin-right: 0.5em;
-    margin-top: 0.5em;
+  background-color: #555;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 1px;
+}
+
+button:hover {
+  background-color: #777;
 }
 
 .comment img {
