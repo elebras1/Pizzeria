@@ -12,6 +12,9 @@
     <div class="card" @click="navigate('CompteList')">
       <h2>Comptes</h2>
     </div>
+    <div class="card" @click="navigate('Statistique')">
+      <h2>Statistique</h2>
+    </div>
   </div>
 </template>
 

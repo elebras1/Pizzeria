@@ -39,7 +39,7 @@ const routes = [
     { path: '/administration/comptes', name: 'CompteList', component: CompteList },
     { path: '/account/commandes/:commandeId/commentaires/new', name: 'CommentaireCreate', component: CommentaireForm, props: route => ({ commandeId: Number(route.params.commandeId) }) },
     { path: '/account/commandes/:commandeId/commentaires/edit/:commentaireId', name: 'CommentaireEdit', component: CommentaireForm, props: route => ({ commandeId: Number(route.params.commandeId), commentaireId: Number(route.params.commentaireId) }) },
-    { path: '/statistique', name: 'Statistique', component: Statistique },
+    { path: '/administration/statistique', name: 'Statistique', component: Statistique },
 ];
 
 const router = createRouter({

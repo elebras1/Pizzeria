@@ -5,7 +5,10 @@ import {
   Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement, PointElement, LineElement
 } from 'chart.js';
 import api from "@/interceptors/api.js";
-import commandeService  from "@/services/commandeService.js";
+import commandeService from "@/services/commandeService.js";
+import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
 
 ChartJS.register(
     Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale,
@@ -16,6 +19,28 @@ export default {
   name: "Statistique",
   components: {
     Bar, Doughnut, Line
+  },
+  setup() {
+    const authStore = useAuthStore();
+    const router = useRouter();
+    const isAdmin = ref(false);
+
+    onMounted(async () => {
+      try {
+        const response = await authStore.verifyAdmin();
+        const compteDto = response.data;
+        if (compteDto && compteDto.isAdmin) {
+          isAdmin.value = true;
+        } else {
+          router.push({ name: 'Home' });
+        }
+      } catch (error) {
+        console.error("Erreur lors de la vérification admin :", error);
+        router.push({ name: 'Home' });
+      }
+    });
+
+    return { isAdmin };
   },
   data() {
     return {
@@ -166,7 +191,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div v-if="isAdmin">
     <h2>Statistiques des Pizzas</h2>
     <div>
       <h3>Top 5 des pizzas les plus vendues</h3>
