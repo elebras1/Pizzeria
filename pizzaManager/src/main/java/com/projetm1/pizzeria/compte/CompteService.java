@@ -91,7 +91,6 @@ public class CompteService {
         return this.compteMapper.toDto(compte);
     }
     public CompteDto updateCompteByToken(CompteDto compteDto, CompteRequestDto compteRequestDto){
-        System.out.println(compteRequestDto);
         Compte compte = this.compteRepository.findById(compteDto.getId()).orElse(null);
         if (compte == null) {
             return null;
@@ -99,7 +98,7 @@ public class CompteService {
         compte.setNom(compteRequestDto.getNom());
         compte.setPrenom(compteRequestDto.getPrenom());
         this.compteRepository.save(compte);
-        return compteDto;
+        return this.compteMapper.toDto(compte);
     }
     public CompteDto updateCompteByToken(String compteJson, ComptePasswordChangeDto comptePasswordChangeDto){
         try {
