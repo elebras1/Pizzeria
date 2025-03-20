@@ -6,6 +6,7 @@ import PizzaSelection from "./pizza/PizzaSelection.vue";
 import ModalConnexion from "./authentification/ModalConnexion.vue";
 import { usePanierStore } from "@/stores/panier.js";
 import imageService from "@/services/imageService.js";
+import api from "@/interceptors/api.js";
 
 const authStore = useAuthStore();
 const pizzas = ref([]);
@@ -15,12 +16,11 @@ const selectedPizza = ref(null);
 
 onMounted(() => {
   getAllPizzas();
-  authStore.initialize();
 });
 
 const getAllPizzas = async () => {
   try {
-    const response = await axios.get("http://localhost:3000/api/pizzas");
+    const response = await api.get("/pizzas");
     pizzas.value = response.data;
     pizzas.value.forEach(pizza => {
       imageService.getImage(pizza.photo)
