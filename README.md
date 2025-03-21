@@ -11,6 +11,7 @@ Ce projet est une application web permettant la commande de pizzas personnalisé
 ## Technologies utilisées
 
 Java 21 <br>
+NodeJS <br>
 MariaDB<br>
 MongoDB<br>
 Maven<br>
