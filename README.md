@@ -25,7 +25,7 @@ Jackson pour la gestion des objets JSON <br>
 MapStruct Mappers pour la transformation entre entités et DTO <br>
 Lombock pour les assesseurs,ect ...<br>
 VueJS <br>
-Vue-Router pour les route VueJS<br>
+Vue-Router pour les routes VueJS<br>
 Chart-JS pour les statistiques<br>
 JWT pour les tokens<br>
 Axios pour les requetes<br>
