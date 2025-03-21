@@ -13,6 +13,7 @@ Ce projet est une application web permettant la commande de pizzas personnalisé
 Java 21 <br>
 MariaDB<br>
 MongoDB<br>
+Maven<br>
 Spring Boot <br>
 Spring Data JPA <br>
 Spring Security <br>
