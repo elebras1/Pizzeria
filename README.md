@@ -10,6 +10,14 @@ Ce projet est une application web permettant la commande de pizzas personnalisé
 
 ## Technologies utilisées
 
+Java 22
+Spring Boot
+Spring Data JPA
+Spring Security
+Stripe API pour la gestion des paiements
+Jackson pour la gestion des objets JSON
+Mappers pour la transformation entre entités et DTO
+
 ## Fonctionnalités
 1. Gestion des Comptes (CompteService)
 
