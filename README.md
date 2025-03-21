@@ -21,65 +21,66 @@ Mappers pour la transformation entre entités et DTO
 ## Fonctionnalités
 1. Gestion des Comptes (CompteService)
 
-    Création de comptes utilisateurs avec vérification de l'unicité du pseudo.
-    Récupération des informations d'un compte par identifiant ou par token.
-    Mise à jour des informations d'un compte.
-    Changement de mot de passe avec vérification de l'ancien mot de passe.
-    Suppression d'un compte.
-    Gestion des rôles d'administration.
+    Création de comptes utilisateurs avec vérification de l'unicité du pseudo.<br>
+    Récupération des informations d'un compte par identifiant ou par token.<br>
+    Mise à jour des informations d'un compte.<br>
+    Changement de mot de passe avec vérification de l'ancien mot de passe.<br>
+    Suppression d'un compte.<br>
+    Gestion des rôles d'administration.<br>
 
 2. Authentification (AuthentificationService)
 
-    Vérification des identifiants et des mots de passe des utilisateurs.
-    Gestion de la connexion avec vérification de la correspondance entre le mot de passe saisi et le mot de passe enregistré.
+    Vérification des identifiants et des mots de passe des utilisateurs.<br>
+    Gestion de la connexion avec vérification de la correspondance entre le mot de passe saisi et le mot de passe enregistré.<br>
 
 3. Gestion des Commandes (CommandeService)
 
-    Création de commandes avec vérification des commandes en cours pour un compte.
-    Récupération d'une commande par identifiant ou de la commande en cours pour un utilisateur.
-    Récupération de toutes les commandes.
-    Mise à jour d'une commande (modification du panier).
-    Finalisation d'une commande.
-    Paiement d'une commande via Stripe avec génération d'une session de paiement.
-    Suppression d'une commande.
+    Création de commandes avec vérification des commandes en cours pour un compte.<br>
+    Récupération d'une commande par identifiant ou de la commande en cours pour un utilisateur.<br>
+    Récupération de toutes les commandes.<br>
+    Mise à jour d'une commande (modification du panier).<br>
+    Finalisation d'une commande.<br>
+    Paiement d'une commande via Stripe avec génération d'une session de paiement.<br>
+    Suppression d'une commande.<br>
 
 4. Gestion des Pizzas (PizzaService)
 
-    Création de nouvelles pizzas avec gestion des ingrédients standard et optionnels.
-    Récupération d'une pizza par identifiant.
-    Récupération de toutes les pizzas disponibles.
-    Mise à jour des informations d'une pizza.
-    Suppression d'une pizza.
+    Création de nouvelles pizzas avec gestion des ingrédients standard et optionnels.<br>
+    Récupération d'une pizza par identifiant.<br>
+    Récupération de toutes les pizzas disponibles.<br>
+    Mise à jour des informations d'une pizza.<br>
+    Suppression d'une pizza.<br>
 
 5. Gestion des Paniers de Pizzas (PizzaPanierService)
 
-    Création de paniers de pizzas avec association d'ingrédients.
-    Récupération d'un panier de pizza par identifiant.
-    Récupération de tous les paniers de pizzas.
-    Mise à jour d'un panier de pizza.
-    Suppression d'un panier de pizza.
+    Création de paniers de pizzas avec association d'ingrédients.<br>
+    Récupération d'un panier de pizza par identifiant.<br>
+    Récupération de tous les paniers de pizzas.<br>
+    Mise à jour d'un panier de pizza.<br>
+    Suppression d'un panier de pizza.<br>
 
 6. Gestion des Ingrédients (IngredientService)
 
-    Création de nouveaux ingrédients avec vérification d'unicité.
-    Récupération d'un ingrédient par identifiant.
-    Récupération de tous les ingrédients disponibles.
-    Mise à jour des informations d'un ingrédient.
-    Suppression d'un ingrédient avec vérification d'absence de références dans les pizzas.
+    Création de nouveaux ingrédients avec vérification d'unicité.<br>
+    Récupération d'un ingrédient par identifiant.<br>
+    Récupération de tous les ingrédients disponibles.<br>
+    Mise à jour des informations d'un ingrédient.<br>
+    Suppression d'un ingrédient avec vérification d'absence de références dans les pizzas.<br>
 
 7. Gestion des Commentaires (CommentaireService)
 
-    Création de commentaires associés à une commande, avec enregistrement éventuel d'une image.
-    Récupération d'un commentaire par identifiant.
-    Récupération de tous les commentaires.
-    Mise à jour des commentaires.
-    Suppression d'un commentaire avec mise à jour de la liste des commentaires de la commande associée.
+    Création de commentaires associés à une commande, avec enregistrement éventuel d'une image.<br>
+    Récupération d'un commentaire par identifiant.<br>
+    Récupération de tous les commentaires.<br>
+    Mise à jour des commentaires.<br>
+    Suppression d'un commentaire avec mise à jour de la liste des commentaires de la commande associée.<br>
 
 8. Gestion des Images (ImageService)
 
-    Sauvegarde d'images sur le serveur.
-    Récupération d'une image par son nom de fichier.
-    Vérification des extensions d'image prises en charge (PNG, JPG, JPEG).
+    Sauvegarde d'images sur le serveur.<br>
+    Récupération d'une image par son nom de fichier.<br>
+    Vérification des extensions d'image prises en charge (PNG, JPG, JPEG).<br>
+    
 ## Base de données
 <img src="database_pizzeria.png" alt="Texte alternatif" width="640" height="293">
 
