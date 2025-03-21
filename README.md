@@ -16,6 +16,7 @@ MongoDB<br>
 Maven<br>
 Spring Boot <br>
 Spring Data JPA <br>
+Spring Data Mongo <br>
 Spring Security <br>
 Stripe API pour la gestion des paiements <br>
 Jackson pour la gestion des objets JSON <br>
