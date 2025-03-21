@@ -23,13 +23,13 @@ Spring Security <br>
 Stripe API pour la gestion des paiements <br>
 Jackson pour la gestion des objets JSON <br>
 MapStruct Mappers pour la transformation entre entités et DTO <br>
-Lombock <br>
+Lombock pour les assesseurs,ect ...<br>
 VueJS <br>
 Vue-Router pour les route VueJS<br>
 Chart-JS pour les statistiques<br>
 JWT pour les tokens<br>
-Axios<br>
-Pinia<br>
+Axios pour les requetes<br>
+Pinia pour le store des informations<br>
 
 
 ## Fonctionnalités
