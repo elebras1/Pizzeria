@@ -12,6 +12,7 @@ Ce projet est une application web permettant la commande de pizzas personnalisé
 
 Java 21 <br>
 NodeJS <br>
+ExpressJs<br>
 MariaDB<br>
 MongoDB<br>
 Maven<br>
@@ -28,6 +29,7 @@ Vue-Router pour les route VueJS<br>
 Chart-JS pour les statistiques<br>
 JWT pour les tokens<br>
 Axios<br>
+Pinia<br>
 
 
 ## Fonctionnalités
