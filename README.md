@@ -20,7 +20,7 @@ Spring Data Mongo <br>
 Spring Security <br>
 Stripe API pour la gestion des paiements <br>
 Jackson pour la gestion des objets JSON <br>
-MapStruc Mappers pour la transformation entre entités et DTO <br>
+MapStruct Mappers pour la transformation entre entités et DTO <br>
 Lombock <br>
 VueJS <br>
 Vue-Router pour les route VueJS<br>
