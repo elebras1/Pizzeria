@@ -11,12 +11,15 @@ Ce projet est une application web permettant la commande de pizzas personnalisé
 ## Technologies utilisées
 
 Java 22 <br>
+MariaDB<br>
+MongoDB<br>
 Spring Boot <br>
 Spring Data JPA <br>
 Spring Security <br>
 Stripe API pour la gestion des paiements <br>
 Jackson pour la gestion des objets JSON <br>
 MapStruc Mappers pour la transformation entre entités et DTO <br>
+Lombock <br>
 Vue Router pour les route VueJS<br>
 Chart-JS pour les statistiques<br>
 JWT pour les tokens<br>
