@@ -162,7 +162,7 @@ public class CommandeService {
                 response.put("url","http://localhost:5173/panier" );
                 return ResponseEntity.ok(response);
             }
-            Stripe.apiKey = "sk_test_51R3PKZQxmuo6VLbo318TeqOwaacBuCiV8c4xGEXvqWT43qLtbkpVAkjuuKsfly5xvaoyfSwvE0PqmZJENBjXjaax00duyJFo1M";
+            Stripe.apiKey = "";
 
             SessionCreateParams.LineItem.PriceData.ProductData productData =
                     SessionCreateParams.LineItem.PriceData.ProductData.builder()
